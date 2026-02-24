@@ -14,15 +14,33 @@
   <script src="script.js"></script>
   <script>
     createCisloInputs([
-      { equation: '1a', x: 100, y: 100, disabled: true, placeholder: '10' },
-      { equation: '1b', x: 160, y: 100, disabled: true, placeholder: '-' },
-      { equation: '1c 2a', x: 220, y: 100, disabled: false },
+      { equation: '1a', x: 100, y: 100, disabled: true, placeholder: '9' },
+      { equation: '1b', x: 160, y: 100, disabled: true, placeholder: '+' },
+      { equation: '1c 4a', x: 220, y: 100, disabled: false },
       { equation: '1d', x: 280, y: 100, disabled: true, placeholder: '=' },
-      { equation: '1e', x: 340, y: 100, disabled: true, placeholder: '8' },
-      { equation: '2b', x: 220, y: 160, disabled: true, placeholder: '*' },
-      { equation: '2c', x: 220, y: 220, disabled: false },
-      { equation: '2d', x: 220, y: 280, disabled: true, placeholder: '=' },
-      { equation: '2e', x: 220, y: 340, disabled: true, placeholder: '10' },
+      { equation: '1e', x: 340, y: 100, disabled: true, placeholder: '20' },
+      
+      { equation: '2a', x: 100, y: 220, disabled: true, placeholder: '5' },
+      { equation: '2b', x: 160, y: 220, disabled: true, placeholder: '**' },
+      { equation: '2c 4c', x: 220, y: 220, disabled: true, placeholder: '3' },
+      { equation: '2d', x: 280, y: 220, disabled: true, placeholder: '%' },
+      { equation: '2e', x: 340, y: 220, disabled: true, placeholder: '15' },
+      { equation: '2f', x: 400, y: 220, disabled: true, placeholder: '=' },
+      { equation: '2g 5c', x: 460, y: 220, disabled: false },
+
+      { equation: '3a', x: 100, y: 340, disabled: true, placeholder: '2' },
+      { equation: '3b', x: 160, y: 340, disabled: true, placeholder: '**' },
+      { equation: '3c 4e', x: 220, y: 340, disabled: false },
+      { equation: '3d', x: 280, y: 340, disabled: true, placeholder: '=' },
+      { equation: '3e', x: 340, y: 340, disabled: false },
+
+      { equation: '4b', x: 220, y: 160, disabled: true, placeholder: '//' },
+      { equation: '4d', x: 220, y: 280, disabled: true, placeholder: '=' },
+
+      { equation: '5a', x: 460, y: 100, disabled: true, placeholder: '4' },
+      { equation: '5b', x: 460, y: 160, disabled: true, placeholder: '*' },
+      { equation: '5d', x: 460, y: 280, disabled: true, placeholder: '=' },
+      { equation: '5e', x: 460, y: 340, disabled: false },
     ], document.querySelector('.container'));
 
     const container = document.querySelector('.container');
