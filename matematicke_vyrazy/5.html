@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Victory!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: Impact, "Arial Black", sans-serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+      overflow-x: hidden;
+    }
+    .victory-text {
+      font-size: clamp(3rem, 15vw, 8rem);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 0.5em 0;
+      animation: flash-colors 1.2s ease-in-out infinite;
+    }
+    @keyframes flash-colors {
+      0%, 100% { color: #ffd700; filter: drop-shadow(0 0 30px #ffd700); }
+      25%      { color: #ff6b6b; filter: drop-shadow(0 0 30px #ff6b6b); }
+      50%      { color: #4ecdc4; filter: drop-shadow(0 0 30px #4ecdc4); }
+      75%      { color: #a78bfa; filter: drop-shadow(0 0 30px #a78bfa); }
+    }
+    .subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: clamp(1rem, 4vw, 1.5rem);
+      margin-bottom: 1.5rem;
+      font-family: system-ui, sans-serif;
+    }
+    .gif-wrap {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      max-width: 90vw;
+    }
+    .gif-wrap img {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="victory-text">Vyhrál jsi!</h1>
+  <p class="subtitle">Vyřešil jsi všechny úlohy! 🎉</p>
+  <div class="gif-wrap">
+    <img src="https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif" alt="Congratulations!">
+  </div>
+
+  <script>
+    document.body.addEventListener('click', function () {
+      document.querySelector('.victory-text').style.animationPlayState =
+        document.querySelector('.victory-text').style.animationPlayState === 'paused' ? 'running' : 'paused';
+    });
+  </script>
+</body>
+</html>

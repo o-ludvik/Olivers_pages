@@ -75,11 +75,34 @@ function tokenizeExpression(expr) {
 }
 
 /**
+ * Resolve unary + and - so that "-1", "6/-1", "9+-2" etc. work. Mutates the token array.
+ */
+function resolveUnaryPlusMinus(tokens) {
+  const ops = new Set(['+', '-', '*', '/', '//', '%', '**']);
+  const result = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if ((t === '-' || t === '+') && (result.length === 0 || ops.has(result[result.length - 1]))) {
+      const next = tokens[i + 1];
+      if (typeof next === 'number') {
+        result.push(t === '-' ? -next : next);
+        i++;
+      } else {
+        result.push(t);
+      }
+    } else {
+      result.push(t);
+    }
+  }
+  return result;
+}
+
+/**
  * Evaluate a single expression (no "="). Supports +, -, *, /, //, **, % with standard precedence.
- * ** is right-associative; *, /, //, % and +, - are left-associative.
+ * Unary minus supported (e.g. 6/-1, 9+-2). ** is right-associative; *, /, //, % and +, - are left-associative.
  */
 function evaluateExpression(exprStr) {
-  let tokens = tokenizeExpression(exprStr);
+  let tokens = resolveUnaryPlusMinus(tokenizeExpression(exprStr));
   if (tokens.length === 0) return NaN;
   if (tokens.length === 1 && typeof tokens[0] === 'number') return tokens[0];
 
