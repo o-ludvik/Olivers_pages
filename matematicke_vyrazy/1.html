@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container"></div>
+  <button type="button" id="compute-btn">Vyhodnotit</button>
+  <button type="button" id="next-level-btn" disabled>Další úroveň</button>
+
+  <script src="script.js"></script>
+  <script>
+    createCisloInputs([
+      { equation: '1a', x: 100, y: 200, disabled: true, placeholder: '9' },
+      { equation: '1b', x: 160, y: 200, disabled: true, placeholder: '-' },
+      { equation: '1c 3a', x: 220, y: 200, disabled: false },
+      { equation: '1d', x: 280, y: 200, disabled: true, placeholder: '=' },
+      { equation: '1e 2c', x: 340, y: 200, disabled: false },
+
+      { equation: '2a', x: 340, y: 80, disabled: true, placeholder: '2' },
+      { equation: '2b', x: 340, y: 140, disabled: true, placeholder: '*' },
+      { equation: '2d', x: 340, y: 260, disabled: true, placeholder: '=' },
+      { equation: '2e', x: 340, y: 320, disabled: true, placeholder: '12' },
+
+      { equation: '3b', x: 220, y: 260, disabled: true, placeholder: '+' },
+      { equation: '3c', x: 220, y: 320, disabled: false },
+      { equation: '3d', x: 220, y: 380, disabled: true, placeholder: '=' },
+      { equation: '3e 4c', x: 220, y: 440, disabled: false },
+
+      { equation: '4a', x: 100, y: 440, disabled: true, placeholder: '16' },
+      { equation: '4b', x: 160, y: 440, disabled: true, placeholder: '/' },
+      { equation: '4d', x: 280, y: 440, disabled: true, placeholder: '=' },
+      { equation: '4e', x: 340, y: 440, disabled: true, placeholder: '2' },
+    ], document.querySelector('.container'));
+
+    const container = document.querySelector('.container');
+    const nextLevelBtn = document.getElementById('next-level-btn');
+
+    document.getElementById('compute-btn').addEventListener('click', function () {
+      const allCorrect = computeEquations(container);
+      nextLevelBtn.disabled = !allCorrect;
+    });
+
+    nextLevelBtn.addEventListener('click', function () {
+      const m = window.location.pathname.match(/(\d+)\.html$/);
+      const level = m ? parseInt(m[1], 10) : parseInt(document.title, 10) || 1;
+      window.location.href = (level + 1) + '.html';
+    });
+  </script>
+</body>
+</html>

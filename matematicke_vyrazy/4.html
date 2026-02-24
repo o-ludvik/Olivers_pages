@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container"></div>
+  <button type="button" id="compute-btn">Vyhodnotit</button>
+  <button type="button" id="next-level-btn" disabled>Další úroveň</button>
+
+  <script src="script.js"></script>
+  <script>
+    createCisloInputs([
+      { equation: '1a', x: 100, y: 300, disabled: true, placeholder: '8' },
+      { equation: '1b', x: 160, y: 300, disabled: true, placeholder: '+' },
+      { equation: '1c 3c', x: 220, y: 300, disabled: false },
+      { equation: '1d', x: 280, y: 300, disabled: true, placeholder: '/' },
+      { equation: '1e 4c', x: 340, y: 300, disabled: false },
+      { equation: '1f', x: 400, y: 300, disabled: true, placeholder: '=' },
+      { equation: '1g', x: 460, y: 300, disabled: true, placeholder: '6' },
+
+      { equation: '2a', x: 100, y: 420, disabled: true, placeholder: '3' },
+      { equation: '2b', x: 160, y: 420, disabled: true, placeholder: '*' },
+      { equation: '2c 3e', x: 220, y: 420, disabled: false },
+      { equation: '2d', x: 280, y: 420, disabled: true, placeholder: '-' },
+      { equation: '2e 4e', x: 340, y: 420, disabled: false },
+      { equation: '2f', x: 400, y: 420, disabled: true, placeholder: '=' },
+      { equation: '2g', x: 460, y: 420, disabled: true, placeholder: '20' },
+
+      { equation: '3a', x: 220, y: 180, disabled: true, placeholder: '3' },
+      { equation: '3b', x: 220, y: 240, disabled: true, placeholder: '**' },
+      { equation: '3d', x: 220, y: 360, disabled: true, placeholder: '%' },
+      { equation: '3f', x: 220, y: 480, disabled: true, placeholder: '=' },
+      { equation: '3g', x: 220, y: 540, disabled: true, placeholder: '1' },
+
+      { equation: '4a', x: 340, y: 180, disabled: true, placeholder: '17' },
+      { equation: '4b', x: 340, y: 240, disabled: true, placeholder: '+' },
+      { equation: '4d', x: 340, y: 360, disabled: true, placeholder: '+' },
+      { equation: '4f', x: 340, y: 480, disabled: true, placeholder: '=' },
+      { equation: '4g', x: 340, y: 540, disabled: true, placeholder: '19' },
+
+    ], document.querySelector('.container'));
+
+    const container = document.querySelector('.container');
+    const nextLevelBtn = document.getElementById('next-level-btn');
+
+    document.getElementById('compute-btn').addEventListener('click', function () {
+      const allCorrect = computeEquations(container);
+      nextLevelBtn.disabled = !allCorrect;
+    });
+
+    nextLevelBtn.addEventListener('click', function () {
+      const m = window.location.pathname.match(/(\d+)\.html$/);
+      const level = m ? parseInt(m[1], 10) : parseInt(document.title, 10) || 1;
+      window.location.href = (level + 1) + '.html';
+    });
+  </script>
+</body>
+</html>
