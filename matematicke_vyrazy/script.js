@@ -157,7 +157,7 @@ function equationIdToInputMap(container) {
  * Builds a string from each equation (e.g. "10-3+8=15") and evaluates it; supports any size and +, -, *, /, //, **, %.
  * Empty unknowns are marked red. Only equations with no empty cells count as correct; correct-but-incomplete (other equation empty/wrong) → orange.
  * Colors: green = correct in every equation (all equations complete and true), orange = some correct some not, red = none correct or empty.
- * @returns {boolean} true when at least one equation is fully correct (no empties and evaluates true), so user can continue to next level.
+ * @returns {boolean} true only when every unknown is filled and green (all equations complete and correct); enables Next level.
  */
 function computeEquations(container) {
   const idToInput = equationIdToInputMap(container);
@@ -168,7 +168,6 @@ function computeEquations(container) {
   const allUnknownInputs = new Set();
   const correctCount = new Map();
   const totalCount = new Map();
-  let anyEquationCorrect = false;
 
   for (const eqNum of eqNumbers) {
     const ids = [...idToInput.keys()].filter((id) => (id.replace(/\D/g, '') || id.charAt(0)) === eqNum).sort((a, b) => a.localeCompare(b));
@@ -187,7 +186,6 @@ function computeEquations(container) {
     }
 
     if (!hasEmpty && evaluateEquationString(eqStr)) {
-      anyEquationCorrect = true;
       for (const { input } of unknowns) {
         correctCount.set(input, (correctCount.get(input) || 0) + 1);
       }
@@ -213,5 +211,11 @@ function computeEquations(container) {
     }
   }
 
-  return !!anyEquationCorrect;
+  const allGreen =
+    allUnknownInputs.size > 0 &&
+    [...allUnknownInputs].every((input) => {
+      if (!(input.value || '').toString().trim()) return false;
+      return (correctCount.get(input) || 0) === (totalCount.get(input) || 0);
+    });
+  return !!allGreen;
 }
