@@ -47,6 +47,95 @@ function createCisloInputs(items, container) {
 }
 
 /**
+ * Tokenize an expression string into numbers and operators (+, -, *, /, //, **, %).
+ */
+function tokenizeExpression(expr) {
+  const tokens = [];
+  let i = 0;
+  const s = String(expr).replace(/\s/g, '');
+  while (i < s.length) {
+    if (/[\d.]/.test(s[i])) {
+      let num = '';
+      while (i < s.length && /[\d.]/.test(s[i])) num += s[i++];
+      tokens.push(parseFloat(num));
+    } else if (s.substring(i, i + 2) === '//') {
+      tokens.push('//');
+      i += 2;
+    } else if (s.substring(i, i + 2) === '**') {
+      tokens.push('**');
+      i += 2;
+    } else if ('+-*/%'.includes(s[i])) {
+      tokens.push(s[i]);
+      i++;
+    } else {
+      i++;
+    }
+  }
+  return tokens;
+}
+
+/**
+ * Evaluate a single expression (no "="). Supports +, -, *, /, //, **, % with standard precedence.
+ * ** is right-associative; *, /, //, % and +, - are left-associative.
+ */
+function evaluateExpression(exprStr) {
+  let tokens = tokenizeExpression(exprStr);
+  if (tokens.length === 0) return NaN;
+  if (tokens.length === 1 && typeof tokens[0] === 'number') return tokens[0];
+
+  while (tokens.includes('**')) {
+    const idx = tokens.lastIndexOf('**');
+    const a = tokens[idx - 1];
+    const b = tokens[idx + 1];
+    if (typeof a !== 'number' || typeof b !== 'number') return NaN;
+    const result = Math.pow(a, b);
+    tokens = tokens.slice(0, idx - 1).concat(result).concat(tokens.slice(idx + 2));
+  }
+
+  const mulOps = ['*', '/', '//', '%'];
+  while (tokens.some((t) => mulOps.includes(t))) {
+    const idx = tokens.findIndex((t) => mulOps.includes(t));
+    const op = tokens[idx];
+    const a = tokens[idx - 1];
+    const b = tokens[idx + 1];
+    if (typeof a !== 'number' || typeof b !== 'number') return NaN;
+    let result;
+    if (op === '*') result = a * b;
+    else if (op === '/') result = a / b;
+    else if (op === '//') result = Math.floor(a / b);
+    else if (op === '%') result = ((a % b) + b) % b;
+    tokens = tokens.slice(0, idx - 1).concat(result).concat(tokens.slice(idx + 2));
+  }
+
+  while (tokens.some((t) => t === '+' || t === '-')) {
+    const idx = tokens.findIndex((t) => t === '+' || t === '-');
+    const op = tokens[idx];
+    const a = tokens[idx - 1];
+    const b = tokens[idx + 1];
+    if (typeof a !== 'number' || typeof b !== 'number') return NaN;
+    const result = op === '+' ? a + b : a - b;
+    tokens = tokens.slice(0, idx - 1).concat(result).concat(tokens.slice(idx + 2));
+  }
+
+  return tokens[0];
+}
+
+/**
+ * Evaluate an equation string like "10-3+8=15" or "1+5=2*3".
+ * Splits on "=", evaluates left and right, returns true if they are equal (within float tolerance).
+ */
+function evaluateEquationString(str) {
+  const parts = String(str)
+    .split('=')
+    .map((p) => p.trim());
+  if (parts.length !== 2 || parts[0] === '' || parts[1] === '') return false;
+  const left = evaluateExpression(parts[0]);
+  const right = evaluateExpression(parts[1]);
+  if (isNaN(left) || isNaN(right)) return false;
+  return Math.abs(left - right) < 1e-9;
+}
+
+/**
  * Equation ids can be chained with spaces (e.g. "1c 2a"). Builds a map from single equation id to the input element.
  */
 function equationIdToInputMap(container) {
@@ -65,8 +154,8 @@ function equationIdToInputMap(container) {
 
 /**
  * Groups equation cells by equation number. One input can appear in multiple equations (e.g. "1c 2a").
- * Assumes structure per equation: left, operator, unknown(s), "=", result.
- * Colors unknown inputs: green if correct in every equation, red if wrong in all, orange if mixed (some correct, some wrong).
+ * Builds a string from each equation (e.g. "10-3+8=15") and evaluates it; supports any size and +, -, *, /, //, **, %.
+ * Colors unknown inputs: green if correct in every equation, red if wrong in all, orange if mixed.
  * @returns {boolean} true only when every unknown input is green (correct in all its equations).
  */
 function computeEquations(container) {
@@ -83,68 +172,20 @@ function computeEquations(container) {
     const ids = [...idToInput.keys()].filter((id) => (id.replace(/\D/g, '') || id.charAt(0)) === eqNum).sort((a, b) => a.localeCompare(b));
     const cells = ids.map((id) => ({ equationId: id, input: idToInput.get(id) })).filter((c) => c.input);
 
-    const n = cells.length;
-    if (n < 3) continue;
-    const op = String(cells[1].input.value || cells[1].input.placeholder || '').trim();
-    if (!op) continue;
-
-    const getVal = (cell) => parseFloat(cell.input.value || cell.input.placeholder || '');
-    const leftVal = getVal(cells[0]);
-    const middleVal = n > 3 ? getVal(cells[2]) : NaN;
-    const resultVal = getVal(cells[n - 1]);
+    let eqStr = cells.map((c) => (c.input.value || c.input.placeholder || '').toString().trim()).join('');
+    eqStr = eqStr.replace(/×/g, '*').replace(/÷/g, '/');
+    if (!eqStr.includes('=')) continue;
 
     const unknowns = cells.filter((c) => c.input.classList.contains('unknown'));
     for (const { input } of unknowns) {
       allUnknownInputs.add(input);
       totalCount.set(input, (totalCount.get(input) || 0) + 1);
-      const user = parseFloat(input.value);
-      const idx = cells.findIndex((c) => c.input === input);
-      let correct = false;
+    }
 
-      const isLeft = idx === 0;
-      const isMiddle = idx === 2 && n > 3;
-      const isResult = idx === n - 1;
-
-      if (op === '+') {
-        if (isMiddle) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(resultVal) && Math.abs(user - (resultVal - leftVal)) < 1e-9;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && Math.abs(user - (leftVal + middleVal)) < 1e-9;
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && !isNaN(resultVal) && Math.abs(user - (resultVal - middleVal)) < 1e-9;
-      } else if (op === '-') {
-        if (isMiddle) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(resultVal) && Math.abs(user - (leftVal - resultVal)) < 1e-9;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && Math.abs(user - (leftVal - middleVal)) < 1e-9;
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && !isNaN(resultVal) && Math.abs(user - (middleVal + resultVal)) < 1e-9;
-      } else if (op === '*' || op === '×') {
-        if (isMiddle) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(resultVal) && resultVal !== 0 && Math.abs(user - resultVal / leftVal) < 1e-9;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && Math.abs(user - leftVal * middleVal) < 1e-9;
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && !isNaN(resultVal) && middleVal !== 0 && Math.abs(user - resultVal / middleVal) < 1e-9;
-      } else if (op === '/' || op === '÷') {
-        if (isMiddle) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(resultVal) && resultVal !== 0 && Math.abs(user - leftVal / resultVal) < 1e-9;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && middleVal !== 0 && Math.abs(user - leftVal / middleVal) < 1e-9;
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && !isNaN(resultVal) && Math.abs(user - middleVal * resultVal) < 1e-9;
-      } else if (op === '//') {
-        if (isMiddle) correct = !isNaN(user) && user !== 0 && !isNaN(leftVal) && !isNaN(resultVal) && Math.floor(leftVal / user) === resultVal;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && middleVal !== 0 && Math.floor(leftVal / middleVal) === user;
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && !isNaN(resultVal) && middleVal !== 0 && Math.floor(user / middleVal) === resultVal;
-      } else if (op === '**') {
-        if (isMiddle) {
-          const expected = leftVal > 0 && resultVal > 0 ? Math.log(resultVal) / Math.log(leftVal) : NaN;
-          correct = !isNaN(user) && !isNaN(expected) && Math.abs(user - expected) < 1e-9;
-        } else if (isResult) {
-          correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && Math.abs(user - Math.pow(leftVal, middleVal)) < 1e-9;
-        } else if (isLeft) {
-          const expected = middleVal !== 0 && resultVal > 0 ? Math.pow(resultVal, 1 / middleVal) : NaN;
-          correct = !isNaN(user) && !isNaN(expected) && Math.abs(user - expected) < 1e-9;
-        }
-      } else if (op === '%') {
-        const leftInt = Math.floor(leftVal);
-        const resultInt = Math.floor(resultVal);
-        const userInt = Math.floor(user);
-        if (isMiddle) correct = !isNaN(user) && userInt > 0 && !isNaN(leftVal) && !isNaN(resultVal) && (leftInt % userInt) === resultInt;
-        else if (isResult) correct = !isNaN(user) && !isNaN(leftVal) && !isNaN(middleVal) && Math.floor(middleVal) > 0 && (leftInt % Math.floor(middleVal)) === Math.floor(user);
-        else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && Math.floor(middleVal) > 0 && (Math.floor(user) % Math.floor(middleVal)) === resultInt;
+    if (evaluateEquationString(eqStr)) {
+      for (const { input } of unknowns) {
+        correctCount.set(input, (correctCount.get(input) || 0) + 1);
       }
-
-      if (correct) correctCount.set(input, (correctCount.get(input) || 0) + 1);
     }
   }
 
