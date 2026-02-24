@@ -66,8 +66,8 @@ function equationIdToInputMap(container) {
 /**
  * Groups equation cells by equation number. One input can appear in multiple equations (e.g. "1c 2a").
  * Assumes structure per equation: left, operator, unknown(s), "=", result.
- * Colors unknown inputs: green if correct in at least one equation, red only if wrong in all.
- * @returns {boolean} true if every unknown input is correct (all equations cleared).
+ * Colors unknown inputs: green if correct in every equation, red if wrong in all, orange if mixed (some correct, some wrong).
+ * @returns {boolean} true only when every unknown input is green (correct in all its equations).
  */
 function computeEquations(container) {
   const idToInput = equationIdToInputMap(container);
@@ -76,7 +76,8 @@ function computeEquations(container) {
   );
 
   const allUnknownInputs = new Set();
-  const correctInAny = new Map();
+  const correctCount = new Map();
+  const totalCount = new Map();
 
   for (const eqNum of eqNumbers) {
     const ids = [...idToInput.keys()].filter((id) => (id.replace(/\D/g, '') || id.charAt(0)) === eqNum).sort((a, b) => a.localeCompare(b));
@@ -95,6 +96,7 @@ function computeEquations(container) {
     const unknowns = cells.filter((c) => c.input.classList.contains('unknown'));
     for (const { input } of unknowns) {
       allUnknownInputs.add(input);
+      totalCount.set(input, (totalCount.get(input) || 0) + 1);
       const user = parseFloat(input.value);
       const idx = cells.findIndex((c) => c.input === input);
       let correct = false;
@@ -142,14 +144,24 @@ function computeEquations(container) {
         else if (isLeft) correct = !isNaN(user) && !isNaN(middleVal) && Math.floor(middleVal) > 0 && (Math.floor(user) % Math.floor(middleVal)) === resultInt;
       }
 
-      if (correct) correctInAny.set(input, true);
+      if (correct) correctCount.set(input, (correctCount.get(input) || 0) + 1);
     }
   }
 
   for (const input of allUnknownInputs) {
-    input.style.backgroundColor = correctInAny.get(input) ? 'green' : 'red';
+    const total = totalCount.get(input) || 0;
+    const correct = correctCount.get(input) || 0;
+    if (total === 0) {
+      input.style.backgroundColor = '';
+    } else if (correct === total) {
+      input.style.backgroundColor = 'green';
+    } else if (correct === 0) {
+      input.style.backgroundColor = 'red';
+    } else {
+      input.style.backgroundColor = 'orange';
+    }
   }
 
-  const allCorrect = allUnknownInputs.size > 0 && [...allUnknownInputs].every((input) => correctInAny.get(input));
+  const allCorrect = allUnknownInputs.size > 0 && [...allUnknownInputs].every((input) => (correctCount.get(input) || 0) === (totalCount.get(input) || 0));
   return !!allCorrect;
 }
