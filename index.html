@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oliver's Pages</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --text: #e8eef5;
+      --muted: #8b9bb0;
+      --accent: #3d9cf0;
+      --accent-hover: #5aaff8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 0%, #1a2a40 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, #152535 0%, transparent 45%),
+        var(--bg);
+      color: var(--text);
+      padding: 2rem;
+    }
+
+    main {
+      width: min(28rem, 100%);
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    a {
+      display: block;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      border: 1px solid transparent;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    a:hover,
+    a:focus-visible {
+      border-color: var(--accent);
+      background: #1e2c40;
+      outline: none;
+    }
+
+    a span {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+
+    a small {
+      display: block;
+      margin-top: 0.25rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Oliver's Pages</h1>
+    <p>Vyber hru:</p>
+    <ul>
+      <li>
+        <a href="it-specialista.html">
+          <span>IT Specialista</span>
+          <small>Interaktivní příběh</small>
+        </a>
+      </li>
+      <li>
+        <a href="matematicke_vyrazy/0.html">
+          <span>Matematické výrazy</span>
+          <small>Začátek hry</small>
+        </a>
+      </li>
+      <li>
+        <a href="typografie/dist/index.html">
+          <span>Typografie</span>
+          <small>Formátování textu</small>
+        </a>
+      </li>
+    </ul>
+  </main>
+</body>
+</html>
