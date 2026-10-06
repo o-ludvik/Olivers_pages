@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  countRemainingErrors,
+  fillInstructions,
+  formatErrorCount,
+} from '../checks/evaluate'
 import { runChecks } from '../checks/runChecks'
-import { fillInstructions } from '../checks/evaluate'
 import { editorHtmlToDocModel, sourceToEditorHtml } from '../doc/parse'
 import { RULES } from '../levels/catalogData'
 import { getNextLevel } from '../levels'
@@ -8,8 +12,10 @@ import type { CheckOutcome, TaskDefinition } from '../levels/types'
 import {
   getAttempts,
   incrementAttempts,
+  isLevelCompleted,
+  isSubmitted,
   markLevelCompleted,
-  resetAttempts,
+  markSubmitted,
 } from '../progress'
 import { CharHints } from './CharHints'
 import { CheckResult } from './CheckResult'
@@ -34,9 +40,22 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
   const [attempts, setAttempts] = useState(() => getAttempts(level.id))
   const [resetToken, setResetToken] = useState(0)
   const [feedback, setFeedback] = useState<string | null>(null)
+  const [showSolution, setShowSolution] = useState(false)
+  const [checklist, setChecklist] = useState<Record<string, boolean>>({})
 
   const instructions = useMemo(() => fillInstructions(level), [level])
   const maxChecks = level.feedback?.maxChecks
+  const revealAfter = level.feedback?.revealAfter
+  const needsSubmit =
+    level.review === 'manual' || level.review === 'auto+manual'
+  const completed =
+    isLevelCompleted(level.id) || isSubmitted(level.id)
+
+  const ruleIds = useMemo(() => {
+    const fromErrors = (level.errors ?? []).map((e) => e.rule)
+    const fromRules = level.rules ?? []
+    return [...new Set([...fromRules, ...fromErrors])]
+  }, [level.errors, level.rules])
 
   useEffect(() => {
     setHtml(initialHtml)
@@ -44,6 +63,8 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
     setAttempts(getAttempts(level.id))
     setResetToken(0)
     setFeedback(null)
+    setShowSolution(false)
+    setChecklist({})
   }, [level.id, initialHtml])
 
   const handleHtmlChange = useCallback((nextHtml: string) => {
@@ -52,12 +73,12 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
   }, [])
 
   const handleReset = () => {
-    resetAttempts(level.id)
-    setAttempts(0)
+    // Do not reset attempts — limit must stay (TYP-18).
     setHtml(initialHtml)
     setResetToken((n) => n + 1)
     setOutcomes(null)
     setFeedback(null)
+    setShowSolution(false)
   }
 
   const handleCheck = () => {
@@ -68,20 +89,55 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
     const nextAttempts = incrementAttempts(level.id)
     setAttempts(nextAttempts)
 
+    const student = editorHtmlToDocModel(html)
     const nextOutcomes = runChecks(level, html)
-    setOutcomes(nextOutcomes)
     const allPassed = nextOutcomes.every((o) => o.passed)
+    const remaining = countRemainingErrors(level, student)
 
-    if (allPassed) {
-      markLevelCompleted(level.id)
-      setFeedback('Hotovo!')
+    const hideLocations =
+      revealAfter != null &&
+      nextAttempts < revealAfter &&
+      level.feedback?.showCountUpfront === false
+
+    if (hideLocations && !allPassed) {
+      setOutcomes(null)
+      setFeedback(`Zbývá ${formatErrorCount(remaining)}.`)
     } else {
-      setFeedback(null)
+      setOutcomes(nextOutcomes)
+      if (allPassed) {
+        if (level.review !== 'manual') {
+          markLevelCompleted(level.id)
+        }
+        setFeedback(
+          needsSubmit && level.review === 'manual'
+            ? 'Kontroly prošly — ještě odešli odpověď.'
+            : 'Hotovo!',
+        )
+      } else if (remaining > 0 && level.feedback?.showCountUpfront === false) {
+        setFeedback(`Zbývá ${formatErrorCount(remaining)}.`)
+      } else {
+        setFeedback(null)
+      }
     }
 
     if (maxChecks != null && nextAttempts >= maxChecks && !allPassed) {
       setFeedback('Došly pokusy')
     }
+  }
+
+  const handleSubmit = () => {
+    const plain = editorHtmlToDocModel(html)
+      .paragraphs.map((p) => p.runs.map((r) => r.text).join(''))
+      .join('\n')
+    const checked = (level.selfChecklist ?? []).filter((c) => checklist[c])
+    markSubmitted({
+      taskId: level.id,
+      plainText: plain,
+      html,
+      checklist: checked.length ? checked : undefined,
+      at: new Date().toISOString(),
+    })
+    setFeedback('Odesláno.')
   }
 
   const handleCopyDocs = async () => {
@@ -102,6 +158,12 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
   }
 
   const nextLevel = getNextLevel(level)
+  const attemptsExhausted =
+    maxChecks != null && attempts >= maxChecks && !completed
+  const solutionHtml = useMemo(
+    () => (level.solution ? sourceToEditorHtml(level.solution) : null),
+    [level.solution],
+  )
 
   return (
     <main className="page page-play">
@@ -113,11 +175,11 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
           {level.id}: {level.title}
         </h1>
         <p className="assignment">{instructions}</p>
-        {level.errors?.length ? (
+        {ruleIds.length ? (
           <details className="rules-panel">
             <summary>Pravidla</summary>
             <ul>
-              {[...new Set(level.errors.map((e) => e.rule))].map((id) => (
+              {ruleIds.map((id) => (
                 <li key={id}>
                   <strong>{RULES[id]?.title ?? id}:</strong>{' '}
                   {RULES[id]?.short}
@@ -169,7 +231,7 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
         <button type="button" className="secondary-btn" onClick={handleCopyDocs}>
           Kopírovat do Google Docs
         </button>
-        {nextLevel ? (
+        {nextLevel && completed ? (
           <button
             type="button"
             className="secondary-btn"
@@ -179,6 +241,63 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
           </button>
         ) : null}
       </div>
+
+      {needsSubmit ? (
+        <div className="submit-panel">
+          {level.selfChecklist?.length ? (
+            <ul className="submit-checklist">
+              {level.selfChecklist.map((item) => (
+                <li key={item}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(checklist[item])}
+                      onChange={(e) =>
+                        setChecklist((c) => ({
+                          ...c,
+                          [item]: e.target.checked,
+                        }))
+                      }
+                    />{' '}
+                    {item}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <button type="button" className="primary-btn" onClick={handleSubmit}>
+            Odeslat učiteli
+          </button>
+        </div>
+      ) : null}
+
+      {attemptsExhausted ? (
+        <div className="attempts-exhausted">
+          <p>Došly pokusy. Můžeš se vrátit na výběr, nebo si zobrazit řešení.</p>
+          <button type="button" className="secondary-btn" onClick={onBack}>
+            Zpět na výběr
+          </button>
+          {solutionHtml ? (
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => setShowSolution(true)}
+            >
+              Ukázat řešení
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showSolution && solutionHtml ? (
+        <div className="solution-reveal" aria-label="Řešení">
+          <h2>Řešení</h2>
+          <div
+            className="docs-editor"
+            dangerouslySetInnerHTML={{ __html: solutionHtml }}
+          />
+        </div>
+      ) : null}
 
       {feedback ? <p className="check-feedback">{feedback}</p> : null}
       <CheckResult outcomes={outcomes} />

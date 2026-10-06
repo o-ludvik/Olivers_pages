@@ -1,15 +1,23 @@
 import type { PageSpec } from '../levels/types'
+import { normalizePages } from './pagesPreviewParse'
 
 type PagesPreviewProps = {
-  pages: PageSpec[]
+  pages: PageSpec[] | unknown[]
   caption?: string
 }
 
+const PUPIL_CAPTION =
+  'Šedý pruh = nadpis. Odsazený řádek = začátek odstavce. Krátký řádek = konec odstavce.'
+
 export function PagesPreview({ pages, caption }: PagesPreviewProps) {
+  const normalized = normalizePages(pages as unknown[])
+  const figCaption =
+    caption && /H\s*=|Pn\s*=/.test(caption) ? PUPIL_CAPTION : (caption ?? PUPIL_CAPTION)
+
   return (
     <figure className="pages-preview">
       <div className="pages-row">
-        {pages.map((page) => (
+        {normalized.map((page) => (
           <div key={page.number} className="page-card">
             <div className="page-card-body">
               {page.blocks.map((block, i) => {
@@ -38,7 +46,7 @@ export function PagesPreview({ pages, caption }: PagesPreviewProps) {
           </div>
         ))}
       </div>
-      {caption ? <figcaption>{caption}</figcaption> : null}
+      {figCaption ? <figcaption>{figCaption}</figcaption> : null}
     </figure>
   )
 }

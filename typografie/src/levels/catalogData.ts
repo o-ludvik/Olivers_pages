@@ -35,12 +35,13 @@ export type RawTask = {
   >
   checks: Array<Record<string, unknown>>
   errors?: Array<{ at: string | string[]; rule: string }>
+  rules?: string[]
   autoErrors?: 'nbsp'
   feedback?: Record<string, unknown>
   review?: 'auto' | 'auto+manual' | 'manual'
   selfChecklist?: string[]
   phase: 'A' | 'B' | 'C' | 'D'
-  ready: boolean
+  ready?: boolean
 }
 
 /** Expand document `~` NBSP placeholders to real U+00A0. */
@@ -362,8 +363,9 @@ Honza se bránil: „Táta říkal, že jsem ‚mlsoun‘!“
 Knihu „Malý princ“ jsem četla už třikrát.`,
     },
     checks: [{ type: 'textLines' }],
+    rules: ['uvozovky'],
     phase: 'B',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-05',
@@ -450,7 +452,7 @@ Výstava potrvá 10. října – 15. října.`,
       format: 'text',
       content: `2026-10-06 v textu, měsíc slovem →
 2026-10-06 v textu, měsíc číslem →
-2026-10-06 do formuláře, vzestupně →
+2026-10-06 do formuláře, den.měsíc.rok s nulami →
 od 9 do 17 hodin, zkráceně se značkou h →
 oběd od 12.00 do 12.45, zkráceně →
 sportovní čas 2 hodiny, 5 minut a 27,15 sekundy →`,
@@ -459,9 +461,9 @@ sportovní čas 2 hodiny, 5 minut a 27,15 sekundy →`,
       format: 'text',
       content: `2026-10-06 v textu, měsíc slovem → 6. října 2026
 2026-10-06 v textu, měsíc číslem → 6. 10. 2026
-2026-10-06 do formuláře, vzestupně → 06.10.2026
+2026-10-06 do formuláře, den.měsíc.rok s nulami → 06.10.2026
 od 9 do 17 hodin, zkráceně se značkou h → 9–17 h
-oběd od 12.00 do 12.45, zkráceně → {{12.00–12.45|12:00–12:45}}
+oběd od 12.00 do 12.45, zkráceně → {{12.00–12.45|12:00–12:45|12.00–12.45 h|12:00–12:45 h}}
 sportovní čas 2 hodiny, 5 minut a 27,15 sekundy → 2:05:27,15`,
     },
     checks: [{ type: 'textLines' }],
@@ -470,7 +472,10 @@ sportovní čas 2 hodiny, 5 minut a 27,15 sekundy → 2:05:27,15`,
       { at: '→ 6. 10. 2026', rule: 'datum' },
       { at: '→ 06.10.2026', rule: 'datum' },
       { at: '→ 9–17 h', rule: 'cas' },
-      { at: ['12.00–12.45', '12:00–12:45'], rule: 'cas' },
+      {
+        at: ['12.00–12.45', '12:00–12:45', '12.00–12.45 h', '12:00–12:45 h'],
+        rule: 'cas',
+      },
       { at: '→ 2:05:27,15', rule: 'cas' },
     ],
     phase: 'A',
@@ -516,6 +521,7 @@ Batoh váží 5 kg.
 Úhel měří 65°12′10″.`,
     },
     checks: [{ type: 'textLines' }],
+    rules: ['jednotky'],
     phase: 'A',
     ready: true,
   },
@@ -539,15 +545,15 @@ Zapiš číslicí a značkou: stokorunová bankovka →`,
       format: 'text',
       content: `Vstupné: 80 Kč
 Lístek na koncert stál 500 Kč.
-Mikina stojí 1290 Kč.
-Zapiš číslicí a značkou: stokorunová bankovka → 100Kč bankovka`,
+Mikina stojí {{1290|1 290}} Kč.
+Zapiš číslicí a značkou: stokorunová bankovka → 100Kč{{ bankovka|}}`,
     },
     checks: [{ type: 'textLines' }],
     errors: [
       { at: 'Vstupné: 80 Kč', rule: 'mena' },
       { at: 'stál 500 Kč', rule: 'mena' },
-      { at: 'stojí 1290 Kč', rule: 'mena' },
-      { at: '→ 100Kč bankovka', rule: 'mena' },
+      { at: ['stojí 1290 Kč', 'stojí 1 290 Kč'], rule: 'mena' },
+      { at: ['→ 100Kč bankovka', '→ 100Kč'], rule: 'mena' },
     ],
     phase: 'A',
     ready: true,
@@ -601,7 +607,8 @@ Naměřili jsme 12,76; 98,50; 45,67.`,
     title: 'Hon na „-ti“ (číslovky)',
     mechanic: 'oprav',
     bloom: 'aplikovat',
-    instructions: 'Oprav zápisy číslovek. V textu je {errorCount}.',
+    instructions:
+      'Oprav zápisy číslovek (ponech číslice, nepřepisuj slovem). V textu je {errorCount}.',
     prefill: {
       format: 'text',
       content: `Do 18-ti let je vstup zdarma.
@@ -617,7 +624,7 @@ Uběhl jsem už 3-tí kolo.`,
 Je to můj 12. pokus.
 Čeká nás {{8kilometrový|8km}} výlet.
 Dostali jsme {{20procentní|20%}} slevu.
-Můj 15letý bratr hraje fotbal.
+Můj {{15letý|patnáctiletý}} bratr hraje fotbal.
 Uběhl jsem už 3. kolo.`,
     },
     checks: [{ type: 'textLines' }],
@@ -626,7 +633,7 @@ Uběhl jsem už 3. kolo.`,
       { at: '12. pokus', rule: 'cislovky' },
       { at: ['8kilometrový', '8km'], rule: 'cislovky' },
       { at: ['20procentní', '20%'], rule: 'cislovky' },
-      { at: '15letý', rule: 'cislovky' },
+      { at: ['15letý', 'patnáctiletý'], rule: 'cislovky' },
       { at: '3. kolo', rule: 'cislovky' },
     ],
     phase: 'A',
@@ -668,12 +675,12 @@ popř. zavolej
 ČR
 pí Nováková
 p. Novák
-Takzvané klikání je nejjednodušší ovládání.
+{{Takzvané|Tak zvané}} klikání je nejjednodušší ovládání.
 Například jablka obsahují hodně vitamínů.`,
     },
     checks: [{ type: 'textLines' }],
     errors: [
-      { at: 'Takzvané', rule: 'zkratky' },
+      { at: ['Takzvané', 'Tak zvané'], rule: 'zkratky' },
       { at: 'Například', rule: 'zkratky' },
     ],
     phase: 'A',
@@ -745,8 +752,9 @@ Na tzv.~klikání stačí i~malé dítě.
 Přednášel Ing.~Novák o~7.~kapitole a~o~tom, co v~ní najdeme.`),
     },
     checks: [{ type: 'textLines' }],
+    rules: ['zalomeni'],
     phase: 'B',
-    ready: false,
+    ready: true,
   },
   // TODO: pagesPreview structure is best-effort from the legend in §7.1
   {
@@ -762,7 +770,8 @@ Přednášel Ing.~Novák o~7.~kapitole a~o~tom, co v~ní najdeme.`),
     media: [
       {
         kind: 'pagesPreview',
-        caption: 'H = nadpis (2 řádky); Pn = odstavec s n řádky; s = začíná; e = končí',
+        caption:
+          'Šedý pruh = nadpis. Odsazený řádek = začátek odstavce. Krátký řádek = konec odstavce.',
         pages: [
           { page: 1, blocks: ['H', 'P6 s e', 'P8 s'] },
           { page: 2, blocks: ['P3 e', 'P12 s e', 'P1 s'], error: 'končí prvním řádkem odstavce' },
@@ -774,8 +783,9 @@ Přednášel Ing.~Novák o~7.~kapitole a~o~tom, co v~ní najdeme.`),
       },
     ],
     checks: [{ type: 'numberSet', values: [2, 3, 6] }],
+    rules: ['strany'],
     phase: 'D',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-16',
@@ -833,7 +843,7 @@ Pití zajistí sponzor, který dá 10 % slevu na limonády.`,
     },
     solution: {
       format: 'text',
-      content: `Sportovní den proběhne 15. 10. 2026 v čase {{8:00–13:00|8.00–13.00}} hod.
+      content: `Sportovní den proběhne {{15. 10. 2026|15. října 2026}} v čase {{8:00–13:00|8.00–13.00}} {{hod.|h.}}
 Startovné je 50 Kč, pro 1. ročníky zdarma.
 Trať měří 3,5 km a vede po 15metrovém mostě.
 Loni vyhrála Jana s časem 0:12:45,30.
@@ -841,7 +851,7 @@ Pití zajistí sponzor, který dá 10% slevu na limonády.`,
     },
     checks: [{ type: 'textLines' }],
     errors: [
-      { at: '15. 10. 2026', rule: 'datum' },
+      { at: ['15. 10. 2026', '15. října 2026'], rule: 'datum' },
       { at: ['8:00–13:00', '8.00–13.00'], rule: 'cas' },
       { at: '50 Kč,', rule: 'mena' },
       { at: '1. ročníky', rule: 'cislovky' },
@@ -861,7 +871,7 @@ Pití zajistí sponzor, který dá 10% slevu na limonády.`,
     mechanic: 'lovec chyb',
     bloom: 'analyzovat',
     instructions:
-      'Zpráva z výletu do školního časopisu. Najdi a oprav všechny typografické chyby včetně chybějících nezlomitelných mezer. Máš jen 3 kontroly.',
+      'Zpráva z výletu do školního časopisu. Najdi a oprav všechny typografické chyby včetně chybějících nezlomitelných mezer. Máš jen 3 kontroly (tlačítko Začít znovu pokusy nenuluje).',
     match: { nbspMode: 'requiredOnly' },
     autoErrors: 'nbsp',
     feedback: {
@@ -869,6 +879,7 @@ Pití zajistí sponzor, který dá 10% slevu na limonády.`,
       revealAfter: 2,
       maxChecks: 3,
     },
+    rules: ['zalomeni'],
     prefill: {
       format: 'text',
       content:
@@ -900,7 +911,7 @@ Ve čtvrtek 9.~října jsme vyrazili vlakem {{Olomouc – Brno|Olomouc–Brno}} 
       { at: 'unavení, ale', rule: 'interpunkce' },
     ],
     phase: 'B',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-19',
@@ -956,7 +967,7 @@ Smíchej to v poměru 3 : 1.`,
       { at: ['8km pochod', '8kilometrový pochod'], rule: 'jednotky' },
     ],
     phase: 'B',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-20',
@@ -966,7 +977,7 @@ Smíchej to v poměru 3 : 1.`,
     mechanic: 'posuď',
     bloom: 'hodnotit',
     instructions:
-      'Tři spolužáci napsali stejnou zprávu do třídní skupiny. Nech v editoru jen tu bezchybnou (zbylé dvě smaž) a pod ni napiš aspoň jednou větou, co je na ostatních špatně.',
+      'Tři spolužáci napsali stejnou zprávu do třídní skupiny. Nech v editoru jen tu bezchybnou (zbylé dvě smaž) a pod ni napiš aspoň jednou větou, co je na ostatních špatně. Nezlomitelné mezery v této úloze neřeš.',
     review: 'auto+manual',
     prefill: {
       format: 'text',
@@ -984,8 +995,11 @@ Verze A má datum bez mezer a cenu s čárkou a pomlčkou, verze B má rovné uv
         type: 'containsLine',
         line: '{{C: |}}Sraz je v sobotu 17. 10. v 9.30 h u kina. Vezměte si 200 Kč na vstupné a svačinu. Jirka říkal: „Kdo přijde pozdě, platí zmrzlinu!“',
       },
-      { type: 'notContainsText', text: '200,- Kč' },
-      { type: 'notContainsText', text: 'na vstupné, a' },
+      {
+        type: 'custom',
+        id: 'noLinesStarting',
+        params: { prefixes: ['A:', 'B:'] },
+      },
       {
         type: 'minWords',
         min: 6,
@@ -993,7 +1007,7 @@ Verze A má datum bez mezer a cenu s čárkou a pomlčkou, verze B má rovné uv
       },
     ],
     phase: 'B',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-21',
@@ -1005,12 +1019,13 @@ Verze A má datum bez mezer a cenu s čárkou a pomlčkou, verze B má rovné uv
     instructions: `Napiš pro třídu oznámení o změně rozvrhu (3–6 vět). Musí obsahovat:
 - datum v souvislém textu,
 - časové rozmezí,
-- číslo učebny,
+- číslo učebny (nebo třídy / místnosti),
 - přímou řeč v českých uvozovkách,
 - výčet zakončený „atd.“
 
 Text musí projít typografickou kontrolou včetně nezlomitelných mezer.`,
     review: 'auto',
+    rules: ['zalomeni', 'uvozovky'],
     solution: {
       format: 'text',
       content: n(
@@ -1030,8 +1045,9 @@ Text musí projít typografickou kontrolou včetně nezlomitelných mezer.`,
       },
       {
         type: 'require',
-        pattern: 'učebn\\p{L}*[ \\u00A0](?:č\\.[ \\u00A0])?\\d+',
-        label: 'číslo učebny',
+        pattern:
+          '(?:učebn\\p{L}*|tříd\\p{L}*|místnost\\p{L}*)[ \\u00A0](?:č\\.[ \\u00A0])?\\d+',
+        label: 'číslo učebny / třídy / místnosti',
       },
       {
         type: 'require',
@@ -1045,13 +1061,24 @@ Text musí projít typografickou kontrolou včetně nezlomitelných mezer.`,
       },
       { type: 'minWords', min: 20 },
       {
+        type: 'custom',
+        id: 'sentenceCount',
+        params: { min: 3, max: 6 },
+      },
+      {
         type: 'lint',
         maxErrors: 0,
-        treatAsErrors: ['nbsp-jednopismenne', 'nbsp-jednotka'],
+        treatAsErrors: [
+          'nbsp-jednopismenne',
+          'nbsp-jednotka',
+          'nbsp-datum',
+          'nbsp-titul',
+          'nbsp-zkratka',
+        ],
       },
     ],
     phase: 'D',
-    ready: false,
+    ready: true,
   },
   {
     id: 'TYP-22',
@@ -1063,6 +1090,7 @@ Text musí projít typografickou kontrolou včetně nezlomitelných mezer.`,
     instructions:
       'Vymysli 5 vět, každou s jednou typografickou chybou jiného typu. Pod každou napiš její opravenou verzi. Nejlepší chytáky můžou dostat ostatní jako úlohu.',
     review: 'manual',
+    rules: ['interpunkce', 'uvozovky', 'zalomeni'],
     prefill: {
       format: 'text',
       content: `1. Chyták:
@@ -1080,12 +1108,10 @@ Text musí projít typografickou kontrolou včetně nezlomitelných mezer.`,
       {
         type: 'custom',
         id: 'trapPairs',
-        // TODO: runtime must parse ^(\d)\. (Chyták|Oprava):[ \u00A0]*(.*)$ —
-        // 5 pairs, both non-empty, differ, fix passes lint, trap has ≥1 lint hit
       },
     ],
     phase: 'D',
-    ready: false,
+    ready: true,
   },
 
   // ─── Formátování (default nbspMode: ignore) ───────────────────

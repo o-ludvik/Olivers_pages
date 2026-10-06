@@ -26,6 +26,13 @@ function normalizeCheck(raw: Record<string, unknown>): Check {
       params: { ...((params as Record<string, unknown>) ?? {}), ...rest },
     }
   }
+  if (raw.type === 'numberSet') {
+    const expected =
+      (raw.expected as number[] | undefined) ??
+      (raw.values as number[] | undefined) ??
+      []
+    return { type: 'numberSet', expected, values: expected }
+  }
   return raw as Check
 }
 
@@ -48,6 +55,7 @@ function toTask(raw: RawTask): TaskDefinition {
     media: raw.media as TaskDefinition['media'],
     checks: raw.checks.map((c) => normalizeCheck(c)),
     errors: raw.errors,
+    rules: raw.rules,
     autoErrors: raw.autoErrors,
     feedback: raw.feedback as TaskDefinition['feedback'],
     review: raw.review,

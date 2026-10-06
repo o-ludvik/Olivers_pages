@@ -5,25 +5,25 @@ const HINTS: Record<
   '„': {
     name: 'uvozovky dole',
     linux: 'Ctrl+Shift+U 201E mezerník',
-    mac: 'Alt+Shift+W (nebo znaková paleta)',
+    mac: 'Alt+Shift+W (US klávesnice; nebo znaková paleta)',
     win: 'Alt+0132 (numpad)',
   },
   '“': {
     name: 'uvozovky nahoře',
     linux: 'Ctrl+Shift+U 201C mezerník',
-    mac: 'Alt+[',
+    mac: 'Alt+[ (US klávesnice)',
     win: 'Alt+0147',
   },
   '‚': {
     name: 'jednoduché dole',
     linux: 'Ctrl+Shift+U 201A mezerník',
-    mac: 'Alt+Shift+0',
+    mac: 'Alt+Shift+0 (US klávesnice)',
     win: 'Alt+0130',
   },
   '‘': {
     name: 'jednoduché nahoře',
     linux: 'Ctrl+Shift+U 2018 mezerník',
-    mac: 'Alt+]',
+    mac: 'Alt+] (US klávesnice)',
     win: 'Alt+0145',
   },
   '–': {

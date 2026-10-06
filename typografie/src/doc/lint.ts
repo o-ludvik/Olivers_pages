@@ -122,6 +122,27 @@ const LINT_RULES: Array<{
     msg: 'Mezi číslem a jednotkou patří nezlomitelná mezera.',
   },
   {
+    id: 'nbsp-datum',
+    re: /\d{1,2}\. (?=ledna|února|března|dubna|května|června|července|srpna|září|října|listopadu|prosince|\d)/gu,
+    sev: 'warn',
+    rule: 'zalomeni',
+    msg: 'Mezi dnem a měsícem patří nezlomitelná mezera.',
+  },
+  {
+    id: 'nbsp-titul',
+    re: /(?:Ing|Mgr|Bc|MUDr|PhDr|RNDr|prof|doc)\. /gu,
+    sev: 'warn',
+    rule: 'zalomeni',
+    msg: 'Za titulem patří nezlomitelná mezera.',
+  },
+  {
+    id: 'nbsp-zkratka',
+    re: /(?:tzv|tj|tzn)\. /gu,
+    sev: 'warn',
+    rule: 'zalomeni',
+    msg: 'Za zkratkou tzv./tj./tzn. patří nezlomitelná mezera.',
+  },
+  {
     id: 'cislo-procento',
     re: /\d%/gu,
     sev: 'warn',

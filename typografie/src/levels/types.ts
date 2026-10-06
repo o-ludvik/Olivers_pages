@@ -86,7 +86,7 @@ export type Check =
       compare: CompareKey[]
       trailingFreeText?: { minWords: number }
     }
-  | { type: 'numberSet'; expected: number[] }
+  | { type: 'numberSet'; expected?: number[]; values?: number[] }
   | { type: 'containsLine'; line: string }
   | { type: 'notContainsText'; text: string }
   | { type: 'require'; pattern: string; flags?: string; label: string; min?: number }
@@ -118,6 +118,8 @@ export type TaskDefinition = {
   media?: TaskMedia[]
   checks: Check[]
   errors?: ErrorAnnotation[]
+  /** Rule ids shown in the Pravidla panel even without errors[]. */
+  rules?: string[]
   autoErrors?: 'nbsp'
   feedback?: FeedbackPolicy
   review?: 'auto' | 'auto+manual' | 'manual'

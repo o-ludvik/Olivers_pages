@@ -10,6 +10,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import { FontSize } from '../extensions/FontSize'
 import { SequentialOrderedList } from '../extensions/SequentialOrderedList'
 import { StyledHeading } from '../extensions/StyledHeading'
+import { ShowHiddenChars } from '../extensions/ShowHiddenChars'
 import {
   ImeUnderlineCleanup,
   SafeUnderline,
@@ -319,6 +320,7 @@ export function Editor({
       TaskItem.configure({
         nested: true,
       }),
+      ShowHiddenChars,
     ],
     content: initialHtml,
     editorProps: {
@@ -361,6 +363,13 @@ export function Editor({
   useEffect(() => {
     setShowHidden(config?.showHiddenDefault ?? false)
   }, [config?.showHiddenDefault])
+
+  useEffect(() => {
+    if (!editor) return
+    editor.commands.setShowHiddenChars(showHidden)
+    const el = editor.view.dom
+    el.classList.toggle('show-hidden', showHidden)
+  }, [editor, showHidden])
 
   // Keep toolbar size/font in sync with caret (storedMarks don't always re-render)
   useEffect(() => {

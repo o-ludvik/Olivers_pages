@@ -25,4 +25,11 @@ describe('F14 linter', () => {
       /uvozovce u «.*"/,
     )
   })
+
+  it('flags missing NBSP after day and title', () => {
+    const f = runLinter('Dne 6. října přišel Ing. Novák na tzv. přednášku.')
+    expect(f.some((x) => x.ruleId === 'nbsp-datum')).toBe(true)
+    expect(f.some((x) => x.ruleId === 'nbsp-titul')).toBe(true)
+    expect(f.some((x) => x.ruleId === 'nbsp-zkratka')).toBe(true)
+  })
 })

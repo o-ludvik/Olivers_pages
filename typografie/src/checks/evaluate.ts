@@ -10,6 +10,7 @@ import {
   contextSnippet,
   formatLintFindings,
   lintErrorCount,
+  runLinter,
 } from '../doc/lint'
 import {
   linesMatch,
@@ -29,24 +30,27 @@ import {
 } from '../doc/parse'
 import { RULES } from '../levels/catalogData'
 
-/** Locative-ish short labels for annotation feedback. */
+/** Locative-ish short labels for annotation feedback (full prepositional phrase). */
 const RULE_WHERE: Record<string, string> = {
-  interpunkce: 'mezeře nebo interpunkci',
-  vypustka: 'výpustce',
-  uvozovky: 'uvozovce',
-  zavorky: 'závorkách',
-  lomitko: 'lomítku',
-  datum: 'datu',
-  cas: 'času',
-  jednotky: 'jednotkách',
-  mena: 'zápisu částky',
-  matematika: 'matematickém zápisu',
-  cislovky: 'číslovce',
-  pomlcka: 'pomlčce',
-  spojovnik: 'spojovníku',
-  zalomeni: 'nezlomitelné mezeře',
-  zkratky: 'zkratce',
-  jmena: 'jménu nebo titulu',
+  interpunkce: 'v mezeře nebo interpunkci',
+  vypustka: 've výpustce',
+  uvozovky: 'v uvozovce',
+  zavorky: 'v závorkách',
+  lomitko: 'v lomítku',
+  datum: 'v datu',
+  cas: 'v čase',
+  jednotky: 'v jednotkách',
+  mena: 'v zápisu částky',
+  matematika: 'v matematickém zápisu',
+  cislovky: 'v číslovce',
+  pomlcka: 'v pomlčce',
+  spojovnik: 've spojovníku',
+  zalomeni: 'v nezlomitelné mezeře',
+  zkratky: 've zkratce',
+  jmena: 've jménu nebo titulu',
+  tituly: 'v titulu',
+  firmy: 'v názvu firmy',
+  cisla: 'v zápisu čísla',
 }
 
 function prepareDisplayLines(
@@ -106,6 +110,38 @@ function annotationSnippet(
   return contextSnippet(student, firstDiffIndex(student, expected))
 }
 
+function collectAnnotations(
+  task: TaskDefinition,
+): { at: string | string[]; rule: string }[] {
+  const annotations = [...(task.errors ?? [])]
+  if (task.autoErrors === 'nbsp' && task.solution) {
+    const solText = docToPlainText(parseDocSource(task.solution))
+    let i = 0
+    while (i < solText.length) {
+      if (solText.startsWith('{{', i)) {
+        const end = solText.indexOf('}}', i)
+        i = end < 0 ? solText.length : end + 2
+        continue
+      }
+      if (solText[i] === '\u00A0') {
+        const before = solText.slice(0, i).split(/[ \u00A0]/).pop() ?? ''
+        const after = solText.slice(i + 1).split(/[ \u00A0]/)[0] ?? ''
+        const at = `${before}\u00A0${after}`
+        if (
+          !annotations.some(
+            (a) =>
+              a.at === at || (Array.isArray(a.at) && a.at.includes(at)),
+          )
+        ) {
+          annotations.push({ at, rule: 'zalomeni' })
+        }
+      }
+      i++
+    }
+  }
+  return annotations
+}
+
 function describeTextLineFailures(
   task: TaskDefinition,
   studentLines: string[],
@@ -122,6 +158,7 @@ function describeTextLineFailures(
     seen.add(m)
     msgs.push(m)
   }
+  const annotations = collectAnnotations(task)
 
   for (const i of mismatches) {
     const s = sLines[i]
@@ -136,7 +173,7 @@ function describeTextLineFailures(
       continue
     }
 
-    const unresolved = (task.errors ?? []).filter(
+    const unresolved = annotations.filter(
       (err) =>
         annotationResolved(e, err.at, task.match) &&
         !annotationResolved(s, err.at, task.match),
@@ -148,11 +185,19 @@ function describeTextLineFailures(
           RULE_WHERE[err.rule] ?? RULES[err.rule]?.title?.toLowerCase()
         if (!where) continue
         const at = annotationSnippet(s, e, err.at)
-        push(
-          at
-            ? `Chyba je v ${where} u «${at}»${para}`
-            : `Chyba je v ${where}.${para}`,
-        )
+        if (err.rule === 'zalomeni') {
+          push(
+            at
+              ? `Chybí nezlomitelná mezera u «${at}»${para}`
+              : `Chybí nezlomitelná mezera.${para}`,
+          )
+        } else {
+          push(
+            at
+              ? `Chyba je ${where} u «${at}»${para}`
+              : `Chyba je ${where}.${para}`,
+          )
+        }
       }
       continue
     }
@@ -162,6 +207,20 @@ function describeTextLineFailures(
       for (const line of formatLintFindings(errors, s).split('\n')) {
         push(para ? `${line}${para}` : line)
       }
+      continue
+    }
+
+    // Prefer snippet after → (form-style conversion rows)
+    const arrow = s.indexOf('→')
+    if (arrow >= 0) {
+      const afterS = s.slice(arrow)
+      const afterE = e.slice(e.indexOf('→') >= 0 ? e.indexOf('→') : 0)
+      const at = contextSnippet(afterS, firstDiffIndex(afterS, afterE))
+      push(
+        at
+          ? `Ještě chyba u «${at}»${para}`
+          : `Na odstavci ${i + 1} je ještě chyba.`,
+      )
       continue
     }
 
@@ -391,12 +450,74 @@ function customCheck(
     }
   }
   if (id === 'trapPairs') {
-    // TYP-22: best-effort — require min lines
-    const passed = lines.filter((l) => l.trim()).length >= 4
+    const traps = new Map<number, string>()
+    const fixes = new Map<number, string>()
+    for (const line of lines) {
+      const m = line.match(/^(\d+)\.\s*(Chyták|Oprava):\s*(.*)$/u)
+      if (!m) continue
+      const n = Number(m[1])
+      const body = (m[3] ?? '').trim()
+      if (m[2] === 'Chyták') traps.set(n, body)
+      else fixes.set(n, body)
+    }
+    const needed = [1, 2, 3, 4, 5]
+    const problems: string[] = []
+    for (const n of needed) {
+      const trap = traps.get(n) ?? ''
+      const fix = fixes.get(n) ?? ''
+      if (!trap || !fix) {
+        problems.push(`Dvojice ${n}: doplň chyták i opravu.`)
+        continue
+      }
+      if (trap === fix) {
+        problems.push(`Dvojice ${n}: chyták a oprava se musí lišit.`)
+        continue
+      }
+      const trapHits = runLinter(trap).length
+      const fixHits = runLinter(fix).length
+      if (fixHits > 0) {
+        problems.push(`Dvojice ${n}: oprava stále obsahuje typografickou chybu.`)
+      }
+      if (trapHits < 1) {
+        problems.push(`Dvojice ${n}: chyták musí obsahovat typografickou chybu.`)
+      }
+    }
+    // Prefill-only (empty bodies) fails
+    if (problems.length === 0 && needed.every((n) => traps.get(n) && fixes.get(n))) {
+      return { check: { type: 'custom', id, params }, passed: true }
+    }
     return {
       check: { type: 'custom', id, params },
-      passed,
-      message: passed ? undefined : 'Přidej aspoň dvě dvojice chytáků.',
+      passed: false,
+      message:
+        problems.slice(0, 3).join(' ') ||
+        'Vyplň 5 dvojic chyták/oprava s typografickou chybou.',
+    }
+  }
+  if (id === 'noLinesStarting') {
+    const prefixes = (params.prefixes as string[]) ?? []
+    const bad = lines.some((l) =>
+      prefixes.some((p) => l.trimStart().startsWith(p)),
+    )
+    return {
+      check: { type: 'custom', id, params },
+      passed: !bad,
+      message: bad
+        ? `V editoru nesmí zůstat řádky začínající ${prefixes.join(' / ')}.`
+        : undefined,
+    }
+  }
+  if (id === 'sentenceCount') {
+    const min = Number(params.min ?? 3)
+    const max = Number(params.max ?? 6)
+    const n = countSentences(docToPlainText(ctx.student))
+    const ok = n >= min && n <= max
+    return {
+      check: { type: 'custom', id, params },
+      passed: ok,
+      message: ok
+        ? undefined
+        : `Oznámení má mít ${min}–${max} vět (máš ${n}).`,
     }
   }
   return {
@@ -404,6 +525,20 @@ function customCheck(
     passed: false,
     message: `Neznámá custom kontrola: ${id}`,
   }
+}
+
+function countSentences(text: string): number {
+  const masked = text
+    .replace(/\batd\./gi, 'atd')
+    .replace(
+      /\b(?:např|tj|tzv|tzn|popř|cca|Ing|Mgr|Bc|MUDr|PhDr|RNDr|prof|doc|pí|p)\./gi,
+      (m) => m.replace('.', ''),
+    )
+    .replace(/\b\d{1,2}\./g, 'N')
+  return masked
+    .split(/[.!?…]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0).length
 }
 
 export function evaluateCheck(check: Check, ctx: EvaluateContext): CheckOutcome {
@@ -419,6 +554,17 @@ export function evaluateCheck(check: Check, ctx: EvaluateContext): CheckOutcome 
         const r = linesMatchSet(lines, expected, match)
         if (r.passed) return { check, passed: true }
         const extras = r.mismatches.map((i) => i + 1)
+        if (
+          task.id === 'TYP-12' &&
+          r.message === 'Chybí některá správná věta.'
+        ) {
+          return {
+            check,
+            passed: false,
+            message:
+              'Větu začni celým slovem, ne zkratkou. Zkontroluj přesný zápis přepsaných vět.',
+          }
+        }
         const msg =
           r.message === 'Chybí některá správná věta.'
             ? 'Ještě chybí některá správná věta — zkontroluj, co jsi smazal(a).'
@@ -450,9 +596,18 @@ export function evaluateCheck(check: Check, ctx: EvaluateContext): CheckOutcome 
       )
     }
     case 'numberSet': {
+      const expectedList =
+        check.values ?? check.expected ?? []
       const found = [...text.matchAll(/-?\d+/g)].map((m) => Number(m[0]))
+      if (found.length === 0) {
+        return {
+          check,
+          passed: false,
+          message: 'Napiš čísla stránek (oddělená čárkou).',
+        }
+      }
       const set = new Set(found)
-      const expected = new Set(check.expected)
+      const expected = new Set(expectedList)
       const missing = [...expected].filter((n) => !set.has(n))
       const extra = [...set].filter((n) => !expected.has(n))
       const ok = missing.length === 0 && extra.length === 0
@@ -494,7 +649,8 @@ export function evaluateCheck(check: Check, ctx: EvaluateContext): CheckOutcome 
     case 'minWords': {
       let t = text
       if (check.excludePattern) {
-        const re = new RegExp(check.excludePattern, 'gmu')
+        // No `g` — RegExp.test advances lastIndex and skips lines.
+        const re = new RegExp(check.excludePattern, 'imu')
         t = lines.filter((l) => !re.test(l)).join('\n')
       }
       const n = wordCount(t)
@@ -561,29 +717,7 @@ export function countRemainingErrors(
   const match = task.match
   let unresolved = 0
 
-  const annotations = [...(task.errors ?? [])]
-  if (task.autoErrors === 'nbsp' && task.solution) {
-    const solText = docToPlainText(parseDocSource(task.solution))
-    // skip alternatives insides
-    // each NBSP in solution (outside {{}})
-    let i = 0
-    while (i < solText.length) {
-      if (solText.startsWith('{{', i)) {
-        const end = solText.indexOf('}}', i)
-        i = end < 0 ? solText.length : end + 2
-        continue
-      }
-      if (solText[i] === '\u00A0') {
-        const before = solText.slice(0, i).split(/[ \u00A0]/).pop() ?? ''
-        const after = solText.slice(i + 1).split(/[ \u00A0]/)[0] ?? ''
-        const at = `${before}\u00A0${after}`
-        if (!annotations.some((a) => a.at === at || (Array.isArray(a.at) && a.at.includes(at)))) {
-          annotations.push({ at, rule: 'zalomeni' })
-        }
-      }
-      i++
-    }
-  }
+  const annotations = collectAnnotations(task)
 
   for (const err of annotations) {
     if (!annotationResolved(text, err.at, match)) unresolved++
@@ -596,17 +730,6 @@ export function countRemainingErrors(
       ? linesMatchSet(lines, expected, match)
       : linesMatch(lines, expected, match)
     unresolved = r.mismatches.length
-  } else if (annotations.length > 0 && task.solution) {
-    const r = linesMatch(docToPlainLines(student), solutionLines(task), match)
-    // add mismatched paragraphs that don't contain any annotation site
-    for (const idx of r.mismatches) {
-      const line = docToPlainLines(student)[idx] ?? ''
-      const covered = annotations.some((a) =>
-        annotationResolved(line, a.at, match),
-      )
-      // if line still wrong and no annotation on solution side for that area — count extra
-      void covered
-    }
   }
 
   return unresolved
@@ -618,6 +741,15 @@ export function formatErrorCount(n: number): string {
   if (cat === 'one') return `${n} chyba`
   if (cat === 'few') return `${n} chyby`
   return `${n} chyb`
+}
+
+/** „je 1 chyba“ / „jsou 4 chyby“ / „je 7 chyb“ */
+export function formatErrorCountPhrase(n: number): string {
+  const pr = new Intl.PluralRules('cs')
+  const cat = pr.select(n)
+  if (cat === 'one') return `je ${n} chyba`
+  if (cat === 'few') return `jsou ${n} chyby`
+  return `je ${n} chyb`
 }
 
 export function fillInstructions(task: TaskDefinition): string {
@@ -635,7 +767,30 @@ export function fillInstructions(task: TaskDefinition): string {
     task.instructions.includes('{errorCount}') && count === 0
       ? guessErrorCount(task)
       : count || guessErrorCount(task)
-  return task.instructions.replace('{errorCount}', formatErrorCount(n))
+
+  let text = task.instructions
+  text = text.replace(
+    /V textu je \{errorCount\}\./g,
+    `V textu ${formatErrorCountPhrase(n)}.`,
+  )
+  text = text.replace(
+    /Úprav je \{errorCount\}\./g,
+    `Oprav ${n} zápisy.`,
+  )
+  text = text.replace(
+    /Chybí jich \{errorCount\}\./g,
+    `Chybí jich ${n}.`,
+  )
+  text = text.replace(
+    /Opravit je potřeba \{errorCount\}\./g,
+    `Opravit je potřeba ${formatErrorCount(n)}.`,
+  )
+  text = text.replace(
+    /je \{errorCount\} v typografii/g,
+    `${formatErrorCountPhrase(n)} v typografii`,
+  )
+  text = text.replace(/\{errorCount\}/g, formatErrorCount(n))
+  return text
 }
 
 function countNbspInSolution(task: TaskDefinition): number {
