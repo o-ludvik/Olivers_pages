@@ -231,7 +231,7 @@ export function LevelPlay({ level, onBack, onGoToLevel }: LevelPlayProps) {
         <button type="button" className="secondary-btn" onClick={handleCopyDocs}>
           Kopírovat do Google Docs
         </button>
-        {nextLevel && completed ? (
+        {nextLevel ? (
           <button
             type="button"
             className="secondary-btn"

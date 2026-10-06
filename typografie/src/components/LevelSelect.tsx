@@ -12,27 +12,23 @@ type LevelSelectProps = {
 
 function LevelButton({
   level,
-  previous,
   onSelect,
 }: {
   level: TaskDefinition
-  previous: TaskDefinition | undefined
   onSelect: (levelId: string) => void
 }) {
   const completed = isLevelCompleted(level.id)
   const preparing = !level.ready
-  const unlocked = !previous || isLevelCompleted(previous.id)
-  const locked = !preparing && !unlocked
 
   return (
     <li>
       <button
         type="button"
-        className={`level-item${completed ? ' is-completed' : ''}${preparing ? ' is-preparing' : ''}${locked ? ' is-locked' : ''}`}
+        className={`level-item${completed ? ' is-completed' : ''}${preparing ? ' is-preparing' : ''}`}
         onClick={() => {
-          if (!preparing && unlocked) onSelect(level.id)
+          if (!preparing) onSelect(level.id)
         }}
-        disabled={preparing || locked}
+        disabled={preparing}
       >
         <span className="level-item-top">
           <span className="level-item-title">
@@ -42,18 +38,12 @@ function LevelButton({
             <span className="level-check" aria-label="hotovo" title="Hotovo">
               ✓
             </span>
-          ) : locked ? (
-            <span className="level-lock" aria-label="zamčeno" title="Zamčeno">
-              🔒
-            </span>
           ) : null}
         </span>
         <span className="level-item-assignment">
           {preparing
             ? 'Tuto úlohu ještě připravujeme.'
-            : locked
-              ? 'Nejdřív dokonči předchozí úlohu.'
-              : fillInstructions(level)}
+            : fillInstructions(level)}
         </span>
       </button>
     </li>
@@ -107,11 +97,10 @@ export function LevelSelect({
           <section key={category.id} className="category-section">
             <h2 className="category-title">{category.title}</h2>
             <ul className="level-list">
-              {category.levels.map((level, index) => (
+              {category.levels.map((level) => (
                 <LevelButton
                   key={level.id}
                   level={level}
-                  previous={index > 0 ? category.levels[index - 1] : undefined}
                   onSelect={onSelect}
                 />
               ))}
