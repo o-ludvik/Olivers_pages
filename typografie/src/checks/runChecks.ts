@@ -1,9 +1,11 @@
-import type { Check, CheckOutcome } from '../levels/types'
-import { evaluateCheck } from './registry'
+import type { CheckOutcome, TaskDefinition } from '../levels/types'
+import { editorHtmlToDocModel } from '../doc/parse'
+import { runTaskChecks } from './evaluate'
 
-export function runChecks(checks: Check[], html: string): CheckOutcome[] {
-  return checks.map((check) => ({
-    check,
-    passed: evaluateCheck(check, html),
-  }))
+export function runChecks(
+  task: TaskDefinition,
+  html: string,
+): CheckOutcome[] {
+  const student = editorHtmlToDocModel(html)
+  return runTaskChecks({ task, student, studentHtml: html })
 }

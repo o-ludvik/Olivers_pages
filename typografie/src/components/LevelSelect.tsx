@@ -1,52 +1,75 @@
-import type { LevelDefinition } from '../levels/types'
+import type { CategoryDefinition, TaskDefinition } from '../levels/types'
 import { isLevelCompleted } from '../progress'
-import { getPreviousLevel, isLevelUnlocked } from '../levels'
 
 type LevelSelectProps = {
-  levels: LevelDefinition[]
+  categories: CategoryDefinition[]
   onSelect: (levelId: string) => void
 }
 
-export function LevelSelect({ levels, onSelect }: LevelSelectProps) {
+function LevelButton({
+  level,
+  onSelect,
+}: {
+  level: TaskDefinition
+  onSelect: (levelId: string) => void
+}) {
+  const completed = isLevelCompleted(level.id)
+  const preparing = !level.ready
+
+  return (
+    <li>
+      <button
+        type="button"
+        className={`level-item${completed ? ' is-completed' : ''}${preparing ? ' is-preparing' : ''}`}
+        onClick={() => {
+          if (!preparing) onSelect(level.id)
+        }}
+        disabled={preparing}
+      >
+        <span className="level-item-top">
+          <span className="level-item-title">
+            {level.id}: {level.title}
+          </span>
+          {completed ? (
+            <span className="level-check" aria-label="hotovo" title="Hotovo">
+              ✓
+            </span>
+          ) : null}
+        </span>
+        <span className="level-item-assignment">
+          {preparing
+            ? 'Tuto úlohu ještě připravujeme.'
+            : level.assignment.replace(/\{errorCount\}/g, '…')}
+        </span>
+      </button>
+    </li>
+  )
+}
+
+export function LevelSelect({ categories, onSelect }: LevelSelectProps) {
   return (
     <main className="page page-select">
       <header className="page-header">
         <h1>Typografie</h1>
-        <p>Vyber level a uprav text podle zadání.</p>
+        <p>Vyber úlohu a uprav text podle zadání.</p>
       </header>
 
-      <ul className="level-list">
-        {levels.map((level) => {
-          const unlocked = isLevelUnlocked(level)
-          const completed = isLevelCompleted(level.id)
-          const previous = getPreviousLevel(level)
-
-          return (
-            <li key={level.id}>
-              <button
-                type="button"
-                className={`level-item${unlocked ? '' : ' is-locked'}${completed ? ' is-completed' : ''}`}
-                onClick={() => {
-                  if (unlocked) onSelect(level.id)
-                }}
-                disabled={!unlocked}
-                aria-disabled={!unlocked}
-              >
-                <span className="level-item-title">
-                  Level {level.order}: {level.title}
-                  {completed ? ' — hotovo' : ''}
-                  {!unlocked ? ' — zamčeno' : ''}
-                </span>
-                <span className="level-item-assignment">
-                  {unlocked
-                    ? level.assignment
-                    : `Nejdřív dokonči level ${previous?.order ?? level.order - 1}.`}
-                </span>
-              </button>
-            </li>
-          )
-        })}
-      </ul>
+      <div className="category-grid">
+        {categories.map((category) => (
+          <section key={category.id} className="category-section">
+            <h2 className="category-title">{category.title}</h2>
+            <ul className="level-list">
+              {category.levels.map((level) => (
+                <LevelButton
+                  key={level.id}
+                  level={level}
+                  onSelect={onSelect}
+                />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </main>
   )
 }

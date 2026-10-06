@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { LevelPlay } from './components/LevelPlay'
 import { LevelSelect } from './components/LevelSelect'
-import { getLevelById, isLevelUnlocked, levels } from './levels'
+import { categories, getLevelById } from './levels'
 
 function App() {
   const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null)
@@ -10,12 +10,11 @@ function App() {
     : undefined
 
   const openLevel = (levelId: string) => {
-    const level = getLevelById(levelId)
-    if (!level || !isLevelUnlocked(level)) return
+    if (!getLevelById(levelId)) return
     setSelectedLevelId(levelId)
   }
 
-  if (selectedLevel && isLevelUnlocked(selectedLevel)) {
+  if (selectedLevel) {
     return (
       <LevelPlay
         key={selectedLevel.id}
@@ -26,7 +25,7 @@ function App() {
     )
   }
 
-  return <LevelSelect levels={levels} onSelect={openLevel} />
+  return <LevelSelect categories={categories} onSelect={openLevel} />
 }
 
 export default App

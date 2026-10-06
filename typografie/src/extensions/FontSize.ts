@@ -45,8 +45,21 @@ export const FontSize = Extension.create({
     return {
       setFontSize:
         (fontSize: string) =>
-        ({ chain }) =>
-          chain().setMark('textStyle', { fontSize }).run(),
+        ({ state, dispatch, tr }) => {
+          const markType = state.schema.marks.textStyle
+          if (!markType) return false
+          const { empty, from, to } = state.selection
+          const prev = markType.isInSet(state.storedMarks || state.selection.$from.marks())
+          const attrs = { ...(prev?.attrs ?? {}), fontSize }
+          if (empty) {
+            // Stored mark → next typed character; also clear conflicting stored size
+            tr = tr.removeStoredMark(markType).addStoredMark(markType.create(attrs))
+          } else {
+            tr = tr.addMark(from, to, markType.create(attrs))
+          }
+          dispatch?.(tr.scrollIntoView())
+          return true
+        },
       unsetFontSize:
         () =>
         ({ chain }) =>
