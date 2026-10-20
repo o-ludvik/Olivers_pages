@@ -82,7 +82,7 @@ button{font:inherit}
 #numpad .keys .ok{grid-column:1/-1}
 
 /* vítězná obrazovka a diplom */
-#win{position:absolute;z-index:4;left:300px;top:84px;width:1000px;text-align:center}
+#win{position:absolute;z-index:4;left:300px;top:122px;width:1000px;text-align:center}
 #win h1{font-size:72px;margin:0 0 8px;color:#3DDC97}
 #win p{font-size:30px;margin:0 auto;max-width:900px}
 #winform{position:absolute;z-index:4;left:560px;top:620px;width:620px;display:flex;flex-direction:column;gap:12px}
@@ -154,7 +154,7 @@ button{font:inherit}
 #hot.solo .hot.bj{display:none}
 
 /* minitest */
-#test{position:absolute;z-index:4;left:40px;top:84px;width:1160px;height:790px;background:#0F1B2D;border:4px solid #3D5578;border-radius:22px;
+#test{position:absolute;z-index:4;left:40px;top:120px;width:1160px;height:756px;background:#0F1B2D;border:4px solid #3D5578;border-radius:22px;
   padding:40px 56px;display:flex;flex-direction:column}
 #test h2{margin:0 0 8px;font-size:40px}
 #test .prog{color:#8A9BB0;font-size:24px;margin-bottom:12px}
@@ -184,6 +184,9 @@ button{font:inherit}
 #topbar .sys{display:flex;gap:10px;align-items:center}
 #topbar .lamp{width:18px;height:18px;border-radius:50%;background:#2C3E5A;border:2px solid #3D5578}
 #topbar .lamp.on{background:#3DDC97;border-color:#2BAF77;box-shadow:0 0 10px #3DDC97}
+#taskbar{position:absolute;z-index:4;left:0;top:64px;width:1600px;height:44px;padding:0 28px;display:flex;align-items:center;gap:12px;
+  background:rgba(15,27,45,.92);border-bottom:2px solid #3D5578;font-size:22px;white-space:nowrap;overflow:hidden}
+#taskbar b{color:#5AC8FA}
 #bookbtn{justify-self:end;width:64px;height:60px;border:0;background:none;padding:0;cursor:pointer}
 #bookbtn .ring{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite;fill:#FFD23F;fill-opacity:0}
 #bookbtn:hover .ring{fill-opacity:.3}
@@ -259,6 +262,7 @@ button{font:inherit}
       <path d="M18 22q7-3 14 1q7-4 14-1v21q-7-3-14 1q-7-4-14-1z M32 23v21" fill="none" stroke="#F2F5F9" stroke-width="2.5" stroke-linejoin="round"/>
     </svg></button>
   </div>
+  <div id="taskbar" hidden><b></b><span></span></div>
   <div id="bubble" hidden><div class="bt"><span class="ghost"></span><span class="typed"></span></div><button class="btn dark next" hidden></button></div>
   <div id="menu" hidden></div>
   <div id="test" hidden></div>
@@ -923,7 +927,7 @@ const bubble = $('#bubble'), ghost = $('#bubble .ghost'), typed = $('#bubble .ty
 nextBtn.textContent = TEXTS.G_NEXT;
 let sp = null;
 
-function say(id, { vars = {}, then } = {}) {
+function say(id, { vars = {}, then, onPage } = {}) {   // onPage(i): akce při zobrazení i-té stránky
   let [e, t] = TEXTS[id];
   const pages = t.replace(/\{(\w+)\}/g, (_, k) => vars[k]).split(' // ').map(p => {
     const m = p.match(/^\[(.+?)\] /);
@@ -931,12 +935,14 @@ function say(id, { vars = {}, then } = {}) {
     return { e, html: inline(p) };
   });
   hideBubble();
-  sp = { pages, i: 0, then };
+  sp = { pages, i: 0, then, onPage };
   showPage();
+  taskBar();
 }
 function showPage() {
   const p = sp.pages[sp.i];
   face(p.e);
+  sp.onPage?.(sp.i);
   sp.toks = p.html.match(/<[^>]+>|[^]/gu);
   sp.n = 0; sp.done = false;
   ghost.innerHTML = p.html; typed.innerHTML = '';
@@ -1085,6 +1091,16 @@ function topbar() {
     systems().map(on => `<span class="lamp${on ? ' on' : ''}"></span>`).join('');
 }
 
+// ===== PRUH S ÚKOLEM (stejný text jako „Co mám dělat?“) =====
+function taskBar() {
+  const bar = $('#taskbar'), t = cur && !cur.tr && cur.task?.();
+  bar.hidden = !t;
+  if (!t) return;
+  const vars = cur.vars?.() || {};
+  bar.querySelector('b').textContent = TEXTS.G_MENU_TASK;
+  bar.querySelector('span').innerHTML = inline(TEXTS[t][1].replace(/\{(\w+)\}/g, (_, k) => vars[k]));
+}
+
 // ===== PŘECHODY =====
 const fadeEl = $('#fade');
 let cur = null;
@@ -1108,9 +1124,9 @@ function go(n) {
     if (!cur.lateRing) showBajtikRing();
     const first = !S.visited.includes(n);
     if (first) S.visited.push(n);
-    save(); topbar();
+    save(); topbar(); taskBar();
     if (DEBUG) console.log(`[debug] ${TEXTS[cur.name]}:`, cur.solution?.() ?? '–');
-    fade(false, () => cur.enter(first));
+    fade(false, () => { cur.enter(first); taskBar(); });
   });
 }
 
@@ -1122,7 +1138,7 @@ const room1 = {
              { label: 'R1_LABEL_16', base: 16, len: 2, color: '#5AC8FA' }],
   digits(c) { return this.n.toString(c.base).toUpperCase().padStart(c.len, '0'); },
   render() {
-    this.n = 0; this.menuSeen = false;
+    this.n = 0; this.menuSeen = false; this.ready = false;
     let h = wall() + `
       <rect x="0" y="80" width="1600" height="26" rx="13" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
       <rect x="0" y="118" width="1600" height="14" rx="7" fill="#2C3E5A" stroke="#3D5578" stroke-width="2"/>
@@ -1165,9 +1181,13 @@ const room1 = {
     this.n = (this.n + 1) % 256;
     this.counters.forEach((c, i) => [...this.digits(c)].forEach((d, j) => { if (d !== old[i][j]) roll(this.wheels[i][j], old[i][j], d); }));
   },
-  clickMe() {
-    showBajtikRing();
-    say('R1_CLICK_ME');
+  clickMe() {   // kruh u Bajtíka a úkol až se 2. stránkou, která o kroužku mluví
+    say('R1_CLICK_ME', { onPage: i => {
+      if (i !== 1 || this.ready) return;
+      this.ready = true;
+      showBajtikRing();
+      taskBar();
+    } });
   },
   onBajtik() {
     if (this.menuSeen) return;
@@ -1177,7 +1197,7 @@ const room1 = {
     say('R1_MENU');
   },
   exit() { clearInterval(this.timer); },
-  task() { return this.menuSeen ? 'R1_TASK_B' : 'R1_TASK_A'; },
+  task() { return this.menuSeen ? 'R1_TASK_B' : this.ready ? 'R1_TASK_A' : null; },
   hints: () => ['R1_HINT_1'],
   solution: () => 'Klikni na Bajtíka, pak na dveře vlevo.',
 };
@@ -1230,8 +1250,8 @@ const room2 = {
         <text x="820" y="637" text-anchor="middle" font-size="32" font-weight="700" letter-spacing="2" fill="#F2F5F9">${T('R2_SEND')}</text></g>
       <rect id="r2dark" width="1600" height="900" fill="#000" opacity="${this.dark ? .4 : 0}" pointer-events="none"/>
       <circle id="r2sos" class="blink" cx="1485" cy="160" r="16" fill="#FF6B4A" filter="url(#glow)"/>
-      <rect x="30" y="88" width="390" height="140" rx="20" fill="#F2F5F9" stroke="#0F1B2D" stroke-width="3"/>
-      <text x="54" y="132" font-size="26" fill="#0F1B2D">${T('R2_NEED')}</text>
+      <rect x="30" y="122" width="390" height="140" rx="20" fill="#F2F5F9" stroke="#0F1B2D" stroke-width="3"/>
+      <text x="54" y="166" font-size="26" fill="#0F1B2D">${T('R2_NEED')}</text>
       <g id="need"></g>`;
     $('#room').innerHTML = h;
     this.door = hot($('#d2'), 1485, 515, () => S.r2.solved >= 6 ? openDoor('d2', () => go(3)) : say('G_DOOR_LOCKED'), s < 6);
@@ -1253,10 +1273,10 @@ const room2 = {
     this.targets.forEach((t, j) => $('#sq' + j).setAttribute('fill', j < s ? '#3DDC97' : '#FF6B4A'));
     $('#need').innerHTML = this.targets.map((t, j) => {
       const x = 76 + j * 60, done = j < s;
-      return (j === s ? `<rect x="${x - 26}" y="150" width="52" height="54" rx="10" fill="none" stroke="#0F1B2D" stroke-width="3"/>` : '') +
-        `<text x="${x}" y="190" text-anchor="middle" font-size="34" font-weight="700" fill="${done ? '#1E9E68' : '#0F1B2D'}">${t}</text>` +
-        (done ? `<line x1="${x - 22}" y1="178" x2="${x + 22}" y2="178" stroke="#1E9E68" stroke-width="4"/>` : '') +
-        (j < 5 ? `<text x="${x + 30}" y="188" text-anchor="middle" font-size="30" fill="#8A9BB0">·</text>` : '');
+      return (j === s ? `<rect x="${x - 26}" y="184" width="52" height="54" rx="10" fill="none" stroke="#0F1B2D" stroke-width="3"/>` : '') +
+        `<text x="${x}" y="224" text-anchor="middle" font-size="34" font-weight="700" fill="${done ? '#1E9E68' : '#0F1B2D'}">${t}</text>` +
+        (done ? `<line x1="${x - 22}" y1="212" x2="${x + 22}" y2="212" stroke="#1E9E68" stroke-width="4"/>` : '') +
+        (j < 5 ? `<text x="${x + 30}" y="222" text-anchor="middle" font-size="30" fill="#8A9BB0">·</text>` : '');
     }).join('');
   },
   enter(first) {
@@ -1316,7 +1336,7 @@ const room2 = {
 const BASES = [2, 8, 10, 12, 16, 20, 60];          // levý sloupec
 const USES = [16, 10, 60, 2, 20, 8, 12];           // pravý sloupec, pevné zamíchání (R3_CARDS)
 const SPINES = ['#8E5A9E', '#3D7A9E', '#A0603C', '#4F8A5B', '#9E3D5A', '#6A6FB0', '#7A8A3D'];
-const CY = j => 136 + j * 76;
+const CY = j => 144 + j * 76;
 function wrap(s, n) {   // zalomení podle běžných mezer; nezlomitelné zůstanou pohromadě
   const lines = [''];
   for (const w of s.split(' ')) {
@@ -1475,6 +1495,7 @@ function ladderSvg(cx, top, lit = {}) {
 const btnSvg = (id, x, y, w, h, label, size = 30) => `<g id="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#3D5578" stroke="#8A9BB0" stroke-width="4"/>
   <text x="${x + w / 2}" y="${y + h / 2 + size * .36}" text-anchor="middle" font-size="${size}" font-weight="700" letter-spacing="2" fill="#F2F5F9">${label}</text></g>`;
 
+const ZOOM_DY = 30;   // přiblížený panel začíná pod pruhem s úkolem
 const room4 = {
   name: 'ROOM_4', book: 3, bajtik: [170, 790],
   done() { return S.r4.a && S.r4.b >= 3 && S.r4.c; },
@@ -1487,9 +1508,9 @@ const room4 = {
     for (let i = 0; i < 700; i++) noise += `<rect x="${rnd() * 740 | 0}" y="${rnd() * 340 | 0}" width="${4 + rnd() * 8 | 0}" height="3" fill="#8A9BB0" opacity="${(.15 + rnd() * .4).toFixed(2)}"/>`;
     this.noise = noise;
     $('#room').innerHTML = wall() + `
-      <rect x="560" y="74" width="760" height="350" rx="20" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
-      <svg id="screen" x="600" y="122" width="680" height="282" overflow="hidden"></svg>
-      <rect x="600" y="122" width="680" height="282" rx="6" fill="none" stroke="#3D5578" stroke-width="3"/>
+      <rect x="560" y="112" width="760" height="312" rx="20" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <svg id="screen" x="600" y="152" width="680" height="256" overflow="hidden"></svg>
+      <rect x="600" y="152" width="680" height="256" rx="6" fill="none" stroke="#3D5578" stroke-width="3"/>
       <g id="r4lamps"></g>
       <rect x="500" y="430" width="886" height="310" rx="18" fill="#1F304A" stroke="#3D5578" stroke-width="3"/>
       ${door('d4', 1400, 250, 180, 530)}
@@ -1511,10 +1532,10 @@ const room4 = {
         <text x="540" y="115" font-size="26" font-weight="600" fill="#5AC8FA">${T('R4_MAP_STATION')}</text>`;
     } else if (S.r4.a || this.aOk) {
       scr.innerHTML = `<rect width="680" height="282" fill="#071018"/>
-        <text x="340" y="170" text-anchor="middle" font-size="96" font-weight="700" letter-spacing="12" fill="#3DDC97" filter="url(#glow)">BAJ…</text>`;
+        <text x="340" y="160" text-anchor="middle" font-size="96" font-weight="700" letter-spacing="12" fill="#3DDC97" filter="url(#glow)">BAJ…</text>`;
     } else scr.innerHTML = `<rect width="680" height="282" fill="#071018"/><g class="noise">${this.noise}</g>`;
-    $('#r4lamps').innerHTML = ['A', 'B', 'C'].map((p, i) => `<circle cx="${880 + i * 60}" cy="98" r="14" fill="${st[p] ? '#3DDC97' : '#2C3E5A'}" stroke="${st[p] ? '#2BAF77' : '#3D5578'}" stroke-width="3"${st[p] ? ' filter="url(#glow)"' : ''}/>
-      <text x="${880 + i * 60}" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="${st[p] ? '#0F1B2D' : '#8A9BB0'}">${p}</text>`).join('');
+    $('#r4lamps').innerHTML = ['A', 'B', 'C'].map((p, i) => `<circle cx="${880 + i * 60}" cy="132" r="12" fill="${st[p] ? '#3DDC97' : '#2C3E5A'}" stroke="${st[p] ? '#2BAF77' : '#3D5578'}" stroke-width="3"${st[p] ? ' filter="url(#glow)"' : ''}/>
+      <text x="${880 + i * 60}" y="139" text-anchor="middle" font-size="18" font-weight="700" fill="${st[p] ? '#0F1B2D' : '#8A9BB0'}">${p}</text>`).join('');
     const icons = {
       A: x => `<rect x="${x + 35}" y="560" width="200" height="34" rx="6" fill="#071018" stroke="#3D5578" stroke-width="2"/>` +
         [...'0100001001'].map((b, i) => seg7(b, x + 45 + i * 19, 566, 12, 22)).join(''),
@@ -1534,7 +1555,7 @@ const room4 = {
   },
 
   // --- přiblížený panel ---
-  zhot(el, cx, cy, fn) { this.zh.push(hot(el, cx, cy, fn, false, 'z')); },
+  zhot(el, cx, cy, fn) { this.zh.push(hot(el, cx, cy + ZOOM_DY, fn, false, 'z')); },
   open(p) {
     this.panel = p; this.miss = 0; resetHint();
     $('#hot').classList.add('zoomed');
@@ -1554,17 +1575,18 @@ const room4 = {
     $('#hot').classList.remove('zoomed');
     padHide();
     this.drawBg();
+    taskBar();
   },
   closeLater(p) { setTimeout(() => { if (this.panel === p) this.close(); }, 1600); },
   draw() {
     this.zh.forEach(h => h.remove()); this.zh = [];
     padHide();
-    $('#zoom').innerHTML = `<rect width="1600" height="900" fill="#000" opacity=".55"/>
+    $('#zoom').innerHTML = `<rect width="1600" height="900" fill="#000" opacity=".55"/><g transform="translate(0 ${ZOOM_DY})">
       <rect x="320" y="80" width="1260" height="720" rx="22" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
       <text x="360" y="134" font-size="34" font-weight="700" fill="#F2F5F9">${this.panel} · ${T('R4_PANEL_' + this.panel)}</text>
       <g id="zx" class="clickable"><rect x="1500" y="96" width="60" height="60" rx="14" fill="#F2F5F9" stroke="#0F1B2D" stroke-width="3"/>
         <path d="M1517 113l26 26M1543 113l-26 26" stroke="#0F1B2D" stroke-width="5" stroke-linecap="round"/></g>
-      <g id="zc"></g>`;
+      <g id="zc"></g></g>`;
     $('#zoom rect').addEventListener('click', e => { e.stopPropagation(); this.close(); });
     $('#zx').addEventListener('click', e => { e.stopPropagation(); this.close(); });
     this['draw' + this.panel]($('#zc'));
@@ -1640,7 +1662,7 @@ const room4 = {
       [0, 1, 2].map(i => `<circle cx="${1400 + i * 34}" cy="128" r="10" fill="${i < S.r4.b ? '#3DDC97' : '#3D5578'}"/>`).join('') +
       `<rect x="980" y="704" width="560" height="80" rx="10" fill="#F2F5F9" stroke="#FF6B4A" stroke-width="4"/>` +
       wrap(T('R4B_NOTE_1024'), 44).map((l, i) => `<text x="998" y="${736 + i * 28}" font-size="21" fill="#0F1B2D">${l}</text>`).join('');
-    numpad(1040, 292, v => this.answerB(v));
+    numpad(1040, 292 + ZOOM_DY, v => this.answerB(v));
   },
   answerB(v) {
     const i = S.r4.b, q = R4B[i], ok = Math.abs(parseNum(v) - q.ans) < 1e-9;
@@ -1778,9 +1800,9 @@ const room6 = {
     let stars = '';
     for (let i = 0; i < 40; i++) stars += `<circle cx="${560 + rnd() * 480 | 0}" cy="${100 + rnd() * 300 | 0}" r="${(1 + rnd() * 1.6).toFixed(1)}" fill="#F2F5F9" opacity="${(.3 + rnd() * .6).toFixed(2)}"/>`;
     $('#room').innerHTML = wall() + `
-      <rect x="540" y="84" width="520" height="330" rx="24" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
-      <svg x="560" y="104" width="480" height="290" overflow="hidden"><rect width="480" height="290" fill="#0F1B2D"/>
-        <g transform="translate(-560 -104)">${stars}</g>
+      <rect x="540" y="116" width="520" height="300" rx="24" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <svg x="560" y="136" width="480" height="260" overflow="hidden"><rect width="480" height="260" fill="#0F1B2D"/>
+        <g transform="translate(-560 -136)">${stars}</g>
         <g id="ant" class="ant${S.sos ? ' up' : ''}"><rect x="232" y="200" width="16" height="140" fill="#8A9BB0"/>
           <path d="M190 200Q240 150 290 200Z" fill="#8A9BB0" stroke="#6F8096" stroke-width="3"/><circle cx="240" cy="168" r="7" fill="#FF6B4A"/>
           <g id="waves"></g></g></svg>
@@ -2171,6 +2193,7 @@ const room7 = {
       <svg class="tsvg" viewBox="0 0 1600 836" width="1600" height="836"></svg><div class="tb"></div>
       <div class="tm"><span></span><button class="btn" data-t="msg" hidden></button></div>`;
     trEl.hidden = false;
+    taskBar();
     this.tr.start();
   },
   close() {
@@ -2180,6 +2203,7 @@ const room7 = {
     this.tr = null;
     bajtikEl.style.visibility = '';
     $('#hot').classList.remove('zoomed', 'solo');
+    taskBar();
   },
   enter(first) { say(first ? 'R7_INTRO' : 'R7_REVISIT'); },
   exit() { this.close(); },
