@@ -1,0 +1,2314 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bajtík a ztracená loď</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+[hidden]{display:none!important}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;overflow:hidden;background:#0F1B2D;color:#F2F5F9;
+  font:26px/1.35 system-ui,"Segoe UI",Roboto,sans-serif;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#scene{position:absolute;inset:0;display:block}
+button{font:inherit}
+
+/* klikací kruhy */
+.clickable,.hot{cursor:pointer}
+.hot{transition:opacity .3s}
+.hot .hit{fill:transparent;pointer-events:all}
+.hot .ring{fill:#FFD23F;fill-opacity:0;stroke:#FFD23F;stroke-width:4;pointer-events:none;
+  transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite}
+.hot.hover .ring{fill-opacity:.3}
+.hot.locked .ring{stroke:#8A9BB0;fill:#8A9BB0;stroke-dasharray:9 7;animation:none}
+.hot.gone{opacity:0;pointer-events:none}
+@keyframes pulse{50%{transform:scale(1.15)}}
+
+/* Bajtík */
+.float{animation:float 2s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(-4px)}50%{transform:translateY(4px)}}
+.bobble{animation:bob 2s linear infinite}
+@keyframes bob{0%,80%{opacity:1}88%{opacity:.15}96%,100%{opacity:1}}
+.scared{animation:scared .45s steps(1) 1}
+@keyframes scared{0%{opacity:1}20%{opacity:0}40%{opacity:1}60%{opacity:0}80%{opacity:1}}
+.blink{animation:bob 1.3s linear infinite}
+
+/* sedmisegmentovky, dveře, počítadla */
+.seg .on{fill:currentColor}
+.seg .off{fill:currentColor;opacity:.08}
+.leaf{transition:transform .3s ease-in;transform-box:fill-box}
+.leaf.open{transform:translateX(-100%)}
+.knob{transition:transform .15s}
+#r2dark{transition:opacity .6s}
+#r2dark.outage{animation:outage 1.2s forwards}
+@keyframes outage{0%{opacity:0}14%{opacity:.85}24%{opacity:0}44%{opacity:.85}54%{opacity:0}74%{opacity:.85}100%{opacity:.4}}
+
+/* zpětná vazba */
+.fx-ok{animation:fxok .7s}
+@keyframes fxok{30%{filter:drop-shadow(0 0 16px #3DDC97) brightness(1.25)}}
+.fx-bad{animation:shake .2s,fxbad .45s}
+.fx-bad>rect:first-child{animation:redfill .45s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes fxbad{30%{filter:drop-shadow(0 0 14px #FF6B4A)}}
+@keyframes redfill{30%{fill:#FF6B4A}}
+
+/* tlačítka UI */
+.btn{font-size:24px;padding:10px 24px;border-radius:14px;border:3px solid #0F1B2D;background:#F2F5F9;color:#0F1B2D;cursor:pointer}
+.btn:hover{background:#DCE4EE}
+.btn.dark{background:#0F1B2D;color:#F2F5F9}
+.btn.dark:hover{background:#2C3E5A}
+
+/* bublina */
+#bubble{position:absolute;width:480px;z-index:5;background:#F2F5F9;color:#0F1B2D;border:3px solid #0F1B2D;border-radius:24px;padding:18px 24px;cursor:default}
+#bubble::before,#bubble::after{content:"";position:absolute;left:calc(var(--tail) - 16px);border:16px solid transparent;border-bottom:0}
+#bubble::before{bottom:-27px;border-top:26px solid #0F1B2D}
+#bubble::after{bottom:-22px;border-top:23px solid #F2F5F9}
+.bt{display:grid}
+.bt>span{grid-area:1/1}
+.ghost{visibility:hidden}
+#bubble .next{display:block;margin:12px 0 0 auto}
+
+#hot.zoomed .hot:not(.z):not(.bj){display:none}
+.noise{animation:noise .5s steps(5) infinite}
+@keyframes noise{to{transform:translate(-40px,-25px)}}
+
+/* klávesnice ve hře */
+#numpad{position:absolute;z-index:5;width:420px}
+#numpad .disp{height:66px;background:#071018;border:3px solid #3D5578;border-radius:12px;color:#3DDC97;font-size:38px;font-weight:600;
+  padding:6px 18px;text-align:right;white-space:pre}
+#numpad .disp::after{content:"";display:inline-block;width:3px;height:40px;margin-left:4px;background:#3DDC97;vertical-align:-6px;animation:bob 1s steps(1) infinite}
+#numpad .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+#numpad .keys .btn{height:54px;font-size:28px;padding:0}
+#numpad .keys .ok{grid-column:1/-1}
+
+/* vítězná obrazovka a diplom */
+#win{position:absolute;z-index:4;left:300px;top:84px;width:1000px;text-align:center}
+#win h1{font-size:72px;margin:0 0 8px;color:#3DDC97}
+#win p{font-size:30px;margin:0 auto;max-width:900px}
+#winform{position:absolute;z-index:4;left:560px;top:620px;width:620px;display:flex;flex-direction:column;gap:12px}
+#winform label{font-size:24px;color:#8A9BB0}
+#winform .row{display:flex;gap:14px}
+#winform input{flex:1;font:inherit;font-size:30px;padding:10px 16px;border-radius:14px;border:3px solid #FFD23F;background:#F2F5F9;color:#0F1B2D;user-select:text;-webkit-user-select:text}
+#winform .btn{white-space:nowrap}
+#winform .btn:disabled{opacity:.45;cursor:default}
+.rescue{animation:rescue 5s ease-out forwards}
+@keyframes rescue{from{transform:translate(-900px,140px)}to{transform:none}}
+#dipwrap{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.7)}
+#dipwrap .bar{position:absolute;right:40px;top:20px;display:flex;gap:14px}
+#diploma{position:absolute;left:250px;top:90px;width:1100px;height:778px;background:#F2F5F9;color:#0F1B2D;
+  border:14px double #3D5578;padding:44px 70px 34px;display:flex;flex-direction:column;align-items:center;text-align:center;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+#diploma h1{font-size:92px;margin:0;letter-spacing:6px;color:#1B2A41}
+#diploma .sub{font-size:30px;margin:0 0 20px;color:#3D5578}
+#diploma .who{font-size:58px;font-weight:700;margin:0 0 14px;border-bottom:3px solid #5AC8FA;padding:0 30px 6px}
+#diploma .txt{font-size:24px;margin:0 0 22px;max-width:820px}
+#diploma .sys{display:flex;gap:40px;font-size:20px}
+#diploma .sys div{display:flex;flex-direction:column;align-items:center;gap:6px}
+#diploma .foot{margin-top:auto;width:100%;display:flex;justify-content:space-between;align-items:flex-end;font-size:22px}
+#diploma .sign{display:flex;flex-direction:column;align-items:center}
+#diploma .ps{font-size:13px;color:#8A9BB0;margin-top:2px}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{height:auto;overflow:visible;background:#fff}
+  #stage{position:static;transform:none!important;width:auto;height:auto;overflow:visible;background:none}
+  #stage>*:not(#dipwrap),#dipwrap .bar{display:none!important}
+  #dipwrap{position:static;background:none}
+  #diploma{position:static;width:297mm;height:209mm;box-sizing:border-box;break-inside:avoid}
+}
+
+/* trenažéry */
+#trainer{position:absolute;z-index:4;left:0;top:64px;width:1600px;height:836px;background:#0F1B2D}
+#trainer .tsvg{position:absolute;left:0;top:0}
+#trainer .th{position:absolute;left:30px;right:30px;top:14px;display:flex;gap:14px;align-items:center}
+#trainer .th h2{flex:1;margin:0;font-size:36px}
+#trainer .th .x{width:56px;height:56px;padding:0;font-size:30px}
+#trainer .ti{position:absolute;left:30px;top:76px;margin:0;font-size:24px;color:#8A9BB0}
+#trainer .tm{position:absolute;left:30px;right:30px;bottom:16px;height:84px;display:flex;gap:16px;align-items:center}
+#trainer .tm span{flex:1;align-self:stretch;display:flex;align-items:center;background:#F2F5F9;color:#0F1B2D;border-radius:16px;padding:0 22px;font-size:26px}
+#trainer .tm span:empty{visibility:hidden}
+#trainer .tb>*{position:absolute}
+.astw{animation:drift 3s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-30px,-10px)}to{transform:translate(30px,12px)}}
+.ast:hover>path{stroke:#FFD23F}
+.frag{animation:frag .7s ease-out forwards}
+@keyframes frag{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+#trainer .lv{left:30px;top:124px;display:flex;gap:10px}
+#trainer .lv .btn{font-size:22px;padding:8px 16px}
+#trainer .lv .on{background:#5AC8FA}
+#trainer .lv .offer{box-shadow:0 0 0 4px #FFD23F}
+#trainer .rules{left:30px;top:196px;font-size:24px;color:#8A9BB0}
+#trainer .sgrid{left:520px;top:250px;display:grid;grid-template-columns:repeat(6,84px);gap:8px;font-size:44px;font-weight:700;text-align:center}
+#trainer .sgrid .d{height:70px;line-height:70px}
+#trainer .sgrid .cell{height:76px;font-size:44px;font-weight:700;background:#071018;border:3px solid #3D5578;border-radius:10px;color:#3DDC97;cursor:pointer}
+#trainer .sgrid .car{height:46px;font-size:26px;background:none;border:2px dashed #3D5578;border-radius:8px;color:#5AC8FA;cursor:pointer}
+#trainer .sgrid .bad{border-color:#FF6B4A;background:#3A1E22}
+#trainer .sgrid .good{border-color:#3DDC97}
+#trainer .sgrid .line{grid-column:2/-1;border-top:4px solid #F2F5F9}
+#trainer .dec{left:520px;top:640px;font-size:30px;color:#8A9BB0}
+#trainer .chk{left:1120px;top:470px;font-size:28px}
+#trainer .cq{left:760px;top:160px;font-size:46px;font-weight:700}
+#trainer .memo{left:50px;top:124px;width:1500px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+#trainer .mc{height:138px;border-radius:14px;border:3px solid #3D5578;background:#2C3E5A;color:#F2F5F9;font-size:22px;padding:8px 14px;cursor:pointer}
+#trainer .mc.f{background:#F2F5F9;color:#0F1B2D;cursor:default}
+#trainer .mc.m{background:#D8F7E9;border-color:#3DDC97;color:#0F1B2D;cursor:default}
+#hot.solo .hot.bj{display:none}
+
+/* minitest */
+#test{position:absolute;z-index:4;left:40px;top:84px;width:1160px;height:790px;background:#0F1B2D;border:4px solid #3D5578;border-radius:22px;
+  padding:40px 56px;display:flex;flex-direction:column}
+#test h2{margin:0 0 8px;font-size:40px}
+#test .prog{color:#8A9BB0;font-size:24px;margin-bottom:12px}
+#test .q{font-size:34px;line-height:1.35;margin:0 0 28px;max-width:1000px}
+#test .opts{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1000px}
+#test .opts .btn{text-align:left;font-size:26px;padding:18px 22px;min-height:96px}
+#test .opts .btn.sel{background:#FFF6D6;border-color:#FFD23F;box-shadow:0 0 0 3px #FFD23F}
+#test .foot{margin-top:auto;display:flex;gap:16px;justify-content:flex-end}
+#test .foot .btn{font-size:28px;padding:12px 34px}
+#test .cats{list-style:none;padding:0;margin:20px 0;font-size:32px}
+#test .cats li{margin:10px 0}
+#test .cats .ok{color:#3DDC97}#test .cats .ko{color:#FF6B4A}
+#test .btn.dark,#numpad .btn.dark{background:#3D5578;border-color:#8A9BB0}
+#test .btn.dark:hover,#numpad .btn.dark:hover{background:#4C668C}
+.wave{fill:none;stroke:#5AC8FA;stroke-width:4;transform-box:fill-box;transform-origin:center;animation:wave 1.2s ease-out infinite}
+@keyframes wave{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.ant{transition:transform .8s ease-out}
+.ant.up{transform:translateY(-110px)}
+
+#menu{position:absolute;z-index:6;display:flex;flex-direction:column;gap:10px}
+#menu .btn{text-align:left;min-width:250px}
+
+/* horní lišta */
+#topbar{position:absolute;z-index:4;left:0;top:0;width:1600px;height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:0 16px 0 28px;background:rgba(15,27,45,.88);border-bottom:2px solid #3D5578;font-size:24px}
+#topbar .name{font-weight:600}
+#topbar .sys{display:flex;gap:10px;align-items:center}
+#topbar .lamp{width:18px;height:18px;border-radius:50%;background:#2C3E5A;border:2px solid #3D5578}
+#topbar .lamp.on{background:#3DDC97;border-color:#2BAF77;box-shadow:0 0 10px #3DDC97}
+#bookbtn{justify-self:end;width:64px;height:60px;border:0;background:none;padding:0;cursor:pointer}
+#bookbtn .ring{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite;fill:#FFD23F;fill-opacity:0}
+#bookbtn:hover .ring{fill-opacity:.3}
+
+/* učebnice */
+#book{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.55)}
+#book .panel{position:absolute;left:80px;top:45px;width:1440px;height:810px;display:grid;grid-template-columns:340px 1fr;
+  background:#F2F5F9;color:#0F1B2D;border-radius:20px;overflow:hidden;border:3px solid #3D5578}
+#book nav{background:#DCE4EE;padding:24px 18px;overflow:auto}
+#book nav h2{font-size:28px;margin:0 8px 18px}
+#book nav button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:10px;font-size:22px;color:#0F1B2D;cursor:pointer}
+#book nav button:hover{background:#C6D2E0}
+#book nav button.sel{background:#0F1B2D;color:#F2F5F9}
+#book article{padding:30px 56px 40px 48px;overflow:auto;font-size:23px;user-select:text;-webkit-user-select:text}
+#book article h2{margin:0 0 16px;font-size:34px}
+#book article h3{margin:28px 0 8px;font-size:27px}
+#book table{border-collapse:collapse;margin:10px 0}
+#book th,#book td{border:1px solid #9AA8B8;padding:6px 14px;text-align:left}
+#book th{background:#DCE4EE}
+#book pre{background:#E2E8F0;padding:14px 18px;border-radius:10px;font:21px/1.35 ui-monospace,Consolas,monospace}
+#book .x,#tome .x{position:absolute;right:14px;top:12px;width:52px;height:52px;padding:0;font-size:30px}
+
+/* otevřená kniha v archivu */
+#tome{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.55)}
+#tome .pages{position:absolute;left:180px;top:120px;width:1240px;height:660px;display:grid;grid-template-columns:1fr 1fr;
+  background:#F2F5F9;color:#0F1B2D;border-radius:18px;border:6px solid #2C3E5A;box-shadow:inset 0 0 0 2px #DCE4EE}
+#tome section{padding:54px 56px;font-size:25px;line-height:1.5}
+#tome section:first-child{border-right:3px solid #C6D2E0}
+#tome h2{margin:0 0 20px;font-size:34px}
+#tome .x{right:192px;top:132px}
+
+/* úvodní obrazovka */
+#start{position:absolute;inset:0;z-index:9;background:#0F1B2D;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#start h1{font-size:76px;margin:10px 0 6px}
+#start p{font-size:30px;margin:0 0 36px;color:#8A9BB0}
+#start .btns{display:flex;gap:20px}
+#start .btn{font-size:30px;padding:14px 34px}
+
+#lights{position:absolute;inset:0;z-index:3;background:#000}
+#lights.on{animation:lightson 1.5s forwards}
+@keyframes lightson{0%{opacity:1}12%{opacity:.15}22%{opacity:1}42%{opacity:.15}52%{opacity:1}74%{opacity:.1}84%{opacity:.6}100%{opacity:0}}
+#fade{position:absolute;inset:0;z-index:20;background:#000;opacity:0;pointer-events:none;transition:opacity .4s}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="scene" viewBox="0 0 1600 900" width="1600" height="900">
+    <defs>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <symbol id="bb" viewBox="0 0 140 180" width="140" height="180" overflow="visible">
+        <ellipse cx="70" cy="172" rx="32" ry="7" fill="#5AC8FA" opacity=".5" filter="url(#glow)"/>
+        <path d="M58 156h24l-6 12h-12z" fill="#3D5578"/>
+        <line x1="70" y1="24" x2="70" y2="9" stroke="#2E8FC0" stroke-width="4"/>
+        <circle class="bobble" cx="70" cy="7" r="6" fill="#3DDC97" filter="url(#glow)"/>
+        <rect x="12" y="22" width="116" height="138" rx="50" fill="#5AC8FA" stroke="#2E8FC0" stroke-width="4"/>
+        <rect x="28" y="42" width="84" height="52" rx="16" fill="#071018" stroke="#2E8FC0" stroke-width="3"/>
+        <rect x="28" y="112" width="84" height="18" rx="9" fill="#2E8FC0"/>
+      </symbol>
+    </defs>
+    <g id="room"></g>
+    <g id="zoom"></g>
+    <g id="bajtik"><g class="float"><use href="#bb" width="140" height="180"/><g id="eyes"></g><g id="leds"></g></g></g>
+    <g id="hot"></g>
+  </svg>
+  <div id="lights" hidden></div>
+  <div id="topbar" hidden>
+    <div class="name"></div>
+    <div class="sys"></div>
+    <button id="bookbtn"><svg viewBox="0 0 64 64" width="60" height="60">
+      <circle class="ring" cx="32" cy="32" r="26" stroke="#FFD23F" stroke-width="3.5"/>
+      <path d="M18 22q7-3 14 1q7-4 14-1v21q-7-3-14 1q-7-4-14-1z M32 23v21" fill="none" stroke="#F2F5F9" stroke-width="2.5" stroke-linejoin="round"/>
+    </svg></button>
+  </div>
+  <div id="bubble" hidden><div class="bt"><span class="ghost"></span><span class="typed"></span></div><button class="btn dark next" hidden></button></div>
+  <div id="menu" hidden></div>
+  <div id="test" hidden></div>
+  <div id="trainer" hidden></div>
+  <div id="win" hidden></div>
+  <div id="winform" hidden></div>
+  <div id="dipwrap" hidden><div class="bar"></div><div id="diploma"></div></div>
+  <div id="numpad" hidden></div>
+  <div id="tome" hidden><div class="pages"><section></section><section></section></div><button class="btn x">×</button></div>
+  <div id="book" hidden><div class="panel"><nav></nav><article></article><button class="btn x">×</button></div></div>
+  <div id="start" hidden></div>
+  <div id="fade"></div>
+</div>
+<script>
+'use strict';
+
+// ===== TEXTY (doslova z dokumentu Bajtík – Textace; hláška = [výraz, text], // odděluje stránky) =====
+const TEXTS = {
+  ROOM_1: 'Technická místnost', ROOM_2: 'Rozvodna', ROOM_3: 'Archiv', ROOM_4: 'Navigace',
+  ROOM_5: 'Rozcestí', ROOM_6: 'Kajuta', ROOM_7: 'Cvičiště',
+
+  G_TITLE: 'Bajtík a ztracená loď',
+  G_SUBTITLE: 'Oprav loď, poznej dvojkovou soustavu a vyšli SOS.',
+  G_NEW: 'Nová hra',
+  G_CONTINUE: 'Pokračovat',
+  G_RESTART: 'Začít znovu',
+  G_RESTART_CONFIRM: 'Opravdu začít znovu? Celý postup se smaže.',
+  G_YES_RESTART: 'Ano, znovu',
+  G_BACK: 'Zpět',
+  G_NEXT: 'Dál ›',
+  G_MENU_TASK: 'Co mám dělat?',
+  G_MENU_HINT: 'Nápověda',
+  G_MENU_BOOK: 'Učebnice',
+  G_BOOK_TITLE: 'Bajtíkova učebnice',
+  G_TOPBAR_SYSTEMS: 'Systémy lodi',
+  G_KEY_CONFIRM: 'Potvrdit',
+  G_KEY_DELETE: 'Smazat',
+  G_CLOSE: 'Zavřít',
+
+  G_DOOR_LOCKED: ['varování', 'Tyhle dveře jsou zatím zamčené. Nejdřív musíme opravit, co je tady.'],
+  G_HINT_OFFER: ['přemýšlí', 'Tohle je záludné, to nevadí. Klikni na mě a dej „Nápověda“.'],
+  G_HINT_LAST: ['přemýšlí', 'Víc už neprozradím, to bych to vyřešil za tebe. Mrkni do učebnice!'],
+  G_ROOM_DONE_BACK: ['neutrální', 'Tady už je všechno opravené. Pokračuj dál.'],
+
+  // popisky počítadel jsou jen v GDD (kap. 4.1), Textace je nemá
+  R1_LABEL_10: 'DESÍTKOVÁ (10)', R1_LABEL_2: 'DVOJKOVÁ (2)', R1_LABEL_16: 'ŠESTNÁCTKOVÁ (16)',
+  R1_INTRO: ['radost', 'Bzzt… Jé, ty jsi vzhůru! Jsem Bajtík, opravářský robot téhle lodi. // [vylekaný] Narazili jsme do meteoritu a loď ztroskotala. Skoro všechny systémy jsou mimo provoz. // [neutrální] Ty umíš opravovat, já znám loď. Spolu ji zprovozníme a vyšleme SOS, ať pro nás někdo přiletí.'],
+  R1_CLICK_ME: ['přemýšlí', 'Vidíš ta tři počítadla? Ukazují pořád stejné číslo, jen každé ho zapisuje jinak. // [neutrální] Všechno, co jde ovládat, má u sebe žlutý kroužek. Zkus kliknout na mě.'],
+  R1_MENU: ['radost', 'Výborně! Když si nebudeš vědět rady, klikni na mě: zopakuju úkol, napovím nebo otevřu učebnici. // Teď dveře vlevo. Jdeme do rozvodny.'],
+  R1_TASK_A: ['neutrální', 'Klikni na žlutý kroužek u mě.'],
+  R1_TASK_B: ['neutrální', 'Klikni na dveře vlevo, jdeme do rozvodny.'],
+  R1_HINT_1: ['neutrální', 'Hledej žlutý kroužek a klikni přímo do něj.'],
+
+  R2_NEED: 'Reaktor potřebuje:', R2_SEND: 'ODESLAT ENERGII',
+  R2_INTRO: ['vylekaný', 'Rozvodna! Reaktor skoro nedává energii, musíme mu ji poslat ručně. // [neutrální] Každá páka posílá jiné množství energie. Nahoře je **1** (zapnuto), dole **0** (vypnuto). // Displeje ukazují, kolik která páka posílá. Nastav součet přesně na číslo z mého seznamu a stiskni ODESLAT ENERGII.'],
+  R2_TASK: ['neutrální', 'Nastav páky tak, aby součet byl {target}. Pak stiskni ODESLAT ENERGII.'],
+  R2_OK_1: ['radost', 'Přesně! A víš co? Páky teď ukazují {bits}. Tak se {target} píše ve **dvojkové soustavě**.'],
+  R2_OK_2: ['radost', 'Paráda, další světýlko je zelené! {target} je ve dvojkové soustavě {bits}.'],
+  R2_OK_3: ['radost', 'Sedí to! {target} = {bits}. Ty už mluvíš jako počítač.'],
+  R2_OK_DARK: ['radost', 'Naslepo a správně! {target} je {bits}.'],
+  R2_WRONG_MORE: ['varování', 'Reaktor dostal {sum}, ale potřebuje {target}. To je moc, některou páku sklop.'],
+  R2_WRONG_LESS: ['varování', 'Reaktor dostal {sum}, potřebuje {target}. To je málo, přidej energii.'],
+  R2_WRONG_MORE_DARK: ['varování', 'Moc energie! Zkus některou páku sklopit.'],
+  R2_WRONG_LESS_DARK: ['varování', 'Málo energie! Zkus přidat.'],
+  R2_BLACKOUT: ['vylekaný', 'Ajaj, vypadl proud a displeje zhasly! // [přemýšlí] Ale páky posílají pořád stejně energie jako předtím. Pamatuješ si, kolik která?'],
+  R2_DONE: ['radost', 'Reaktor jede a proud je zpátky! První systém opravený. // 31 je 11111, všechny páky nahoře. Víc se pěti pákami poslat nedá.'],
+  R2_HINT_1: ['přemýšlí', 'Každá páka má svou hodnotu: zleva 16, 8, 4, 2, 1. Číslo poskládáš jejich sečtením.'],
+  R2_HINT_2: ['přemýšlí', 'Začni zleva. Když se hodnota páky do zbytku čísla vejde, zvedni ji a odečti. Pak pokračuj další pákou.'],
+  R2_HINT_3: ['neutrální', '{target} = {decomp}. Zvedni právě tyhle páky.'],
+
+  R3_INTRO: ['neutrální', 'Lodní archiv. Počítač tu drží dveře zamčené, dokud mu neukážeš, že soustavám rozumíš. // [přemýšlí] Desítková a dvojková totiž nejsou jediné! Spoj každou soustavu na stole s tím, k čemu se dnes používá. // [neutrální] Nevíš si rady? Knihy v regálu ti to vysvětlí. Klikni na ně.'],
+  R3_TASK: ['neutrální', 'Spoj každou soustavu s jejím použitím a dej ZKONTROLOVAT. Když nevíš, čti knihy v regálu.'],
+  R3_RESULT: ['přemýšlí', 'Máš {correct} ze 7 správně. Zelené zůstanou, ostatní zkus spojit znovu.'],
+  R3_DONE: ['radost', 'Všech 7 správně, archiv odemyká dveře! // Soustav je spousta, ale v počítačích vládne ta dvojková. Jdeme do navigace.'],
+  R3_HINT_1: ['přemýšlí', 'Každá kniha v regálu patří k jednomu použití. Přečti si ji a najdi, o které soustavě mluví.'],
+  R3_HINT_2: ['přemýšlí', 'Začni tím, co znáš: běžné počítání je 10 a počítače 2. Zbytek najdeš v knihách.'],
+  R3_HINT_3: ['neutrální', 'Minuty jsou 60, tucet 12, barvy na webu 16 a letadla mají kódy v osmičkové. Zbývá francouzština.'],
+  R3_CHECK: 'ZKONTROLOVAT',
+
+  R4_PANEL_A: 'Datová páska', R4_PANEL_B: 'Žebřík jednotek', R4_PANEL_C: 'Paměťové moduly',
+  R4_LEN: 'Délka kusu', R4_SPLIT: 'ROZDĚLIT', R4_GARBAGE: 'nesmyslná data', R4_INSERT: 'VLOŽIT', R4_RACK: 'nejmenší → největší',
+  R4B_NOTE_1024: 'Pozor: někde se počítá po 1 024 (KiB, MiB, GiB). Vždy čti zadání!',
+  R4_MAP_STATION: 'Orion-7',
+  R4_INTRO: ['vylekaný', 'Navigace je prázdná! Bez hvězdné mapy nevíme, kde jsme, a SOS by nikdo nenašel. // [neutrální] Mapu nahrajeme přes tři panely. Začni panelem A, datovou páskou.'],
+  R4A_TASK: ['neutrální', 'Nastav délku kusu tak, aby z pásky vyšla smysluplná data, a dej ROZDĚLIT.'],
+  R4A_OK: ['radost', 'Funguje to! Kus o 8 bitech se jmenuje **bajt** a počítač čte data právě po bajtech. // 24 bitů jsou tedy 3 bajty. A vyšlo z nich BAJ… skoro moje jméno!'],
+  R4A_WRONG: ['přemýšlí', 'Hmm, z toho vyšla jen změť znaků. Zkus jinou délku kusu.'],
+  R4A_UNIT_Q: ['neutrální', 'Navigace hlásí velikost pásky: 3 _. Doplň správnou značku.'],
+  R4A_DONE: ['radost', 'Správně! Malé **b** je bit, velké **B** je bajt. Jedno písmenko, osmkrát větší rozdíl.'],
+  R4A_UNIT_WRONG: ['varování', 'Pozor, malé b je bit. Bitů má páska 24, bajty jsou jen 3. Která značka patří k číslu 3?'],
+  R4A_HINT_1: ['přemýšlí', 'Počítač čte data po kouscích, které mají vždy stejný počet bitů. Zkoušej různé délky.'],
+  R4A_HINT_2: ['přemýšlí', 'Ten správný kousek se jmenuje bajt. Kolik bitů má bajt? Je to v učebnici.'],
+  R4A_HINT_3: ['neutrální', 'Nastav délku kusu na 8.'],
+  R4B_INTRO: ['neutrální', 'Velká data měříme v kilobajtech, megabajtech, gigabajtech… Každý schod nahoru je 1 000× víc, jako u metrů a kilometrů. // Jen mezi bity a bajty je schod 8×. // [přemýšlí] Vidíš cedulku? Někde, třeba u operační paměti nebo ve Windows, se počítá po 1 024. My tu počítáme po 1 000, ale vždy čti zadání!'],
+  R4B_Q1: ['neutrální', 'Hvězdná mapa má 4 GB. Starý počítač přijímá velikost jen v MB. Kolik MB má mapa?'],
+  R4B_Q2: ['neutrální', 'Modul motorů hlásí 2 500 kB. Kolik je to MB?'],
+  R4B_Q3: ['neutrální', 'Kontrolní otázka: kolik bitů je 1 kB?'],
+  R4B_OK_1: ['radost', 'Přesně, 4 GB = 4 000 MB. Z větší jednotky na menší násobíš.'],
+  R4B_OK_2: ['radost', 'Ano, 2 500 kB = 2,5 MB. Z menší jednotky na větší dělíš.'],
+  R4B_OK_3: ['radost', 'Správně! 1 kB = 1 000 B a každý bajt má 8 bitů, takže 8 000 b.'],
+  R4B_WRONG: ['varování', 'To nesedí. Podívej se na žebřík: jdeš nahoru, nebo dolů? A o kolik schodů?'],
+  R4B_DONE: ['radost', 'Žebřík zvládnutý! Poslední panel: paměťové moduly.'],
+  R4B_HINT_1: ['přemýšlí', 'Najdi na žebříku jednotku, ze které jdeš, a tu, do které jdeš. Každý schod je × 1 000 nebo ÷ 1 000.'],
+  R4B_HINT_2: ['přemýšlí', 'Dolů na menší jednotku násobíš, nahoru na větší dělíš.'],
+  R4B_HINT_3_Q1: ['neutrální', 'Z GB na MB je jeden schod dolů: 4 × 1 000.'],
+  R4B_HINT_3_Q2: ['neutrální', 'Z kB na MB je jeden schod nahoru: 2 500 ÷ 1 000.'],
+  R4B_HINT_3_Q3: ['neutrální', 'Z kB na B je × 1 000, z B na b je × 8.'],
+  R4C_INTRO: ['neutrální', 'Moduly s mapou dej do stojanu od nejmenšího po největší. // [přemýšlí] Pozor, každý je popsaný jinou jednotkou. Převeď si je na stejnou, třeba na MB.'],
+  R4C_TASK: ['neutrální', 'Seřaď moduly od nejmenšího po největší a dej VLOŽIT.'],
+  R4C_WRONG: ['varování', 'Některé moduly byly na špatném místě a vyskočily. Převeď si všechny na MB.'],
+  R4C_WRONG_MB: ['přemýšlí', '12 000 vypadá jako obr, ale koukni na jednotku: **Mb** je megabit, ne megabajt! Vyděl to osmi.'],
+  R4C_DONE: ['radost', 'Všechny moduly sedí! 12 000 Mb je jen 1 500 MB, ta past tam byla schválně.'],
+  R4C_HINT_1: ['přemýšlí', 'Převeď všechny moduly na MB a pak je porovnej.'],
+  R4C_HINT_2: ['přemýšlí', 'GB na MB: × 1 000. kB na MB: ÷ 1 000. Mb na MB: ÷ 8.'],
+  R4C_HINT_3: ['neutrální', '750 MB · 1 GB = 1 000 MB · 12 000 Mb = 1 500 MB · 2 000 000 kB = 2 000 MB.'],
+  R5_DOOR_L: 'KAJUTA – VYSÍLAČ SOS', R5_DOOR_R: 'CVIČIŠTĚ',
+  R5_INTRO: ['neutrální', 'Rozcestí! Vlevo je kajuta s vysílačem SOS, vpravo cvičiště. // [přemýšlí] Vysílač se zapne až po krátkém testu. Kdo si ještě nevěří, ať zajde nejdřív do cvičiště. Test jde zkoušet pořád dokola.'],
+  R5_REVISIT: ['neutrální', 'Kajuta vlevo, cvičiště vpravo. Kam to bude?'],
+  R5_TASK: ['neutrální', 'Vlevo test a vysílač SOS, vpravo cvičiště na trénink.'],
+
+  R6_INTRO: ['neutrální', 'Tohle je kajuta a tamhle vysílač. // [varování] Chrání ho bezpečnostní test: 8 otázek, aspoň 7 musí být správně. Až budeš chtít, klikni na terminál.'],
+  R6_REVISIT: ['neutrální', 'Zkusíme test znovu? Pokaždé dostaneš jiné otázky.'],
+  R6_TASK: ['neutrální', 'Klikni na terminál a splň test. Pak vyšleme SOS.'],
+  R6_TEST_TITLE: 'Bezpečnostní test vysílače',
+  R6_TEST_START: 'Spustit test',
+  R6_TEST_PROGRESS: 'Otázka {n} z 8',
+  R6_TEST_NEXT: 'Další',
+  R6_TEST_FINISH: 'Vyhodnotit',
+  R6_RESULT: 'Výsledek: {score} z 8',
+  R6_CAT_A: 'Pojmy', R6_CAT_B: 'Dvojková → desítková', R6_CAT_C: 'Počítání ve dvojkové', R6_CAT_D: 'Jednotky',
+  R6_RETRY: 'Zkusit znovu',
+  R6_PASS: ['radost', '{score} z 8, test splněný! Vysílač je odemčený. // Klikni na VYSLAT SOS.'],
+  R6_FAIL_A: ['přemýšlí', 'Tentokrát {score} z 8, potřebujeme 7. Zádrhel byl u pojmů. // Zahraj si ve cvičišti Pexeso pojmů (D), nebo mrkni do slovníčku v učebnici.'],
+  R6_FAIL_B: ['přemýšlí', 'Tentokrát {score} z 8, potřebujeme 7. Zádrhel byl u převodu z dvojkové do desítkové. // Ve cvičišti pomůže Asteroidová střelnice (A).'],
+  R6_FAIL_C: ['přemýšlí', 'Tentokrát {score} z 8, potřebujeme 7. Zádrhel byl u počítání ve dvojkové. // Ve cvičišti si to vyzkoušej na Sčítačce (B).'],
+  R6_FAIL_D: ['přemýšlí', 'Tentokrát {score} z 8, potřebujeme 7. Zádrhel byl u jednotek. // Ve cvičišti je na to Převodník (C).'],
+  R6_HINT_1: ['přemýšlí', 'Test má 8 otázek ze čtyř oblastí: pojmy, dvojková → desítková, počítání ve dvojkové a jednotky.'],
+  R6_HINT_2: ['přemýšlí', 'Ve cvičišti si každou oblast natrénuješ na lehčích příkladech.'],
+  R6_HINT_3: ['neutrální', 'I během testu můžeš otevřít učebnici. To není podvod, to je výzkum!'],
+  R6_SOS_BUTTON: 'VYSLAT SOS',
+  R6_SOS_SENDING: 'Vysílám…',
+  R6_SOS: ['radost', 'Signál letí! Stanice Orion-7 nás slyší! // Díky! Bez tebe bych tu pořád počítal na prstech. A to žádné prsty nemám.'],
+  WIN_TITLE: 'SOS přijato!',
+  WIN_TEXT: 'Všechny systémy jsou opravené a záchranná loď ze stanice Orion-7 je na cestě. Skvělá práce!',
+  WIN_BAJTIK: ['radost', 'Tohle si zasloužíš. Napiš své jméno a vytisknu ti diplom!'],
+  WIN_NAME_LABEL: 'Tvoje jméno na diplom',
+  WIN_NAME_PLACEHOLDER: 'Jméno a příjmení',
+  WIN_GET_DIPLOMA: 'Získat diplom',
+  DIPLOMA_TITLE: 'Diplom',
+  DIPLOMA_SUBTITLE: 'za záchranu vesmírné lodi',
+  DIPLOMA_TEXT: 'za opravu reaktoru, archivu a navigace a za vyslání signálu SOS. Dvojková soustava, bity a bajty už pro tebe nejsou žádná záhada.',
+  DIPLOMA_SYSTEMS: 'Reaktor · Archiv · Navigace · Vysílač SOS',
+  DIPLOMA_DATE: 'Dne {date}',
+  DIPLOMA_SIGN: 'Bajtík, opravářský robot',
+  DIPLOMA_PS: 'PS: 01000100 01001001 01001011 01011001',
+  DIPLOMA_PRINT: 'Vytisknout / uložit jako PDF',
+
+  R7_INTRO: ['radost', 'Vítej ve cvičišti! Tady se nic nepočítá, jen se trénuje. // [neutrální] Každý automat procvičuje jednu oblast z testu. Začni ukázkou a pak to zkus.'],
+  R7_REVISIT: ['neutrální', 'Který automat to dneska bude?'],
+  R7_TASK: ['neutrální', 'Vyber si automat a trénuj. Až si budeš věřit, vrať se do kajuty k testu.'],
+  TRAIN_A_NAME: 'A · Asteroidová střelnice', TRAIN_B_NAME: 'B · Sčítačka', TRAIN_C_NAME: 'C · Převodník', TRAIN_D_NAME: 'D · Pexeso pojmů',
+  TRAIN_DEMO: 'Ukázka', TRAIN_NEXT: 'Další příklad', TRAIN_CHECK: 'Zkontrolovat',
+  TRAIN_A_INTRO: 'Zaměřovač ukazuje desítkové číslo. Sestřel asteroid, na kterém je to samé číslo ve dvojkové.',
+  TRAIN_A_DEMO: 'Cíl je 13. // Hodnoty pozic zleva jsou 8, 4, 2, 1. // Asteroid 1101: 8 + 4 + 0 + 1 = 13. Zásah!',
+  TRAIN_A_HIT: 'Zásah! {bits} = {decomp} = {target}.',
+  TRAIN_A_MISS: 'Vedle! {bits} je {value}, ne {target}.',
+  TRAIN_A_LEVELUP: 'Výborně, přidáváme pátý bit s hodnotou 16.',
+  TRAIN_B_INTRO: 'Počítej pod sebou zprava doleva, stejně jako v desítkové. Kliknutím měníš číslici 0 ↔ 1.',
+  TRAIN_B_RULES: '0 + 0 = 0 · 0 + 1 = 1 · 1 + 1 = 10 · 1 + 1 + 1 = 11',
+  TRAIN_B_DEMO_ADD: 'Sčítáme 0101 + 0011, tedy 5 + 3. // Vpravo: 1 + 1 = 2 a dvojka se ve dvojkové píše 10. Píšu 0 a 1 přenáším doleva. // Pamatuješ na počítadla v technické místnosti? Když se kolečko přetočí, poskočí to vedlejší. To je přenos. // Další sloupec: 0 + 1 + přenos 1 = 10. Zase píšu 0 a přenáším 1. // Třetí sloupec: 1 + 0 + 1 = 10, píšu 0, přenos 1. Poslední: 0 + 0 + 1 = 1. // Výsledek je 1000, tedy 8. Sedí to!',
+  TRAIN_B_DEMO_SUB: 'Odčítáme 0110 − 0011, tedy 6 − 3. // Vpravo: 0 − 1 nejde, půjčím si 1 z vedlejšího sloupce. Půjčená jednička má tady hodnotu 2, takže 2 − 1 = 1. // Druhý sloupec měl 1, ale půjčil ji, zbyla 0. 0 − 1 zase nejde, půjčím si znovu: 2 − 1 = 1. // Třetí sloupec půjčil, má 0. 0 − 0 = 0. Poslední 0 − 0 = 0. // Výsledek je 0011, tedy 3. Sedí to!',
+  TRAIN_B_OK: 'Správně! {a} {op} {b} = {result}, v desítkové {dec}.',
+  TRAIN_B_WRONG: 'Ve zvýrazněném sloupci je chyba. Nezapomeň na přenos nebo půjčku z vedlejšího sloupce.',
+  TRAIN_B_LVL_1: 'Sčítání bez přenosu', TRAIN_B_LVL_2: 'Sčítání s přenosem', TRAIN_B_LVL_3: 'Odčítání bez půjčování', TRAIN_B_LVL_4: 'Odčítání s půjčováním',
+  TRAIN_C_INTRO: 'Převáděj po žebříku. Dolů na menší jednotku násobíš, nahoru na větší dělíš.',
+  TRAIN_C_DEMO: 'Převedeme 3 GB na MB. Z GB na MB je jeden schod dolů. // Dolů se násobí 1 000: 3 × 1 000 = 3 000 MB.',
+  TRAIN_C_OK: 'Přesně! {q} = {a}.',
+  TRAIN_C_WRONG: 'Ještě ne. Správně je {a}, protože {path}.',
+  TRAIN_D_PAIRS: [['bit', 'Nejmenší jednotka informace: 0, nebo 1'], ['bajt (B)', 'Skupina 8 bitů'], ['základ soustavy', 'Kolik různých číslic soustava používá'],
+    ['poziční zápis', 'Hodnota číslice závisí na tom, na kterém místě stojí'], ['dvojková soustava', 'Jen číslice 0 a 1, jazyk počítačů'],
+    ['šestnáctková soustava', 'Číslice 0–9 a A–F, třeba barvy #FF0000'], ['přenos', 'Jednička, která při sčítání přeteče do vyššího řádu'], ['kilobajt (kB)', '1 000 bajtů']],
+  TRAIN_D_INTRO: 'Najdi dvojice: pojem a jeho vysvětlení. Otáčej vždy dvě karty.',
+  TRAIN_D_MATCH: 'Dvojice! {term}: {definition}.',
+  TRAIN_D_DONE: 'Všechny dvojice nalezené!',
+  TRAIN_D_AGAIN: 'Nové rozdání',
+
+  // banka minitestu: A a D7–D8 = [otázka, možnosti se správnou první], B = [bity, výsledek], C = [příklad, dvojkový výsledek], D = [otázka, číslo]
+  TEST_A_1: ['Kolik různých číslic používá dvojková soustava?', ['2', '1', '8', '10']],
+  TEST_A_2: ['Jak se jmenuje nejmenší jednotka informace, která může být jen 0, nebo 1?', ['bit', 'bajt', 'kilobajt', 'pixel']],
+  TEST_A_3: ['Kolik bitů má jeden bajt?', ['8', '2', '10', '16']],
+  TEST_A_4: ['Co udává základ soustavy?', ['Kolik různých číslic soustava používá', 'Největší číslo, které jde zapsat', 'Kolik míst má číslo', 'První číslici čísla']],
+  TEST_A_5: ['Ve které soustavě se zapisují barvy na webu, např. #FF0000?', ['šestnáctkové', 'dvojkové', 'osmičkové', 'šedesátkové']],
+  TEST_A_6: ['Proč počítače používají dvojkovou soustavu?', ['Jejich spínače mají jen dva stavy: proud teče, nebo neteče', 'Je to nejstarší soustava', 'Lidé mají dvě ruce', 'Čísla v ní jsou kratší než v desítkové']],
+  TEST_A_7: ['Ve které soustavě počítáme minuty a sekundy?', ['šedesátkové', 'dvanáctkové', 'desítkové', 'dvacítkové']],
+  TEST_A_8: ['Jaká je správná značka pro bajt?', ['B', 'b', 'Bt', 'bj']],
+  TEST_B_Q: 'Jaké desítkové číslo je ve dvojkové soustavě **{bits}**?',
+  TEST_B_1: ['1010', 10], TEST_B_2: ['0111', 7], TEST_B_3: ['1100', 12], TEST_B_4: ['01001', 9],
+  TEST_B_5: ['10001', 17], TEST_B_6: ['10110', 22], TEST_B_7: ['11001', 25], TEST_B_8: ['11111', 31],
+  TEST_C_Q: 'Spočítej ve dvojkové soustavě: **{priklad}**',
+  TEST_C_1: ['0101 + 0010', '111'], TEST_C_2: ['0011 + 0001', '100'], TEST_C_3: ['0110 + 0011', '1001'], TEST_C_4: ['1001 + 0110', '1111'],
+  TEST_C_5: ['1011 + 0101', '10000'], TEST_C_6: ['0111 − 0010', '101'], TEST_C_7: ['1100 − 0100', '1000'], TEST_C_8: ['1010 − 0011', '111'],
+  TEST_D_1: ['3 GB = ? MB', 3000], TEST_D_2: ['5 000 MB = ? GB', 5], TEST_D_3: ['1 B = ? b', 8], TEST_D_4: ['2 MB = ? kB', 2000],
+  TEST_D_5: ['500 MB = ? GB', 0.5], TEST_D_6: ['16 b = ? B', 2],
+  TEST_D_7: ['Který soubor je největší?', ['1,5 GB', '1 200 MB', '800 000 kB', '9 000 Mb']],
+  TEST_D_8: ['Internet má rychlost 80 Mb/s. Kolik MB stáhne za 1 sekundu?', ['10', '80', '640', '8']],
+
+  R4_DONE: ['radost', 'Mapa je nahraná! Nejbližší je stanice Orion-7, tam pošleme SOS. // Navigace opravená. Vysílač je kousek odsud.'],
+  R3_CARD_16: 'Barvy na webu, např. #FF0000 = červená',
+  R3_CARD_10: 'Ceny, známky, měření a běžné počítání lidí',
+  R3_CARD_60: 'Minuty, sekundy, úhly a zeměpisné souřadnice',
+  R3_CARD_2: 'Vše uvnitř počítačů a telefonů: programy, fotky, hudba',
+  R3_CARD_20: 'Francouzské číslovky: 80 = quatre-vingts (4 × 20)',
+  R3_CARD_8: 'Kódy transpondérů v letadlech, např. 7700 = nouze',
+  R3_CARD_12: 'Tucet vajec, 12 měsíců, 12 hodin na ciferníku',
+  // knihy: [název hřbetu, text]
+  R3_BOOK_2: ['Uvnitř počítače', 'Počítač je postavený z miliard drobných spínačů, tranzistorů. Každý umí jen dva stavy: proud teče, nebo neteče. Proto počítače používají **dvojkovou soustavu**, která má jen dvě číslice: 0 a 1. Všechno, co v telefonu nebo počítači máš, je uložené jako dlouhá řada nul a jedniček: program, fotka, písnička i tahle hra. Třeba písmeno A je pro počítač 01000001.'],
+  R3_BOOK_8: ['Řízení letového provozu', 'Každé letadlo má **transpondér**, přístroj, který radaru hlásí čtyřmístný kód. Číslice v kódu jdou jen od 0 do 7, je to tedy **osmičková soustava** a kódů existuje 8 × 8 × 8 × 8 = 4 096. Některé kódy mají zvláštní význam: 7700 znamená nouzi na palubě, 7600 poruchu rádia. Osmičkovou soustavu potkáš i u práv k souborům na serverech, kde zápis 755 říká, kdo smí soubor číst a měnit.'],
+  R3_BOOK_10: ['Obchod a měření', 'Ceny v obchodě, známky ve škole, délka v metrech nebo teplota: to všechno lidé zapisují v **desítkové soustavě** s číslicemi 0 až 9. Je to soustava, kterou používá skoro celý svět. Postavená je na ní i soustava jednotek: 1 kilometr je 1 000 metrů a 1 metr je 100 centimetrů, vždy násobky deseti. Když vidíš číslo bez dalšího označení, je skoro jistě desítkové.'],
+  R3_BOOK_12: ['Kalendáře a tucty', 'Rok má 12 měsíců a ciferník hodin 12 hodin. Vejce se dodnes prodávají po **tuctech**: tucet je 12 kusů a veletucet 12 × 12 = 144. Dvanáctka se dá dělit 2, 3, 4 i 6, a proto se hodí na dělení věcí na stejné díly. Stopy **dvanáctkové soustavy** jsou i v anglických mírách: jedna stopa má 12 palců.'],
+  R3_BOOK_16: ['Barvy na obrazovce', 'Každá barva na obrazovce se míchá ze tří světel: červeného, zeleného a modrého. Síla každého se zapisuje dvěma číslicemi **šestnáctkové soustavy** od 00 do FF. Ta má číslice 0–9 a pak písmena A–F (A = 10, F = 15). #FF0000 je tedy naplno červená a nic ostatního, #FFFFFF bílá a #000000 černá. Šestnáctkově se zapisují i adresy síťových karet (MAC adresy).'],
+  R3_BOOK_20: ['Jazyky světa', 'Některé jazyky dodnes počítají po dvacítkách, ve **dvacítkové soustavě**. Francouz neřekne osmdesát, ale quatre-vingts, „čtyři dvacítky“, a devadesát je quatre-vingt-dix, „čtyři dvacítky a deset“. Dvacítky mají v číslovkách schované i Dánové. Ve dvacítkové soustavě počítali také Mayové a jejich kalendář.'],
+  R3_BOOK_60: ['Čas a mapy', 'Minuta má 60 sekund a hodina 60 minut: čas zapisujeme v **šedesátkové soustavě**. Stejně se dělí úhly: kruh má 360 stupňů a stupeň 60 úhlových minut. Proto zeměpisná poloha na mapě vypadá třeba takto: 49° 12′ 30″. Šedesátku vymysleli už staří Babyloňané, protože jde dělit 2, 3, 4, 5, 6, 10, 12, 15, 20 i 30.'],
+};
+
+// ===== UČEBNICE (doslova z dokumentu Bajtík – Učebnice; ~~~ = blok s neproporcionálním písmem) =====
+const TEXTBOOK = [
+{ title: 'Kapitola 1: Číselné soustavy', md: `
+Číselná soustava je pravidlo, jak zapsat čísla pomocí několika znaků. Těm znakům říkáme **číslice**. Číslice je jen znak (třeba 7), číslo je hodnota, kterou z číslic poskládáme (třeba 347).
+
+### Základ soustavy
+
+**Základ** říká, kolik různých číslic soustava má. Nejvyšší číslice je vždy o jedna menší než základ.
+
+| Soustava | Základ | Číslice |
+| --- | --- | --- |
+| Dvojková | 2 | 0, 1 |
+| Desítková | 10 | 0–9 |
+| Šestnáctková | 16 | 0–9, A, B, C, D, E, F |
+
+Aby bylo jasné, ve které soustavě číslo je, píše se základ malým číslem vpravo dole: 101₂ je dvojkové číslo, 101₁₀ desítkové. Jsou to dvě úplně jiné hodnoty!
+
+### Poziční zápis
+
+V čísle 347 má každá číslice jinou váhu podle toho, **kde stojí**:
+
+~~~
+  3      4      7
+  ×100   ×10    ×1
+= 300  + 40   + 7  = 347
+~~~
+
+Každé místo směrem doleva má 10× větší hodnotu, protože základ je 10. V jiné soustavě to funguje úplně stejně, jen je každé místo doleva tolikrát větší, kolik je základ: ve dvojkové 2×, v šestnáctkové 16×.
+
+### Přetečení
+
+Když na nějakém místě dojdou číslice a přičteš 1, místo se vynuluje a místo vlevo se zvětší o 1. Říká se tomu **přetečení** a jednička, která „přeskočí“ doleva, je **přenos**.
+
+- Desítková: 9 + 1 = **10**, 99 + 1 = **100**
+- Dvojková: 1 + 1 = **10**, 11 + 1 = **100**
+
+Přesně tohle ukazovala počítadla v technické místnosti: když se kolečko přetočí na nulu, vedlejší kolečko poskočí. Ve dvojkové se to děje nejčastěji, protože tam je číslic nejmíň.
+
+**Bajtíkův tip:** Ve dvojkové soustavě se „10“ čte „jedna nula“, ne „deset“. Má totiž hodnotu dvě.
+` },
+{ title: 'Kapitola 2: Dvojková soustava', md: `
+Dvojková (binární) soustava má jen dvě číslice, 0 a 1. Jedné takové číslici se říká **bit**. Počítače ji používají, protože jejich spínače mají jen dva stavy: proud teče (1), nebo neteče (0).
+
+### Hodnoty pozic
+
+Každé místo směrem doleva má **dvojnásobnou** hodnotu. Pro pět bitů:
+
+| Pozice | 5. | 4. | 3. | 2. | 1. |
+| --- | --- | --- | --- | --- | --- |
+| Hodnota | 16 | 8 | 4 | 2 | 1 |
+
+To jsou přesně hodnoty pák v rozvodně. Další pozice by měly hodnotu 32, 64, 128…
+
+### Jak dvojkové číslo přečíst
+
+Napiš si číslo pod hodnoty pozic a sečti hodnoty tam, kde je **1**. Kde je 0, nepočítáš nic.
+
+~~~
+Hodnota:  16   8   4   2   1
+Číslo:     1   0   0   1   1
+          16 + 0 + 0 + 2 + 1 = 19
+~~~
+
+Takže 10011₂ = 19₁₀. Nuly na začátku hodnotu nemění: 00101 je totéž co 101, tedy 5.
+
+### Jak číslo zapsat dvojkově
+
+Postupuj zleva, od největší hodnoty. U každé se zeptej: **vejde se do toho, co zbývá?**
+
+~~~
+Chci zapsat 19.
+16 → vejde se (19 − 16 = zbývá 3)  → 1
+ 8 → nevejde se                    → 0
+ 4 → nevejde se                    → 0
+ 2 → vejde se  (3 − 2 = zbývá 1)   → 1
+ 1 → vejde se  (1 − 1 = zbývá 0)   → 1
+Výsledek: 10011
+~~~
+
+### Čísla 0–15 ve dvojkové
+
+| Desítkově | Dvojkově | Desítkově | Dvojkově |
+| --- | --- | --- | --- |
+| 0 | 0000 | 8 | 1000 |
+| 1 | 0001 | 9 | 1001 |
+| 2 | 0010 | 10 | 1010 |
+| 3 | 0011 | 11 | 1011 |
+| 4 | 0100 | 12 | 1100 |
+| 5 | 0101 | 13 | 1101 |
+| 6 | 0110 | 14 | 1110 |
+| 7 | 0111 | 15 | 1111 |
+
+### Kolik čísel se vejde
+
+Každý bit navíc zdvojnásobí, kolik čísel jde zapsat. Čtyři bity zvládnou 16 čísel (0–15), pět bitů 32 čísel (0–31) a osm bitů 256 čísel (0–255). Největší číslo jsou vždy samé jedničky: 11111 = 31.
+
+**Bajtíkův tip:** Dvojkové číslo, které končí 1, je vždy liché. Jen poslední pozice má totiž lichou hodnotu 1.
+` },
+{ title: 'Kapitola 3: Soustavy kolem nás', md: `
+Lidé dnes nejvíc používají desítkovou soustavu a počítače dvojkovou, ale v běžném životě potkáš i další. Často ani nevíš, že s nimi počítáš.
+
+| Základ | Název | Kde ji dnes potkáš |
+| --- | --- | --- |
+| 2 | dvojková | Všechno uvnitř počítačů a telefonů: programy, fotky, hudba |
+| 8 | osmičková | Kódy transpondérů v letadlech (7700 = nouze), práva k souborům na serverech (755) |
+| 10 | desítková | Ceny, známky, měření, běžné počítání |
+| 12 | dvanáctková | Tucet (12 kusů), 12 měsíců, 12 hodin na ciferníku |
+| 16 | šestnáctková | Barvy na webu (#FF0000), adresy síťových karet |
+| 20 | dvacítková | Francouzské číslovky: 80 = quatre-vingts, „čtyři dvacítky“ |
+| 60 | šedesátková | Minuty a sekundy, úhly, zeměpisné souřadnice (49° 12′ 30″) |
+
+Podrobnosti ke každé najdeš v knihách v archivu.
+
+### Šestnáctková soustava
+
+Šestnáctková (hexadecimální) soustava potřebuje 16 číslic. Číslic 0–9 je jen deset, a tak si půjčuje písmena:
+
+| Číslice | A | B | C | D | E | F |
+| --- | --- | --- | --- | --- | --- | --- |
+| Hodnota | 10 | 11 | 12 | 13 | 14 | 15 |
+
+Poziční zápis funguje stejně jako jinde, jen je každé místo doleva 16× větší. Největší dvoumístné číslo je FF:
+
+~~~
+F        F
+15 × 16 + 15 × 1 = 255
+~~~
+
+**Proč ji mají programátoři rádi?** Jedna šestnáctková číslice přesně odpovídá čtyřem bitům, takže dvě číslice popíšou celý bajt (8 bitů). Místo dlouhého 11111111 stačí napsat FF. Šestnáctková je tak zkratka, jak lidé zapisují dvojková data.
+
+**Barvy na webu:** zápis #RRGGBB říká, jak silně svítí červená (RR), zelená (GG) a modrá (BB), vždy od 00 (vůbec) do FF (naplno).
+
+| Zápis | Barva |
+| --- | --- |
+| #FF0000 | červená |
+| #00FF00 | zelená |
+| #0000FF | modrá |
+| #FFFFFF | bílá (všechno naplno) |
+| #000000 | černá (nic nesvítí) |
+
+**Bajtíkův tip:** Aby se šestnáctková čísla nepletla s desítkovými, píše se před ně často # (u barev) nebo 0x (v programování), třeba 0xFF.
+` },
+{ title: 'Kapitola 4: Bity, bajty a jednotky', md: `
+Bit je nejmenší kousek informace: 0, nebo 1. Počítač ale data čte a ukládá po skupinách 8 bitů a té se říká **bajt**.
+
+~~~
+1 bajt = 8 bitů
+01000001  ← jeden bajt, pro počítač písmeno A
+~~~
+
+### Malé b a velké B
+
+| Značka | Znamená | Příklad |
+| --- | --- | --- |
+| **b** | bit | rychlost internetu 100 Mb/s |
+| **B** | bajt | velikost souboru 3 MB |
+
+Jedno písmenko, ale osmkrát velký rozdíl. Vždycky se dívej, jestli je B velké, nebo malé!
+
+### Předpony: kilo, mega, giga, tera
+
+Velká data se měří s předponami, stejně jako metry a kilometry. Každá předpona je **1 000× víc** než ta předchozí.
+
+| Jednotka | Značka | Kolik bajtů | Přibližně odpovídá |
+| --- | --- | --- | --- |
+| bajt | B | 1 | jedno písmeno |
+| kilobajt | kB | 1 000 | krátká zpráva |
+| megabajt | MB | 1 000 000 | fotka z mobilu (asi 3 MB) |
+| gigabajt | GB | 1 000 000 000 | film (asi 2–5 GB) |
+| terabajt | TB | 1 000 000 000 000 | velký pevný disk |
+
+### Žebřík jednotek
+
+~~~
+TB
+ ↕  × 1 000 / ÷ 1 000
+GB
+ ↕  × 1 000 / ÷ 1 000
+MB
+ ↕  × 1 000 / ÷ 1 000
+kB
+ ↕  × 1 000 / ÷ 1 000
+B
+ ↕  × 8 / ÷ 8
+b
+~~~
+
+- Dolů, na **menší** jednotku: **násobíš**. 4 GB = 4 × 1 000 = 4 000 MB.
+- Nahoru, na **větší** jednotku: **dělíš**. 2 500 kB = 2 500 ÷ 1 000 = 2,5 MB.
+- O dva schody: násobíš (dělíš) dvakrát. 2 GB = 2 × 1 000 × 1 000 = 2 000 000 kB.
+- Bity a bajty se stejnou předponou: dělíš nebo násobíš 8. 16 Mb = 16 ÷ 8 = 2 MB.
+
+**Příklad ze života:** internet má rychlost 80 Mb/s (megabitů za sekundu). Za sekundu tedy stáhneš 80 ÷ 8 = **10 MB**. Proto se stahování zdá pomalejší, než slibuje reklama.
+
+### Pozor: někdy se počítá po 1 024
+
+Počítače rády počítají s mocninami dvojky a 2¹⁰ = 1 024 je skoro 1 000. Proto se někde místo 1 000 používá 1 024. Aby se to nepletlo, mají tyto jednotky vlastní názvy: **kibibajt (KiB)**, **mebibajt (MiB)**, **gibibajt (GiB)**.
+
+| Kde | Jak počítá |
+| --- | --- |
+| Výrobci disků a flashek, macOS, rychlost internetu | po 1 000 |
+| Operační paměť (RAM) | po 1 024 |
+| Windows (Průzkumník souborů) | po 1 024, ale píše kB, MB, GB |
+
+Proto nový disk s 1 TB ukazuje ve Windows jen asi 931 GB. Nikdo tě neokradl, jen se počítá jinak.
+
+**V téhle hře a ve škole počítáme po 1 000**, pokud zadání neřekne jinak. Vždycky si ale zadání pořádně přečti!
+` },
+{ title: 'Kapitola 5: Počítání ve dvojkové soustavě', md: `
+Ve dvojkové se sčítá a odčítá pod sebou úplně stejně jako v desítkové: zprava doleva, sloupec po sloupci. Rozdíl je jen v tom, že přetéká už při dvojce.
+
+### Sčítání
+
+| Sloupec | Výsledek | Píšeš | Přenášíš |
+| --- | --- | --- | --- |
+| 0 + 0 | 0 | 0 | – |
+| 0 + 1 | 1 | 1 | – |
+| 1 + 1 | 10 (dvě) | 0 | 1 |
+| 1 + 1 + přenos 1 | 11 (tři) | 1 | 1 |
+
+**Příklad:** 0101 + 0011 (5 + 3)
+
+~~~
+Přenos:    1 1 1
+           0 1 0 1
+         + 0 0 1 1
+         ---------
+           1 0 0 0
+~~~
+
+1. Vpravo: 1 + 1 = 10. Píšu 0, přenáším 1.
+2. Druhý sloupec: 0 + 1 + 1 = 10. Píšu 0, přenáším 1.
+3. Třetí sloupec: 1 + 0 + 1 = 10. Píšu 0, přenáším 1.
+4. Čtvrtý sloupec: 0 + 0 + 1 = 1. Píšu 1.
+
+Výsledek 1000₂ = 8. A opravdu 5 + 3 = 8.
+
+### Odčítání
+
+| Sloupec | Výsledek |
+| --- | --- |
+| 0 − 0 | 0 |
+| 1 − 0 | 1 |
+| 1 − 1 | 0 |
+| 0 − 1 | nejde, půjčíš si 1 z vedlejšího sloupce vlevo: 10 − 1 = 1 |
+
+Půjčená jednička má v pravém sloupci hodnotu **dvě** (protože každé místo doleva je 2× větší). Sloupci, ze kterého si půjčuješ, pak 1 ubude.
+
+**Příklad:** 0110 − 0011 (6 − 3)
+
+~~~
+           0 1 1 0
+         − 0 0 1 1
+         ---------
+           0 0 1 1
+~~~
+
+1. Vpravo: 0 − 1 nejde. Půjčím si z druhého sloupce: 2 − 1 = 1.
+2. Druhý sloupec měl 1, půjčil ji, zbyla 0. 0 − 1 zase nejde, půjčím si ze třetího: 2 − 1 = 1.
+3. Třetí sloupec měl 1, půjčil ji, zbyla 0. 0 − 0 = 0.
+4. Čtvrtý sloupec: 0 − 0 = 0.
+
+Výsledek 0011₂ = 3. A opravdu 6 − 3 = 3.
+
+**Bajtíkův tip:** Kontroluj se v desítkové. Převeď obě čísla i výsledek na desítková a ověř, že příklad sedí.
+` },
+{ title: 'Kapitola 6: Slovníček pojmů', md: `
+| Pojem | Vysvětlení |
+| --- | --- |
+| bajt (B) | Skupina 8 bitů. Počítač po bajtech čte a ukládá data. |
+| bit (b) | Nejmenší jednotka informace: 0, nebo 1. |
+| číslice | Znak, ze kterého skládáme čísla (např. 0–9 nebo 0 a 1). |
+| desítková soustava | Soustava se základem 10 a číslicemi 0–9. Používají ji lidé. |
+| dvojková soustava | Soustava se základem 2 a číslicemi 0 a 1. Používají ji počítače. |
+| gigabajt (GB) | 1 000 megabajtů. |
+| kibibajt (KiB) | 1 024 bajtů. Používá se třeba u operační paměti. |
+| kilobajt (kB) | 1 000 bajtů. |
+| megabajt (MB) | 1 000 kilobajtů. |
+| poziční zápis | Hodnota číslice závisí na místě, kde v čísle stojí. |
+| přenos | Jednička, která při sčítání přeteče do vyššího řádu (doleva). |
+| přetečení | Když na jednom místě dojdou číslice, místo se vynuluje a místo vlevo se zvětší o 1. |
+| půjčka | Při odčítání si vezmeš 1 z vedlejšího sloupce vlevo, protože číslo nestačí. |
+| šestnáctková soustava | Soustava se základem 16 a číslicemi 0–9 a A–F. Barvy na webu, zkratka pro bajty. |
+| terabajt (TB) | 1 000 gigabajtů. |
+| základ soustavy | Kolik různých číslic soustava používá. |
+` },
+];
+
+// ===== POMOCNÉ =====
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const P = new URLSearchParams(location.search);
+const DEBUG = P.get('debug') === '1';
+const SAVE_KEY = 'bajtik-save-v1';
+
+// česká typografie: nezlomitelná mezera po jednopísmenných předložkách/spojkách a v tisících
+const PREP = /(^|[\s(„>])([kKsSvVzZoOuUaAiI]) /g;
+const typo = s => s.replace(PREP, '$1$2 ').replace(PREP, '$1$2 ').replace(/(\d) (?=\d{3}(?!\d))/g, '$1 ');
+const inline = s => typo(s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'));
+const T = id => typo(TEXTS[id]);
+
+function svgEl(str) {
+  const g = document.createElementNS(NS, 'g');
+  g.innerHTML = str;
+  return g.firstElementChild;
+}
+
+// mini-markdown učebnice: ###, tabulky, ~~~ bloky, odrážky, číslované seznamy, **tučně**
+function md(src) {
+  let h = '', mode = '', row = 0;
+  const close = () => { h += { ul: '</ul>', ol: '</ol>', table: '</table>' }[mode] || ''; mode = ''; };
+  for (const l of src.trim().split('\n')) {
+    if (mode === 'pre') { if (l.startsWith('~~~')) { h += '</pre>'; mode = ''; } else h += l + '\n'; continue; }
+    const m = l.startsWith('~~~') ? 'pre' : l.startsWith('|') ? 'table' : l.startsWith('- ') ? 'ul' : /^\d+\. /.test(l) ? 'ol' : '';
+    if (m !== mode) { close(); mode = m; row = 0; h += m && `<${m}>`; if (m === 'pre') continue; }
+    if (m === 'table') {
+      if (/^\|\s*-/.test(l)) continue;
+      const tag = row++ ? 'td' : 'th';
+      h += '<tr>' + l.slice(1, -1).split('|').map(c => `<${tag}>${inline(c.trim())}</${tag}>`).join('') + '</tr>';
+    } else if (m) h += `<li>${inline(l.replace(/^(- |\d+\. )/, ''))}</li>`;
+    else if (l.startsWith('### ')) h += `<h3>${inline(l.slice(4))}</h3>`;
+    else if (l.trim()) h += `<p>${inline(l)}</p>`;
+  }
+  close();
+  return h;
+}
+
+// sedmisegmentová číslice 0–9, A–F
+const SEG = { 0: 'abcdef', 1: 'bc', 2: 'abdeg', 3: 'abcdg', 4: 'bcfg', 5: 'acdfg', 6: 'acdefg', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg',
+  A: 'abcefg', B: 'cdefg', C: 'adef', D: 'bcdeg', E: 'adefg', F: 'aefg' };
+function seg7(ch, x, y, w = 36, h = 64) {
+  const t = w * .2, v = h / 2 - t * 1.5 - 3, hw = w - 2 * t - 3, on = SEG[ch] || '';
+  const r = { a: [t + 1.5, 0, hw, t], g: [t + 1.5, h / 2 - t / 2, hw, t], d: [t + 1.5, h - t, hw, t],
+    f: [0, t + 1.5, t, v], e: [0, h / 2 + t / 2 + 1.5, t, v], b: [w - t, t + 1.5, t, v], c: [w - t, h / 2 + t / 2 + 1.5, t, v] };
+  return `<g class="seg" transform="translate(${x} ${y})">` + Object.entries(r).map(([k, [a, b, c, d]]) =>
+    `<rect x="${a}" y="${b}" width="${c}" height="${d}" rx="${t / 2}" class="${on.includes(k) ? 'on' : 'off'}"/>`).join('') + '</g>';
+}
+
+// společné kusy scén
+const wall = () => `<rect width="1600" height="900" fill="#1B2A41"/>
+  <rect y="780" width="1600" height="120" fill="#2C3E5A"/><rect y="778" width="1600" height="6" fill="#3D5578"/>`;
+
+function door(id, x, y, w, h) {
+  const iw = w - 28, ih = h - 14;
+  return `<g id="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+    <svg x="${x + 14}" y="${y + 14}" width="${iw}" height="${ih}" overflow="hidden"><rect width="${iw}" height="${ih}" fill="#0F1B2D"/>
+      <g class="leaf"><rect width="${iw}" height="${ih}" rx="6" fill="#3D5578" stroke="#2C3E5A" stroke-width="3"/>
+        <rect x="18" y="24" width="${iw - 36}" height="${ih / 2 - 40}" rx="8" fill="#2C3E5A"/>
+        <rect x="18" y="${ih / 2 + 16}" width="${iw - 36}" height="${ih / 2 - 40}" rx="8" fill="#2C3E5A"/>
+        <rect x="${iw - 34}" y="${ih / 2 - 30}" width="14" height="60" rx="7" fill="#8A9BB0" stroke="#6F8096" stroke-width="2"/></g></svg></g>`;
+}
+function fx(el, ok) {   // správně: zelená záře, špatně: zatřesení + červené bliknutí
+  el.classList.remove('fx-ok', 'fx-bad');
+  void el.getBoundingClientRect();
+  el.classList.add(ok ? 'fx-ok' : 'fx-bad');
+}
+function openDoor(id, cb) {
+  $(`#${id} .leaf`).classList.add('open');
+  setTimeout(cb, 300);
+}
+
+// ===== STAV =====
+const fresh = () => ({ room: 1, visited: [], r2: { solved: 0 }, r3: { locked: [] }, r4: { a: false, b: 0, c: false }, testPassed: false, sos: false, playerName: '' });
+let S = fresh();
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); return s && s.room ? { ...fresh(), ...s } : null; } catch (e) { return null; } }
+// ?room=N: místnost N se splněnými předchozími
+function stateForRoom(n) {
+  const s = fresh();
+  s.room = n;
+  for (let i = 1; i < n; i++) s.visited.push(i);
+  if (n > 2) s.r2.solved = 6;
+  if (n > 3) s.r3.locked = [2, 8, 10, 12, 16, 20, 60];
+  if (n > 4) s.r4 = { a: true, b: 3, c: true };
+  if (n > 7) { s.testPassed = true; s.sos = true; }
+  return s;
+}
+const systems = () => [S.r2.solved >= 6, S.r3.locked.length >= 7, S.r4.a && S.r4.b >= 3 && S.r4.c, S.sos];
+
+// ===== KLIKACÍ KRUHY =====
+function hot(el, cx, cy, fn, locked = false, cls = '') {
+  const g = svgEl(`<g class="hot ${cls}${locked ? ' locked' : ''}"><circle class="hit" cx="${cx}" cy="${cy}" r="34"/><circle class="ring" cx="${cx}" cy="${cy}" r="28"/></g>`);
+  $('#hot').append(g);
+  const targets = [g, el].filter(Boolean);
+  const over = () => g.classList.add('hover'), out = () => g.classList.remove('hover');
+  const click = e => { e.stopPropagation(); fn(); };
+  for (const t of targets) {
+    t.classList.add('clickable');
+    t.addEventListener('click', click); t.addEventListener('pointerenter', over); t.addEventListener('pointerleave', out);
+  }
+  return {
+    lock(b) { g.classList.toggle('locked', b); },
+    remove() {
+      for (const t of targets) {
+        t.classList.remove('clickable');
+        t.removeEventListener('click', click); t.removeEventListener('pointerenter', over); t.removeEventListener('pointerleave', out);
+      }
+      g.classList.add('gone');
+      setTimeout(() => g.remove(), 300);
+    },
+  };
+}
+
+// ===== BAJTÍK =====
+const bajtikEl = $('#bajtik');
+let bajtikPos = [1350, 790], bajtikHot = null;
+const EYE = 'fill="#5AC8FA"', LINE = 'fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"';
+const EYES = {
+  'neutrální': `<ellipse cx="55" cy="68" rx="7" ry="11" ${EYE}/><ellipse cx="85" cy="68" rx="7" ry="11" ${EYE}/>`,
+  'radost': `<path d="M46 74Q55 56 64 74M76 74Q85 56 94 74" ${LINE}/>`,
+  'přemýšlí': `<ellipse cx="52" cy="68" rx="7" ry="11" ${EYE}/><ellipse cx="78" cy="71" rx="4" ry="6" ${EYE}/>
+    <path d="M94 56q0-7 6-7t6 6q0 4-6 6v4" fill="none" stroke="#5AC8FA" stroke-width="3" stroke-linecap="round"/><circle cx="100" cy="74" r="2" ${EYE}/>`,
+  'varování': `<ellipse cx="55" cy="71" rx="7" ry="9" ${EYE}/><ellipse cx="85" cy="71" rx="7" ry="9" ${EYE}/><path d="M45 57H65M75 57H95" ${LINE}/>`,
+  'vylekaný': `<circle cx="55" cy="68" r="12" fill="none" stroke="#5AC8FA" stroke-width="4"/><circle cx="85" cy="68" r="12" fill="none" stroke="#5AC8FA" stroke-width="4"/>
+    <circle cx="55" cy="68" r="3" ${EYE}/><circle cx="85" cy="68" r="3" ${EYE}/>`,
+  'off': '',
+};
+function face(e) {
+  const eyes = $('#eyes');
+  eyes.innerHTML = EYES[e];
+  eyes.classList.remove('scared');
+  if (e === 'vylekaný') { void eyes.getBoundingClientRect(); eyes.classList.add('scared'); }
+}
+function placeBajtik([x, y], n) {
+  bajtikPos = [x, y];
+  bajtikEl.setAttribute('transform', `translate(${x - 70} ${y - 180})`);
+  $('#leds').innerHTML = [...n.toString(2).padStart(8, '0')].map((b, i) =>
+    `<circle cx="${35 + i * 10}" cy="121" r="3.6" fill="${b === '1' ? '#3DDC97' : '#0F1B2D'}"/>`).join('');
+}
+function bajtikClick() {
+  openMenu();
+  room().onBajtik?.();
+}
+const showBajtikRing = () => { bajtikHot = hot(bajtikEl, bajtikPos[0] - 110, bajtikPos[1] - 100, bajtikClick, false, 'bj'); };
+
+// ===== ŘEČOVÁ BUBLINA =====
+const bubble = $('#bubble'), ghost = $('#bubble .ghost'), typed = $('#bubble .typed'), nextBtn = $('#bubble .next');
+nextBtn.textContent = TEXTS.G_NEXT;
+let sp = null;
+
+function say(id, { vars = {}, then } = {}) {
+  let [e, t] = TEXTS[id];
+  const pages = t.replace(/\{(\w+)\}/g, (_, k) => vars[k]).split(' // ').map(p => {
+    const m = p.match(/^\[(.+?)\] /);
+    if (m) { e = m[1]; p = p.slice(m[0].length); }
+    return { e, html: inline(p) };
+  });
+  hideBubble();
+  sp = { pages, i: 0, then };
+  showPage();
+}
+function showPage() {
+  const p = sp.pages[sp.i];
+  face(p.e);
+  sp.toks = p.html.match(/<[^>]+>|[^]/gu);
+  sp.n = 0; sp.done = false;
+  ghost.innerHTML = p.html; typed.innerHTML = '';
+  nextBtn.hidden = true;
+  bubble.hidden = false;
+  const left = Math.max(20, Math.min(bajtikPos[0] - 240, 1600 - 500));
+  bubble.style.left = left + 'px';
+  bubble.style.bottom = (900 - bajtikPos[1] + 210) + 'px';
+  bubble.style.setProperty('--tail', (bajtikPos[0] - left) + 'px');
+  sp.timer = setInterval(() => {   // 40 znaků/s, tagy se vkládají celé
+    do sp.n++; while (sp.n < sp.toks.length && sp.toks[sp.n - 1].length > 1);
+    typed.innerHTML = sp.toks.slice(0, sp.n).join('');
+    if (sp.n >= sp.toks.length) finishPage();
+  }, 25);
+}
+function finishPage() {
+  clearInterval(sp.timer);
+  typed.innerHTML = sp.pages[sp.i].html;
+  sp.done = true;
+  nextBtn.hidden = !(sp.i < sp.pages.length - 1 || sp.then);
+}
+function hideBubble() {
+  if (sp) clearInterval(sp.timer);
+  sp = null;
+  bubble.hidden = true;
+}
+bubble.addEventListener('click', e => {
+  e.stopPropagation();
+  if (!sp) return;
+  if (!sp.done) finishPage();
+  else if (nextBtn.hidden) hideBubble();
+});
+nextBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  if (!sp) return;
+  if (sp.i < sp.pages.length - 1) { sp.i++; showPage(); return; }
+  const then = sp.then;
+  hideBubble();
+  then?.();
+});
+
+// ===== MENU A NÁPOVĚDA =====
+const menu = $('#menu');
+function openMenu() {
+  menu.innerHTML = '';
+  for (const [id, fn] of [['G_MENU_TASK', task], ['G_MENU_HINT', hint], ['G_MENU_BOOK', () => openBook()]]) {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = TEXTS[id];
+    b.onclick = e => { e.stopPropagation(); closeMenu(); fn(); };
+    menu.append(b);
+  }
+  const [x, y] = bajtikPos;
+  menu.style.left = menu.style.right = '';
+  if (x > 800) menu.style.right = (1600 - x + 90) + 'px'; else menu.style.left = (x + 90) + 'px';
+  menu.style.bottom = (900 - y + 10) + 'px';
+  menu.hidden = false;
+}
+const closeMenu = () => { menu.hidden = true; };
+
+function task() {
+  const t = room().task?.();
+  if (t) say(t, { vars: room().vars?.() });
+}
+let hintLvl = 0;   // nové zadání v místnosti → resetHint()
+const resetHint = () => { hintLvl = 0; };
+function hint() {
+  const hs = room().hints?.() || [];
+  if (!hs.length) return;
+  const again = hintLvl === 3;
+  hintLvl = Math.min(hintLvl + 1, 3);
+  say(hs[Math.min(hintLvl, hs.length) - 1], { vars: room().vars?.(), then: again ? () => say('G_HINT_LAST') : undefined });
+}
+
+// ===== UČEBNICE =====
+const book = $('#book');
+function openBook(ch = room().book) {
+  closeMenu();
+  const nav = book.querySelector('nav'), art = book.querySelector('article');
+  nav.innerHTML = `<h2>${T('G_BOOK_TITLE')}</h2>`;
+  TEXTBOOK.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.textContent = typo(c.title);
+    b.className = i === ch ? 'sel' : '';
+    b.onclick = () => openBook(i);
+    nav.append(b);
+  });
+  art.innerHTML = ch == null ? '' : `<h2>${typo(TEXTBOOK[ch].title)}</h2>` + md(TEXTBOOK[ch].md);
+  art.scrollTop = 0;
+  book.hidden = false;
+}
+const closeBook = () => { book.hidden = true; };
+book.querySelector('.x').title = TEXTS.G_CLOSE;
+book.querySelector('.x').onclick = closeBook;
+book.addEventListener('click', e => { e.stopPropagation(); if (e.target === book) closeBook(); });
+$('#bookbtn').onclick = e => { e.stopPropagation(); openBook(); };
+$('#bookbtn').title = TEXTS.G_MENU_BOOK;
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('#tome').hidden) $('#tome').hidden = true;
+  else if (!book.hidden) closeBook(); else closeMenu();
+});
+$('#stage').addEventListener('click', () => closeMenu());
+
+// ===== KLÁVESNICE VE HŘE =====
+const pad = $('#numpad');
+let padCb = null, padVal = '';
+// přijímá desetinnou čárku i tečku a ignoruje mezery: '4 000' → 4000, '2,5' → 2.5
+const parseNum = s => { const t = s.replace(/\s/g, '').replace(',', '.'); return /^\d+(\.\d+)?$/.test(t) ? +t : NaN; };
+function numpad(x, y, onSubmit, keys = '789456123,0') {
+  padVal = ''; padCb = onSubmit;
+  pad.innerHTML = '<div class="disp"></div><div class="keys">' +
+    [...keys].map(k => `<button class="btn" data-k="${k}">${k}</button>`).join('') +
+    `<button class="btn" data-k="del">${T('G_KEY_DELETE')}</button><button class="btn dark ok" data-k="ok">${T('G_KEY_CONFIRM')}</button></div>`;
+  pad.style.left = x + 'px'; pad.style.top = y + 'px';
+  pad.dataset.keys = keys;
+  pad.hidden = false;
+  padKey();
+}
+function padKey(k) {
+  if (k === 'del') padVal = padVal.slice(0, -1);
+  else if (k === 'ok') { if (padVal.trim()) padCb(padVal); }
+  else if (k && padVal.length < 12) padVal += k;
+  pad.querySelector('.disp').textContent = padVal;
+}
+const padHide = () => { pad.hidden = true; padCb = null; };
+const padClear = () => { padVal = ''; padKey(); };
+pad.addEventListener('click', e => { e.stopPropagation(); const k = e.target.dataset.k; if (k) padKey(k); });
+document.addEventListener('keydown', e => {
+  if (pad.hidden || !book.hidden) return;
+  const k = e.key === '.' ? ',' : e.key;
+  if (pad.dataset.keys.includes(k) || k === ' ') padKey(k);
+  else if (k === 'Backspace') padKey('del');
+  else if (k === 'Enter') padKey('ok');
+  else return;
+  e.preventDefault();
+});
+
+// ===== HORNÍ LIŠTA =====
+function topbar() {
+  const tb = $('#topbar');
+  tb.hidden = false;
+  tb.querySelector('.name').textContent = T(room().name);
+  tb.querySelector('.sys').innerHTML = `${T('G_TOPBAR_SYSTEMS')}: ${systems().filter(Boolean).length} / 4 ` +
+    systems().map(on => `<span class="lamp${on ? ' on' : ''}"></span>`).join('');
+}
+
+// ===== PŘECHODY =====
+const fadeEl = $('#fade');
+let cur = null;
+const room = () => cur;
+function fade(on, cb) {
+  fadeEl.style.pointerEvents = 'auto';
+  fadeEl.style.opacity = on ? 1 : 0;
+  setTimeout(() => { if (!on) fadeEl.style.pointerEvents = 'none'; cb(); }, 400);
+}
+function go(n) {
+  fade(true, () => {
+    cur?.exit?.();
+    hideBubble(); closeMenu(); closeBook(); resetHint();
+    $('#tome').hidden = true;
+    bajtikHot?.remove(); bajtikHot = null;
+    $('#hot').innerHTML = '';
+    S.room = n; cur = ROOMS[n];
+    face('neutrální');
+    placeBajtik(cur.bajtik, n);
+    cur.render();
+    if (!cur.lateRing) showBajtikRing();
+    const first = !S.visited.includes(n);
+    if (first) S.visited.push(n);
+    save(); topbar();
+    if (DEBUG) console.log(`[debug] ${TEXTS[cur.name]}:`, cur.solution?.() ?? '–');
+    fade(false, () => cur.enter(first));
+  });
+}
+
+// ===== MÍSTNOST 1: TECHNICKÁ MÍSTNOST =====
+const room1 = {
+  name: 'ROOM_1', book: 0, bajtik: [1350, 790], lateRing: true,
+  counters: [{ label: 'R1_LABEL_10', base: 10, len: 3, color: '#3DDC97' },
+             { label: 'R1_LABEL_2', base: 2, len: 8, color: '#3DDC97' },
+             { label: 'R1_LABEL_16', base: 16, len: 2, color: '#5AC8FA' }],
+  digits(c) { return this.n.toString(c.base).toUpperCase().padStart(c.len, '0'); },
+  render() {
+    this.n = 0; this.menuSeen = false;
+    let h = wall() + `
+      <rect x="0" y="80" width="1600" height="26" rx="13" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
+      <rect x="0" y="118" width="1600" height="14" rx="7" fill="#2C3E5A" stroke="#3D5578" stroke-width="2"/>
+      <rect x="1500" y="100" width="30" height="680" rx="8" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
+      <path d="M1210 130C1180 320 1260 500 1220 780M1250 130C1230 300 1300 520 1270 780" fill="none" stroke="#2C3E5A" stroke-width="9" stroke-linecap="round"/>
+      <rect x="1200" y="300" width="110" height="130" rx="12" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
+      <circle class="blink" cx="1230" cy="335" r="7" fill="#3DDC97"/>
+      <circle class="blink" style="animation-delay:-.5s" cx="1280" cy="335" r="7" fill="#FF6B4A"/>
+      <circle class="blink" style="animation-delay:-.9s" cx="1230" cy="390" r="7" fill="#5AC8FA"/>
+      <circle cx="1280" cy="390" r="7" fill="#3D5578"/>
+      <rect x="400" y="140" width="800" height="610" rx="20" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      ${door('d1', 80, 250, 220, 530)}`;
+    this.counters.forEach((c, i) => {
+      const top = 175 + i * 196, w = c.len * 68 - 8, x0 = 800 - w / 2;
+      h += `<text x="800" y="${top}" text-anchor="middle" font-size="26" font-weight="600" letter-spacing="2" fill="#F2F5F9">${T(c.label)}</text>
+        <rect x="${x0 - 16}" y="${top + 16}" width="${w + 32}" height="124" rx="14" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+        <g style="color:${c.color}" filter="url(#glow)">` +
+        [...this.digits(c)].map((d, j) => `<svg class="wheel" x="${x0 + j * 68}" y="${top + 30}" width="60" height="96" overflow="hidden">
+          <rect width="60" height="96" rx="8" fill="#0D1A26"/><g class="roll">${seg7(d, 12, 16)}</g></svg>`).join('') + '</g>';
+      c.top = top;
+    });
+    $('#room').innerHTML = h;
+    this.wheels = this.counters.map((c, i) => [...$('#room').querySelectorAll('.wheel')].slice(
+      this.counters.slice(0, i).reduce((s, k) => s + k.len, 0)).slice(0, c.len));
+    this.door = hot($('#d1'), 190, 515, () => this.menuSeen ? openDoor('d1', () => go(2)) : say('G_DOOR_LOCKED'), true);
+    if (!S.visited.includes(1)) { face('off'); $('#lights').hidden = false; }
+  },
+  enter(first) {
+    this.timer = setInterval(() => this.tick(), 1500);
+    if (!first) return this.clickMe();
+    const l = $('#lights');
+    l.classList.add('on');
+    setTimeout(() => {
+      l.hidden = true; l.classList.remove('on');
+      say('R1_INTRO', { then: () => this.clickMe() });
+    }, 1500);
+  },
+  tick() {
+    const old = this.counters.map(c => this.digits(c));
+    this.n = (this.n + 1) % 256;
+    this.counters.forEach((c, i) => [...this.digits(c)].forEach((d, j) => { if (d !== old[i][j]) roll(this.wheels[i][j], old[i][j], d); }));
+  },
+  clickMe() {
+    showBajtikRing();
+    say('R1_CLICK_ME');
+  },
+  onBajtik() {
+    if (this.menuSeen) return;
+    this.menuSeen = true;
+    this.door.lock(false);
+    resetHint();
+    say('R1_MENU');
+  },
+  exit() { clearInterval(this.timer); },
+  task() { return this.menuSeen ? 'R1_TASK_B' : 'R1_TASK_A'; },
+  hints: () => ['R1_HINT_1'],
+  solution: () => 'Klikni na Bajtíka, pak na dveře vlevo.',
+};
+function roll(wheel, a, b) {   // protočení kolečka počítadla, 200 ms
+  const g = wheel.querySelector('.roll');
+  g.style.transition = 'none'; g.style.transform = '';
+  g.innerHTML = seg7(a, 12, 16) + seg7(b, 12, 112);
+  void g.getBoundingClientRect();
+  g.style.transition = 'transform .2s ease-in-out'; g.style.transform = 'translateY(-96px)';
+  setTimeout(() => { g.style.transition = 'none'; g.style.transform = ''; g.innerHTML = seg7(b, 12, 16); }, 210);
+}
+
+// ===== MÍSTNOST 2: ROZVODNA =====
+const LV = [16, 8, 4, 2, 1], LX = i => 520 + i * 150, SUMX = 1290;
+const bits5 = n => n.toString(2).padStart(5, '0');
+const decomp = n => LV.filter(v => n & v).join(' + ');
+const room2 = {
+  name: 'ROOM_2', book: 1, bajtik: [200, 790],
+  targets: [5, 12, 19, 10, 26, 31],
+  get target() { return this.targets[S.r2.solved]; },
+  get sum() { return LV.reduce((s, v, i) => s + v * this.bits[i], 0); },
+  display(x, id) {
+    return `<rect x="${x - 55}" y="118" width="110" height="94" rx="12" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+      <g id="${id}" style="color:#3DDC97" filter="url(#glow)"></g>`;
+  },
+  render() {
+    this.bits = [0, 0, 0, 0, 0]; this.miss = 0; this.pending = false;
+    const s = S.r2.solved;
+    this.dark = s >= 3 && s < 6;
+    let h = wall() + `
+      <rect x="1340" y="64" width="26" height="716" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
+      <path d="M0 140H24M0 760H440" stroke="#2C3E5A" stroke-width="18"/>
+      <rect x="450" y="96" width="920" height="604" rx="20" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      ${door('d2', 1390, 250, 190, 530)}
+      <rect x="1392" y="204" width="186" height="36" rx="8" fill="#2C3E5A" stroke="#3D5578" stroke-width="3"/>
+      ${this.targets.map((_, j) => `<rect id="sq${j}" x="${1401 + j * 29}" y="212" width="22" height="20" rx="4"/>`).join('')}`;
+    LV.forEach((v, i) => {
+      const x = LX(i);
+      h += this.display(x, 'disp' + i) +
+        (i < 4 ? `<text x="${x + 75}" y="178" text-anchor="middle" font-size="40" fill="#8A9BB0">+</text>` : '') +
+        `<text x="${x}" y="292" text-anchor="middle" font-size="38" font-weight="700" fill="#F2F5F9">1</text>
+        <text x="${x}" y="540" text-anchor="middle" font-size="38" font-weight="700" fill="#F2F5F9">0</text>
+        <g id="lv${i}"><rect x="${x - 40}" y="300" width="80" height="210" fill="transparent"/>
+          <rect x="${x - 14}" y="310" width="28" height="180" rx="14" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+          <g class="knob"><rect x="${x - 5}" y="440" width="10" height="30" fill="#6F8096"/>
+            <circle cx="${x}" cy="465" r="25" fill="#8A9BB0" stroke="#6F8096" stroke-width="4"/></g></g>`;
+    });
+    h += `<text x="${SUMX - 60}" y="178" text-anchor="middle" font-size="40" fill="#8A9BB0">=</text>` + this.display(SUMX, 'dispsum') + `
+      <g id="send"><rect x="620" y="585" width="400" height="80" rx="18" fill="#3D5578" stroke="#8A9BB0" stroke-width="4"/>
+        <text x="820" y="637" text-anchor="middle" font-size="32" font-weight="700" letter-spacing="2" fill="#F2F5F9">${T('R2_SEND')}</text></g>
+      <rect id="r2dark" width="1600" height="900" fill="#000" opacity="${this.dark ? .4 : 0}" pointer-events="none"/>
+      <circle id="r2sos" class="blink" cx="1485" cy="160" r="16" fill="#FF6B4A" filter="url(#glow)"/>
+      <rect x="30" y="88" width="390" height="140" rx="20" fill="#F2F5F9" stroke="#0F1B2D" stroke-width="3"/>
+      <text x="54" y="132" font-size="26" fill="#0F1B2D">${T('R2_NEED')}</text>
+      <g id="need"></g>`;
+    $('#room').innerHTML = h;
+    this.door = hot($('#d2'), 1485, 515, () => S.r2.solved >= 6 ? openDoor('d2', () => go(3)) : say('G_DOOR_LOCKED'), s < 6);
+    this.hots = s < 6 ? [...LV.map((_, i) => hot($('#lv' + i), LX(i), 400, () => this.toggle(i))),
+      hot($('#send'), 1062, 625, () => this.submit())] : [];
+    this.update();
+  },
+  update() {
+    const lit = !this.dark, two = n => lit ? String(n).padStart(2, ' ') : '  ';
+    const seg2 = (x, str) => seg7(str[0], x - 44, 133) + seg7(str[1], x + 8, 133);
+    LV.forEach((v, i) => {
+      $('#disp' + i).innerHTML = seg2(LX(i), two(v * this.bits[i]));
+      $(`#lv${i} .knob`).style.transform = this.bits[i] ? 'translateY(-130px)' : '';
+    });
+    $('#dispsum').innerHTML = seg2(SUMX, two(this.sum));
+    $('#room').querySelectorAll('[id^=disp]').forEach(d => { d.style.opacity = lit ? 1 : 0; });
+    $('#r2sos').style.display = this.dark ? '' : 'none';
+    const s = S.r2.solved;
+    this.targets.forEach((t, j) => $('#sq' + j).setAttribute('fill', j < s ? '#3DDC97' : '#FF6B4A'));
+    $('#need').innerHTML = this.targets.map((t, j) => {
+      const x = 76 + j * 60, done = j < s;
+      return (j === s ? `<rect x="${x - 26}" y="150" width="52" height="54" rx="10" fill="none" stroke="#0F1B2D" stroke-width="3"/>` : '') +
+        `<text x="${x}" y="190" text-anchor="middle" font-size="34" font-weight="700" fill="${done ? '#1E9E68' : '#0F1B2D'}">${t}</text>` +
+        (done ? `<line x1="${x - 22}" y1="178" x2="${x + 22}" y2="178" stroke="#1E9E68" stroke-width="4"/>` : '') +
+        (j < 5 ? `<text x="${x + 30}" y="188" text-anchor="middle" font-size="30" fill="#8A9BB0">·</text>` : '');
+    }).join('');
+  },
+  enter(first) {
+    if (first) say('R2_INTRO');
+    else say(this.task(), { vars: this.vars() });
+  },
+  toggle(i) {
+    if (this.pending) this.blackout();
+    this.bits[i] ^= 1;
+    this.update();
+  },
+  submit() {
+    if (this.pending) this.blackout();
+    const t = this.target, sum = this.sum;
+    if (sum !== t) {
+      fx($('#send'), false);
+      this.miss++;
+      say(`R2_WRONG_${sum > t ? 'MORE' : 'LESS'}${this.dark ? '_DARK' : ''}`,
+        { vars: this.vars(), then: this.miss === 2 ? () => say('G_HINT_OFFER') : undefined });
+      return;
+    }
+    const vars = this.vars();
+    S.r2.solved++; save();
+    this.bits = [0, 0, 0, 0, 0]; this.miss = 0; resetHint();
+    fx($('#send'), true);
+    this.update();
+    fx($('#sq' + (S.r2.solved - 1)), true);
+    const k = S.r2.solved;
+    if (k === 3) { this.pending = true; say('R2_OK_3', { vars, then: () => this.blackout() }); }
+    else if (k === 6) this.finish();
+    else say(k < 3 ? `R2_OK_${k}` : 'R2_OK_DARK', { vars });
+  },
+  blackout() {
+    if (!this.pending) return;
+    this.pending = false; this.dark = true;
+    $('#r2dark').classList.add('outage');
+    this.update();
+    say('R2_BLACKOUT');
+  },
+  finish() {
+    this.dark = false;
+    const d = $('#r2dark');
+    d.classList.remove('outage'); d.setAttribute('opacity', 0);
+    this.update();
+    this.hots.forEach(h => h.remove());
+    this.door.lock(false);
+    topbar();
+    say('R2_DONE');
+  },
+  vars() { const t = this.target; return t && { target: t, sum: this.sum, bits: bits5(t), decomp: decomp(t) }; },
+  task() { return S.r2.solved >= 6 ? 'G_ROOM_DONE_BACK' : 'R2_TASK'; },
+  hints() { return S.r2.solved >= 6 ? [] : ['R2_HINT_1', 'R2_HINT_2', 'R2_HINT_3']; },
+  solution() { return this.targets.slice(S.r2.solved).map(t => `${t} = ${bits5(t)}`).join(', '); },
+};
+
+// ===== MÍSTNOST 3: ARCHIV =====
+const BASES = [2, 8, 10, 12, 16, 20, 60];          // levý sloupec
+const USES = [16, 10, 60, 2, 20, 8, 12];           // pravý sloupec, pevné zamíchání (R3_CARDS)
+const SPINES = ['#8E5A9E', '#3D7A9E', '#A0603C', '#4F8A5B', '#9E3D5A', '#6A6FB0', '#7A8A3D'];
+const CY = j => 136 + j * 76;
+function wrap(s, n) {   // zalomení podle běžných mezer; nezlomitelné zůstanou pohromadě
+  const lines = [''];
+  for (const w of s.split(' ')) {
+    const l = lines.length - 1;
+    if (lines[l] && (lines[l] + ' ' + w).length > n) lines.push(w); else lines[l] += (lines[l] ? ' ' : '') + w;
+  }
+  return lines;
+}
+function openTome(base) {
+  const [title, text] = TEXTS['R3_BOOK_' + base];
+  const sent = text.match(/[^.!?]+[.!?]+(\s|$)/g);
+  let half = 0, n = 0;
+  while (half < sent.length && n + sent[half].length <= text.length / 2 + 40) n += sent[half++].length;
+  const [l, r] = $('#tome').querySelectorAll('section');
+  l.innerHTML = `<h2>${typo(title)}</h2><p>${inline(sent.slice(0, half).join(''))}</p>`;
+  r.innerHTML = `<p>${inline(sent.slice(half).join(''))}</p>`;
+  $('#tome').hidden = false;
+}
+$('#tome .x').onclick = () => { $('#tome').hidden = true; };
+$('#tome').title = '';
+$('#tome .x').title = TEXTS.G_CLOSE;
+$('#tome').addEventListener('click', e => { e.stopPropagation(); if (e.target.id === 'tome') $('#tome').hidden = true; });
+
+const room3 = {
+  name: 'ROOM_3', book: 2, bajtik: [1330, 790],
+  isLocked(base) { return S.r3.locked.includes(base); },
+  render() {
+    this.pairs = new Map(); this.sel = null; this.flash = []; this.miss = 0;
+    let h = wall() + `
+      <rect x="30" y="96" width="270" height="684" rx="10" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <rect x="40" y="430" width="250" height="16" rx="4" fill="#3D5578"/><rect x="40" y="756" width="250" height="16" rx="4" fill="#3D5578"/>
+      <rect x="320" y="84" width="790" height="560" rx="18" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <rect x="400" y="644" width="24" height="136" fill="#3D5578"/><rect x="1006" y="644" width="24" height="136" fill="#3D5578"/>
+      <path d="M1180 64V120M1150 150L1162 120H1198L1210 150Z" stroke="#8A9BB0" stroke-width="4" fill="#8A9BB0"/>
+      <path d="M1150 150L1110 330H1250L1210 150Z" fill="#F2F5F9" opacity=".05"/>
+      ${door('d3', 1410, 250, 170, 530)}
+      <g id="lines"></g>`;
+    BASES.forEach((b, j) => {
+      const x = 46 + (j < 4 ? j : j - 4) * 62, y = j < 4 ? 130 : 456;
+      h += `<g id="bk${b}"><rect x="${x}" y="${y}" width="54" height="300" rx="6" fill="${SPINES[j]}" stroke="#0F1B2D" stroke-opacity=".35" stroke-width="3"/>
+        <rect x="${x}" y="${y + 18}" width="54" height="6" fill="#F2F5F9" opacity=".35"/>
+        <text transform="rotate(-90 ${x + 34} ${y + 222})" x="${x + 34}" y="${y + 222}" font-size="18" fill="#F2F5F9">${typo(TEXTS['R3_BOOK_' + b][0])}</text></g>`;
+    });
+    BASES.forEach((b, j) => {
+      h += `<g id="cL${j}"><rect x="340" y="${CY(j) - 32}" width="150" height="64" rx="12"/>
+        <text x="460" y="${CY(j) + 12}" text-anchor="end" font-size="34" font-weight="700" fill="#F2F5F9">${b}</text></g>`;
+    });
+    USES.forEach((b, k) => {
+      const lines = wrap(T('R3_CARD_' + b), 34);
+      h += `<g id="cR${k}"><rect x="640" y="${CY(k) - 32}" width="450" height="64" rx="12"/>` +
+        lines.map((l, i) => `<text x="660" y="${CY(k) + 7 + (i - (lines.length - 1) / 2) * 24}" font-size="19" fill="#F2F5F9">${l}</text>`).join('') + '</g>';
+    });
+    h += `<g id="check"><rect x="555" y="664" width="320" height="70" rx="16" fill="#3D5578" stroke="#8A9BB0" stroke-width="4"/>
+      <text x="715" y="710" text-anchor="middle" font-size="30" font-weight="700" letter-spacing="2" fill="#F2F5F9">${T('R3_CHECK')}</text></g>`;
+    $('#room').innerHTML = h;
+    BASES.forEach((b, j) => hot($('#bk' + b), (j < 4 ? 73 + j * 62 : 73 + (j - 4) * 62), j < 4 ? 398 : 724, () => openTome(b)));
+    this.cardHots = {};
+    BASES.forEach((b, j) => { if (!this.isLocked(b)) this.cardHots['L' + j] = hot($('#cL' + j), 372, CY(j), () => this.pick('L', j)); });
+    USES.forEach((b, k) => { if (!this.isLocked(b)) this.cardHots['R' + k] = hot($('#cR' + k), 1058, CY(k), () => this.pick('R', k)); });
+    this.door = hot($('#d3'), 1495, 690, () => this.done() ? openDoor('d3', () => go(4)) : say('G_DOOR_LOCKED'), !this.done());
+    this.checkHot = null;
+    this.update();
+  },
+  done() { return S.r3.locked.length >= 7; },
+  pick(side, i) {
+    const other = side === 'L' ? 'R' : 'L';
+    const paired = side === 'L' ? this.pairs.has(i) : [...this.pairs.values()].includes(i);
+    if (paired) {   // klik na spojenou kartu spojení zruší
+      for (const [l, r] of this.pairs) if ((side === 'L' ? l : r) === i) this.pairs.delete(l);
+      this.sel = null;
+    } else if (this.sel?.side === other) {
+      const [l, r] = side === 'L' ? [i, this.sel.i] : [this.sel.i, i];
+      this.pairs.set(l, r);
+      this.sel = null;
+    } else this.sel = this.sel?.side === side && this.sel.i === i ? null : { side, i };
+    this.update();
+  },
+  update() {
+    const all = [...this.pairs];
+    BASES.forEach((b, j) => { if (this.isLocked(b)) all.push([j, USES.indexOf(b), 'ok']); });
+    $('#lines').innerHTML = [...all, ...this.flash.map(([l, r]) => [l, r, 'bad'])].map(([l, r, st]) =>
+      `<path d="M490 ${CY(l)}C565 ${CY(l)} 565 ${CY(r)} 640 ${CY(r)}" fill="none" stroke-linecap="round" stroke-width="5"
+        stroke="${st === 'ok' ? '#3DDC97' : st === 'bad' ? '#FF6B4A' : '#5AC8FA'}"/>`).join('');
+    const style = (id, locked, linked, selected) => {
+      const r = $('#' + id + ' rect');
+      r.setAttribute('fill', locked ? '#1F5E4A' : '#1B2A41');
+      r.setAttribute('stroke', selected ? '#FFD23F' : locked ? '#3DDC97' : linked ? '#5AC8FA' : '#3D5578');
+      r.setAttribute('stroke-width', selected ? 5 : 3);
+    };
+    const linkedR = new Set(this.pairs.values());
+    BASES.forEach((b, j) => style('cL' + j, this.isLocked(b), this.pairs.has(j), this.sel?.side === 'L' && this.sel.i === j));
+    USES.forEach((b, k) => style('cR' + k, this.isLocked(b), linkedR.has(k), this.sel?.side === 'R' && this.sel.i === k));
+    const ready = !this.done() && this.pairs.size + S.r3.locked.length === 7;
+    $('#check').setAttribute('opacity', ready ? 1 : .4);
+    if (ready && !this.checkHot) this.checkHot = hot($('#check'), 908, 699, () => this.check());
+    if (!ready && this.checkHot) { this.checkHot.remove(); this.checkHot = null; }
+  },
+  check() {
+    const bad = [];
+    for (const [l, r] of this.pairs) {
+      if (BASES[l] === USES[r]) {
+        S.r3.locked.push(BASES[l]);
+        for (const k of ['L' + l, 'R' + r]) { this.cardHots[k].remove(); fx($('#c' + k), true); }
+      } else {
+        bad.push([l, r]);
+        fx($('#cL' + l), false); fx($('#cR' + r), false);
+      }
+    }
+    this.pairs.clear(); this.sel = null; this.flash = bad;
+    save();
+    this.update();
+    setTimeout(() => { this.flash = []; this.update(); }, 450);
+    if (this.done()) {
+      this.door.lock(false);
+      topbar();
+      return say('R3_DONE');
+    }
+    this.miss++;
+    say('R3_RESULT', { vars: { correct: S.r3.locked.length }, then: this.miss === 2 ? () => say('G_HINT_OFFER') : undefined });
+  },
+  enter(first) { say(first ? 'R3_INTRO' : this.task()); },
+  task() { return this.done() ? 'G_ROOM_DONE_BACK' : 'R3_TASK'; },
+  hints() { return this.done() ? [] : ['R3_HINT_1', 'R3_HINT_2', 'R3_HINT_3']; },
+  solution: () => BASES.map(b => `${b} → ${TEXTS['R3_CARD_' + b]}`).join(' | '),
+};
+
+// ===== MÍSTNOST 4: NAVIGACE =====
+const TAPE = '010000100100000101001010';
+const MODS = { '750MB': '750 MB', '1GB': '1 GB', '12000Mb': '12 000 Mb', '2000000kB': '2 000 000 kB' };
+const MOD_HOME = ['12000Mb', '750MB', '2000000kB', '1GB'];   // výchozí rozložení na stole
+const MOD_OK = ['750MB', '1GB', '12000Mb', '2000000kB'];
+const LADDER = ['TB', 'GB', 'MB', 'kB', 'B', 'b'];
+const R4B = [{ ans: 4000, dir: 'down', steps: [1] }, { ans: 2.5, dir: 'up', steps: [2] }, { ans: 8000, dir: 'down', steps: [3, 4] }];
+const JUNK = '#%&@?§¤*~^¿¶';
+const rnd = (seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647)(42);   // deterministické hvězdy a šum
+
+// žebřík jednotek (Navigace i trenažér C); lit = { dir: 'down'|'up', steps: [index schodu 0–4] }
+function ladderSvg(cx, top, lit = {}) {
+  let h = `<path d="M${cx - 70} ${top - 40}V${top + 560}M${cx + 70} ${top - 40}V${top + 560}" stroke="#8A9BB0" stroke-width="6"/>`;
+  LADDER.forEach((u, i) => {
+    const y = top + i * 104;
+    h += `<rect x="${cx - 90}" y="${y - 28}" width="180" height="56" rx="12" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+      <text x="${cx}" y="${y + 12}" text-anchor="middle" font-size="32" font-weight="700" fill="#F2F5F9">${u}</text>`;
+  });
+  for (let k = 0; k < 5; k++) {
+    const y1 = top + k * 104 + 32, y2 = top + (k + 1) * 104 - 32, m = (y1 + y2) / 2 + 8, f = k === 4 ? '8' : '1 000';
+    const dn = lit.dir === 'down' && lit.steps.includes(k), up = lit.dir === 'up' && lit.steps.includes(k);
+    const st = on => `stroke="${on ? '#3DDC97' : '#3D5578'}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"${on ? ' filter="url(#glow)"' : ''}`;
+    h += `<path d="M${cx - 110} ${y1}V${y2}M${cx - 119} ${y2 - 10}L${cx - 110} ${y2}L${cx - 101} ${y2 - 10}" ${st(dn)}/>
+      <text x="${cx - 128}" y="${m}" text-anchor="end" font-size="22" fill="${dn ? '#3DDC97' : '#8A9BB0'}">${typo('× ' + f)}</text>
+      <path d="M${cx + 110} ${y2}V${y1}M${cx + 101} ${y1 + 10}L${cx + 110} ${y1}L${cx + 119} ${y1 + 10}" ${st(up)}/>
+      <text x="${cx + 128}" y="${m}" font-size="22" fill="${up ? '#3DDC97' : '#8A9BB0'}">${typo('÷ ' + f)}</text>`;
+  }
+  return h;
+}
+const btnSvg = (id, x, y, w, h, label, size = 30) => `<g id="${id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="#3D5578" stroke="#8A9BB0" stroke-width="4"/>
+  <text x="${x + w / 2}" y="${y + h / 2 + size * .36}" text-anchor="middle" font-size="${size}" font-weight="700" letter-spacing="2" fill="#F2F5F9">${label}</text></g>`;
+
+const room4 = {
+  name: 'ROOM_4', book: 3, bajtik: [170, 790],
+  done() { return S.r4.a && S.r4.b >= 3 && S.r4.c; },
+  current() { return this.panel || (!S.r4.a ? 'A' : S.r4.b < 3 ? 'B' : !S.r4.c ? 'C' : null); },
+  render() {
+    this.zh = []; this.bh = []; this.panel = null; this.miss = 0;
+    this.aLen = 4; this.aCut = null; this.aOk = false; this.bLit = {}; this.seen = {};
+    this.slots = [null, null, null, null]; this.held = null;
+    let noise = '';
+    for (let i = 0; i < 700; i++) noise += `<rect x="${rnd() * 740 | 0}" y="${rnd() * 340 | 0}" width="${4 + rnd() * 8 | 0}" height="3" fill="#8A9BB0" opacity="${(.15 + rnd() * .4).toFixed(2)}"/>`;
+    this.noise = noise;
+    $('#room').innerHTML = wall() + `
+      <rect x="560" y="74" width="760" height="350" rx="20" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <svg id="screen" x="600" y="122" width="680" height="282" overflow="hidden"></svg>
+      <rect x="600" y="122" width="680" height="282" rx="6" fill="none" stroke="#3D5578" stroke-width="3"/>
+      <g id="r4lamps"></g>
+      <rect x="500" y="430" width="886" height="310" rx="18" fill="#1F304A" stroke="#3D5578" stroke-width="3"/>
+      ${door('d4', 1400, 250, 180, 530)}
+      <g id="r4panels"></g>`;
+    this.door = hot($('#d4'), 1490, 515, () => this.done() ? openDoor('d4', () => go(5)) : say('G_DOOR_LOCKED'), !this.done());
+    this.drawBg();
+  },
+  drawBg() {
+    const st = { A: S.r4.a, B: S.r4.b >= 3, C: S.r4.c }, cur = this.current();
+    // obrazovka: šum → BAJ… → hvězdná mapa
+    const scr = $('#screen');
+    if (this.done()) {
+      let stars = '';
+      for (let i = 0; i < 70; i++) stars += `<circle cx="${rnd() * 680 | 0}" cy="${rnd() * 282 | 0}" r="${(1 + rnd() * 2).toFixed(1)}" fill="#F2F5F9" opacity="${(.3 + rnd() * .6).toFixed(2)}"/>`;
+      scr.innerHTML = `<rect width="680" height="282" fill="#071018"/>${stars}
+        <path d="M110 220C260 230 380 90 560 70" fill="none" stroke="#5AC8FA" stroke-width="4" stroke-dasharray="12 10"/>
+        <path d="M96 232l26-10-26-10 6 10z" fill="#5AC8FA" filter="url(#glow)"/>
+        <circle cx="565" cy="68" r="14" fill="none" stroke="#5AC8FA" stroke-width="4" filter="url(#glow)"/><circle cx="565" cy="68" r="5" fill="#5AC8FA"/>
+        <text x="540" y="115" font-size="26" font-weight="600" fill="#5AC8FA">${T('R4_MAP_STATION')}</text>`;
+    } else if (S.r4.a || this.aOk) {
+      scr.innerHTML = `<rect width="680" height="282" fill="#071018"/>
+        <text x="340" y="170" text-anchor="middle" font-size="96" font-weight="700" letter-spacing="12" fill="#3DDC97" filter="url(#glow)">BAJ…</text>`;
+    } else scr.innerHTML = `<rect width="680" height="282" fill="#071018"/><g class="noise">${this.noise}</g>`;
+    $('#r4lamps').innerHTML = ['A', 'B', 'C'].map((p, i) => `<circle cx="${880 + i * 60}" cy="98" r="14" fill="${st[p] ? '#3DDC97' : '#2C3E5A'}" stroke="${st[p] ? '#2BAF77' : '#3D5578'}" stroke-width="3"${st[p] ? ' filter="url(#glow)"' : ''}/>
+      <text x="${880 + i * 60}" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="${st[p] ? '#0F1B2D' : '#8A9BB0'}">${p}</text>`).join('');
+    const icons = {
+      A: x => `<rect x="${x + 35}" y="560" width="200" height="34" rx="6" fill="#071018" stroke="#3D5578" stroke-width="2"/>` +
+        [...'0100001001'].map((b, i) => seg7(b, x + 45 + i * 19, 566, 12, 22)).join(''),
+      B: x => `<path d="M${x + 110} 545V615M${x + 160} 545V615M${x + 110} 562H${x + 160}M${x + 110} 580H${x + 160}M${x + 110} 598H${x + 160}" stroke="#8A9BB0" stroke-width="5"/>`,
+      C: x => [0, 1, 2].map(i => `<rect x="${x + 55 + i * 58}" y="548" width="44" height="64" rx="4" fill="#1F5E4A" stroke="#2BAF77" stroke-width="2"/>`).join(''),
+    };
+    this.bh.forEach(h => h.remove()); this.bh = [];
+    $('#r4panels').innerHTML = ['A', 'B', 'C'].map((p, i) => {
+      const x = 520 + i * 288, avail = p === cur && !this.panel;
+      return `<g id="pn${p}" opacity="${st[p] || avail ? 1 : .4}"><rect x="${x}" y="450" width="270" height="270" rx="16" fill="#2C3E5A" stroke="${st[p] ? '#3DDC97' : '#3D5578'}" stroke-width="4"/>
+        <text x="${x + 22}" y="500" font-size="40" font-weight="700" fill="#F2F5F9">${p}</text>
+        <circle cx="${x + 240}" cy="486" r="10" fill="${st[p] ? '#3DDC97' : '#FF6B4A'}"/>
+        <text x="${x + 22}" y="534" font-size="24" fill="#F2F5F9">${T('R4_PANEL_' + p)}</text>
+        <g style="color:#3DDC97">${icons[p](x)}</g></g>`;
+    }).join('');
+    if (cur && !this.panel) this.bh.push(hot($('#pn' + cur), 520 + 'ABC'.indexOf(cur) * 288 + 135, 670, () => this.open(cur)));
+  },
+
+  // --- přiblížený panel ---
+  zhot(el, cx, cy, fn) { this.zh.push(hot(el, cx, cy, fn, false, 'z')); },
+  open(p) {
+    this.panel = p; this.miss = 0; resetHint();
+    $('#hot').classList.add('zoomed');
+    this.drawBg();
+    this.draw();
+    const first = !this.seen[p];
+    this.seen[p] = true;
+    if (p === 'B' && first && S.r4.b === 0) say('R4B_INTRO', { then: () => say(this.task()) });
+    else if (p === 'C' && first) say('R4C_INTRO');
+    else say(this.task());
+  },
+  close() {
+    if (!this.panel) return;
+    this.panel = null;
+    this.zh.forEach(h => h.remove()); this.zh = [];
+    $('#zoom').innerHTML = '';
+    $('#hot').classList.remove('zoomed');
+    padHide();
+    this.drawBg();
+  },
+  closeLater(p) { setTimeout(() => { if (this.panel === p) this.close(); }, 1600); },
+  draw() {
+    this.zh.forEach(h => h.remove()); this.zh = [];
+    padHide();
+    $('#zoom').innerHTML = `<rect width="1600" height="900" fill="#000" opacity=".55"/>
+      <rect x="320" y="80" width="1260" height="720" rx="22" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <text x="360" y="134" font-size="34" font-weight="700" fill="#F2F5F9">${this.panel} · ${T('R4_PANEL_' + this.panel)}</text>
+      <g id="zx" class="clickable"><rect x="1500" y="96" width="60" height="60" rx="14" fill="#F2F5F9" stroke="#0F1B2D" stroke-width="3"/>
+        <path d="M1517 113l26 26M1543 113l-26 26" stroke="#0F1B2D" stroke-width="5" stroke-linecap="round"/></g>
+      <g id="zc"></g>`;
+    $('#zoom rect').addEventListener('click', e => { e.stopPropagation(); this.close(); });
+    $('#zx').addEventListener('click', e => { e.stopPropagation(); this.close(); });
+    this['draw' + this.panel]($('#zc'));
+  },
+
+  drawA(z) {
+    const done = S.r4.a, L = done ? 8 : this.aCut, n = L ? Math.ceil(24 / L) : 1;
+    const total = 24 * 38 + (n - 1) * 8, x0 = 950 - total / 2;
+    let h = '';
+    for (let p = 0; p < n; p++) {
+      const a = L ? p * L : 0, b = L ? Math.min(24, a + L) : 24, px = x0 + a * 38 + p * 8, w = (b - a) * 38, cx = px + w / 2;
+      h += `<rect x="${px}" y="200" width="${w}" height="64" rx="6" fill="#071018" stroke="#3D5578" stroke-width="3"/>`;
+      h += `<g style="color:#3DDC97">${[...TAPE.slice(a, b)].map((bit, i) => seg7(bit, px + i * 38 + 9, 214, 20, 36)).join('')}</g>`;
+      if (L === 8) {
+        const v = parseInt(TAPE.slice(a, b), 2);
+        h += `<text x="${cx}" y="306" text-anchor="middle" font-size="30" fill="#8A9BB0">${v}</text>
+          <text x="${cx}" y="364" text-anchor="middle" font-size="52" font-weight="700" fill="#3DDC97">${String.fromCharCode(v)}</text>`;
+      } else if (L) h += `<text x="${cx}" y="320" text-anchor="middle" font-size="30" fill="#FF6B4A">${this.aJunk[p]}</text>`;
+    }
+    if (L && L !== 8) h += `<text x="950" y="375" text-anchor="middle" font-size="26" fill="#FF6B4A">${T('R4_GARBAGE')}</text>`;
+    const locked = done || this.aOk;
+    h += `<text x="540" y="460" font-size="26" fill="#F2F5F9">${T('R4_LEN')}</text>
+      <g id="aminus"><rect x="520" y="480" width="76" height="76" rx="14" fill="#3D5578" stroke="#8A9BB0" stroke-width="3"/><path d="M542 518h32" stroke="#F2F5F9" stroke-width="6" stroke-linecap="round"/></g>
+      <rect x="612" y="480" width="110" height="76" rx="12" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+      <g style="color:#3DDC97" filter="url(#glow)">${seg7(String(this.aLen).padStart(2, ' ')[0], 626, 490, 32, 56)}${seg7(String(this.aLen).padStart(2, ' ')[1], 674, 490, 32, 56)}</g>
+      <g id="aplus"><rect x="738" y="480" width="76" height="76" rx="14" fill="#3D5578" stroke="#8A9BB0" stroke-width="3"/><path d="M760 518h32M776 502v32" stroke="#F2F5F9" stroke-width="6" stroke-linecap="round"/></g>
+      ${btnSvg('asplit', 880, 482, 290, 72, T('R4_SPLIT'))}
+      <g transform="translate(898 500)" stroke="#F2F5F9" stroke-width="3" fill="none"><circle cx="8" cy="28" r="7"/><circle cx="26" cy="28" r="7"/><path d="M12 22L32 0M22 22L2 0"/></g>`;
+    if (this.aOk || done) {
+      h += `<text x="560" y="700" font-size="60" font-weight="700" fill="${done ? '#3DDC97' : '#F2F5F9'}">3 ${done ? 'B' : '_'}</text>`;
+      if (!done) h += btnSvg('ub', 780, 630, 110, 100, 'b', 54) + btnSvg('uB', 930, 630, 110, 100, 'B', 54);
+    }
+    z.innerHTML = h;
+    if (!locked) {
+      this.zhot($('#aminus'), 558, 518, () => { this.aLen = Math.max(1, this.aLen - 1); this.draw(); });
+      this.zhot($('#aplus'), 776, 518, () => { this.aLen = Math.min(12, this.aLen + 1); this.draw(); });
+      this.zhot($('#asplit'), 1205, 518, () => this.split());
+    } else if (!done) {
+      this.zhot($('#ub'), 835, 680, () => this.unit('b'));
+      this.zhot($('#uB'), 985, 680, () => this.unit('B'));
+    }
+  },
+  split() {
+    this.aCut = this.aLen;
+    if (this.aLen === 8) {
+      this.aOk = true; this.miss = 0; resetHint();
+      this.draw(); this.drawBg();
+      say('R4A_OK', { then: () => say('R4A_UNIT_Q') });
+    } else {
+      this.aJunk = Array.from({ length: Math.ceil(24 / this.aLen) }, () => JUNK[Math.random() * JUNK.length | 0]);
+      this.draw();
+      fx($('#asplit'), false);
+      this.wrong('R4A_WRONG');
+    }
+  },
+  unit(u) {
+    if (u === 'b') { fx($('#ub'), false); return this.wrong('R4A_UNIT_WRONG'); }
+    S.r4.a = true; save();
+    this.draw(); this.drawBg();
+    say('R4A_DONE');
+    this.closeLater('A');
+  },
+  wrong(id) {
+    this.miss++;
+    say(id, { then: this.miss === 2 ? () => say('G_HINT_OFFER') : undefined });
+  },
+
+  drawB(z) {
+    const q = Math.min(S.r4.b, 2);
+    const lines = wrap(typo(TEXTS[`R4B_Q${q + 1}`][1]), 32);
+    z.innerHTML = `<g id="ladder">${ladderSvg(720, 200, this.bLit)}</g>` +
+      lines.map((l, i) => `<text x="980" y="${200 + i * 34}" font-size="27" fill="#F2F5F9">${l}</text>`).join('') +
+      [0, 1, 2].map(i => `<circle cx="${1400 + i * 34}" cy="128" r="10" fill="${i < S.r4.b ? '#3DDC97' : '#3D5578'}"/>`).join('') +
+      `<rect x="980" y="704" width="560" height="80" rx="10" fill="#F2F5F9" stroke="#FF6B4A" stroke-width="4"/>` +
+      wrap(T('R4B_NOTE_1024'), 44).map((l, i) => `<text x="998" y="${736 + i * 28}" font-size="21" fill="#0F1B2D">${l}</text>`).join('');
+    numpad(1040, 292, v => this.answerB(v));
+  },
+  answerB(v) {
+    const i = S.r4.b, q = R4B[i], ok = Math.abs(parseNum(v) - q.ans) < 1e-9;
+    this.bLit = q;
+    if (!ok) {
+      $('#ladder').innerHTML = ladderSvg(720, 200, q);
+      fx(pad.querySelector('.disp'), false);
+      return this.wrong('R4B_WRONG');
+    }
+    S.r4.b++; save();
+    this.miss = 0; resetHint();
+    this.draw();
+    if (S.r4.b < 3) say(`R4B_OK_${i + 1}`, { then: () => { this.bLit = {}; if (this.panel === 'B') this.draw(); say(this.task()); } });
+    else {
+      padHide();
+      say('R4B_OK_3', { then: () => { say('R4B_DONE'); this.closeLater('B'); } });
+      this.drawBg();
+    }
+  },
+
+  drawC(z) {
+    const modSvg = (id, x, y, sel) => `<g id="m${id}"><rect x="${x}" y="${y}" width="220" height="84" rx="8" fill="#1F5E4A" stroke="${sel ? '#FFD23F' : '#2BAF77'}" stroke-width="${sel ? 5 : 3}"/>
+      ${[0, 1, 2, 3].map(i => `<rect x="${x + 14 + i * 40}" y="${y + 52}" width="30" height="20" rx="3" fill="#0F1B2D"/>`).join('')}
+      <path d="M${x + 10} ${y + 84}v10M${x + 210} ${y + 84}v10" stroke="#8A9BB0" stroke-width="4"/>
+      <text x="${x + 14}" y="${y + 36}" font-size="25" font-weight="700" fill="#F2F5F9">${typo(MODS[id])}</text></g>`;
+    let h = `<rect x="490" y="170" width="1040" height="190" rx="16" fill="#1B2A41" stroke="#8A9BB0" stroke-width="4"/>
+      <text x="1010" y="395" text-anchor="middle" font-size="26" fill="#F2F5F9">${T('R4_RACK')}</text>
+      <rect x="400" y="590" width="1140" height="24" rx="6" fill="#3D5578"/>`;
+    this.slots.forEach((m, i) => {
+      const x = 510 + i * 255;
+      h += `<g id="sl${i}"><rect x="${x}" y="196" width="240" height="138" rx="10" fill="#071018" stroke="#3D5578" stroke-width="3" stroke-dasharray="${m ? 0 : '10 8'}"/></g>
+        <text x="${x + 120}" y="186" text-anchor="middle" font-size="20" fill="#8A9BB0">${i + 1}.</text>`;
+      if (m) h += modSvg(m, x + 10, 222, false);
+    });
+    MOD_HOME.forEach((m, i) => { if (!this.slots.includes(m)) h += modSvg(m, 520 + i * 255, this.held === m ? 470 : 496, this.held === m); });
+    const full = this.slots.every(Boolean);
+    h += `<g opacity="${full ? 1 : .4}">${btnSvg('cins', 870, 660, 280, 72, T('R4_INSERT'))}</g>`;
+    z.innerHTML = h;
+    this.slots.forEach((m, i) => {
+      const x = 510 + i * 255;
+      if (m) this.zhot($('#m' + m), x + 200, 264, () => { this.slots[i] = null; this.draw(); });
+      else if (this.held) this.zhot($('#sl' + i), x + 120, 265, () => { this.slots[i] = this.held; this.held = null; this.draw(); });
+    });
+    MOD_HOME.forEach((m, i) => {
+      if (!this.slots.includes(m)) this.zhot($('#m' + m), 520 + i * 255 + 190, (this.held === m ? 470 : 496) + 36,
+        () => { this.held = this.held === m ? null : m; this.draw(); });
+    });
+    if (full) this.zhot($('#cins'), 1185, 696, () => this.insert());
+  },
+  insert() {
+    const wrongIdx = this.slots.map((m, i) => m === MOD_OK[i] ? -1 : i).filter(i => i >= 0);
+    if (!wrongIdx.length) {
+      S.r4.c = true; save();
+      this.draw();
+      return say('R4C_DONE', { then: () => this.finish() });
+    }
+    const mbTrap = this.slots[3] === '12000Mb';
+    const bounced = wrongIdx.map(i => this.slots[i]);
+    wrongIdx.forEach(i => { this.slots[i] = null; });
+    this.draw();
+    bounced.forEach(m => fx($('#m' + m), false));
+    this.wrong(mbTrap ? 'R4C_WRONG_MB' : 'R4C_WRONG');
+  },
+  finish() {
+    this.close();
+    this.door.lock(false);
+    topbar();
+    say('R4_DONE');
+  },
+
+  enter(first) { say(first ? 'R4_INTRO' : this.task()); },
+  exit() { this.close(); },
+  task() {
+    const p = this.current();
+    if (!p) return 'G_ROOM_DONE_BACK';
+    if (p === 'A') return S.r4.a ? 'R4A_DONE' : this.aOk ? 'R4A_UNIT_Q' : 'R4A_TASK';
+    if (p === 'B') return S.r4.b >= 3 ? 'R4B_DONE' : `R4B_Q${S.r4.b + 1}`;
+    return 'R4C_TASK';
+  },
+  hints() {
+    const p = this.current();
+    if (!p) return [];
+    if (p === 'B') return ['R4B_HINT_1', 'R4B_HINT_2', `R4B_HINT_3_Q${Math.min(S.r4.b, 2) + 1}`];
+    return [`R4${p}_HINT_1`, `R4${p}_HINT_2`, `R4${p}_HINT_3`];
+  },
+  solution: () => 'A: délka 8, pak B · B: 4000, 2,5, 8000 · C: 750 MB, 1 GB, 12 000 Mb, 2 000 000 kB',
+};
+
+// ===== MÍSTNOST 5: ROZCESTÍ =====
+const room5 = {
+  name: 'ROOM_5', book: null, bajtik: [800, 790],
+  render() {
+    $('#room').innerHTML = wall() + `
+      <path d="M0 150H1600M0 700H1600" stroke="#2C3E5A" stroke-width="14"/>
+      ${[540, 660, 940, 1060].map(x => `<rect x="${x}" y="200" width="16" height="440" rx="8" fill="#2C3E5A"/>`).join('')}
+      <circle cx="800" cy="300" r="70" fill="#0F1B2D" stroke="#3D5578" stroke-width="6"/>
+      <circle cx="770" cy="280" r="3" fill="#F2F5F9"/><circle cx="830" cy="320" r="2" fill="#F2F5F9"/><circle cx="805" cy="265" r="2" fill="#F2F5F9"/>
+      ${[['d5l', 200, 'R5_DOOR_L'], ['d5r', 1140, 'R5_DOOR_R']].map(([id, x, t]) => `
+        <rect x="${x - 40}" y="176" width="340" height="56" rx="10" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+        <text x="${x + 130}" y="213" text-anchor="middle" font-size="24" font-weight="700" letter-spacing="1" fill="#5AC8FA">${T(t)}</text>
+        ${door(id, x, 250, 260, 530)}`).join('')}`;
+    hot($('#d5l'), 330, 515, () => openDoor('d5l', () => go(6)));
+    hot($('#d5r'), 1270, 515, () => openDoor('d5r', () => go(7)));
+  },
+  enter(first) { say(first ? 'R5_INTRO' : 'R5_REVISIT'); },
+  task: () => 'R5_TASK',
+  hints: () => ['R5_TASK'],
+  solution: () => 'Vlevo kajuta (test + SOS), vpravo cvičiště.',
+};
+
+// ===== MÍSTNOST 6: KAJUTA, MINITEST A SOS =====
+const PASS_SCORE = 7;
+const CATS = ['A', 'B', 'C', 'D'];
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function makeQ(c, n) {
+  const d = TEXTS[`TEST_${c}_${n}`], q = { c, id: `TEST_${c}_${n}` };
+  if (c === 'B') return { ...q, text: TEXTS.TEST_B_Q.replace('{bits}', d[0]), ans: d[1] };
+  if (c === 'C') return { ...q, text: TEXTS.TEST_C_Q.replace('{priklad}', d[0]), bin: d[1] };
+  if (Array.isArray(d[1])) return { ...q, text: d[0], opts: d[1], shown: shuffle(d[1]) };
+  return { ...q, text: d[0], ans: d[1] };
+}
+// 2 otázky z každé kategorie, celé pořadí zamíchané
+const drawTest = () => shuffle(CATS.flatMap(c => shuffle([1, 2, 3, 4, 5, 6, 7, 8]).slice(0, 2).map(n => makeQ(c, n))));
+function isCorrect(q, a) {
+  if (a == null) return false;
+  if (q.opts) return a === q.opts[0];
+  if (q.bin) { const t = a.replace(/\s/g, ''); return /^[01]+$/.test(t) && t.replace(/^0+(?=.)/, '') === q.bin; }
+  return Math.abs(parseNum(a) - q.ans) < 1e-9;
+}
+
+const testEl = $('#test');
+const room6 = {
+  name: 'ROOM_6', book: null, bajtik: [1330, 790],
+  render() {
+    let stars = '';
+    for (let i = 0; i < 40; i++) stars += `<circle cx="${560 + rnd() * 480 | 0}" cy="${100 + rnd() * 300 | 0}" r="${(1 + rnd() * 1.6).toFixed(1)}" fill="#F2F5F9" opacity="${(.3 + rnd() * .6).toFixed(2)}"/>`;
+    $('#room').innerHTML = wall() + `
+      <rect x="540" y="84" width="520" height="330" rx="24" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <svg x="560" y="104" width="480" height="290" overflow="hidden"><rect width="480" height="290" fill="#0F1B2D"/>
+        <g transform="translate(-560 -104)">${stars}</g>
+        <g id="ant" class="ant${S.sos ? ' up' : ''}"><rect x="232" y="200" width="16" height="140" fill="#8A9BB0"/>
+          <path d="M190 200Q240 150 290 200Z" fill="#8A9BB0" stroke="#6F8096" stroke-width="3"/><circle cx="240" cy="168" r="7" fill="#FF6B4A"/>
+          <g id="waves"></g></g></svg>
+      <rect x="40" y="560" width="380" height="140" rx="16" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+      <rect x="60" y="520" width="110" height="60" rx="20" fill="#F2F5F9" opacity=".85"/>
+      <rect x="150" y="540" width="270" height="70" rx="14" fill="#3D5578"/>
+      <rect x="50" y="700" width="20" height="80" fill="#3D5578"/><rect x="390" y="700" width="20" height="80" fill="#3D5578"/>
+      <g id="term"><rect x="580" y="430" width="440" height="350" rx="18" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+        <rect x="610" y="452" width="380" height="200" rx="10" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+        <g id="tscreen"></g>
+        <rect x="620" y="676" width="360" height="70" rx="10" fill="#1B2A41"/>
+        ${Array.from({ length: 24 }, (_, i) => `<rect x="${630 + (i % 12) * 29}" y="${686 + (i / 12 | 0) * 28}" width="22" height="20" rx="4" fill="#3D5578"/>`).join('')}</g>
+      ${door('d6', 1410, 250, 170, 530)}`;
+    hot($('#d6'), 1495, 690, () => openDoor('d6', () => go(5)));
+    this.screen();
+  },
+  screen() {   // obsah terminálu: název testu, nebo tlačítko VYSLAT SOS
+    this.termHot?.remove(); this.termHot = null;
+    const ts = $('#tscreen');
+    if (S.sos) { ts.innerHTML = `<text x="800" y="565" text-anchor="middle" font-size="40" font-weight="700" fill="#3DDC97">SOS ✓</text>`; return; }
+    if (S.testPassed) {
+      ts.innerHTML = btnSvg('sosbtn', 650, 510, 300, 90, T('R6_SOS_BUTTON'), 34);
+      $('#sosbtn rect').setAttribute('fill', '#FF6B4A');
+      this.termHot = hot($('#sosbtn'), 975, 555, () => this.sendSos());
+    } else {
+      ts.innerHTML = wrap(T('R6_TEST_TITLE'), 18).map((l, i) => `<text x="800" y="${540 + i * 40}" text-anchor="middle" font-size="32" font-weight="600" fill="#3DDC97">${l}</text>`).join('');
+      this.termHot = hot($('#term'), 800, 712, () => this.openTest());
+    }
+  },
+  enter(first) {
+    if (first) say('R6_INTRO');
+    else if (!S.testPassed) say('R6_REVISIT');
+  },
+  exit() { this.closeTest(); },
+
+  // --- test ---
+  openTest() {
+    hideBubble();
+    $('#hot').classList.add('zoomed');
+    $('#zoom').innerHTML = '<rect width="1600" height="900" fill="#000" opacity=".55"/>';
+    testEl.hidden = false;
+    testEl.innerHTML = `<h2>${T('R6_TEST_TITLE')}</h2>
+      <div class="foot"><button class="btn" data-a="back">${T('G_BACK')}</button><button class="btn dark" data-a="start">${T('R6_TEST_START')}</button></div>`;
+  },
+  closeTest() {
+    testEl.hidden = true;
+    $('#zoom').innerHTML = '';
+    $('#hot').classList.remove('zoomed');
+    padHide();
+  },
+  start() {
+    this.qs = drawTest(); this.i = 0; this.ans = [];
+    if (DEBUG) console.log('[debug] test:', this.qs.map(q => q.opts ? q.opts[0] : q.bin || q.ans).join(' · '));
+    this.showQ();
+  },
+  showQ() {
+    const q = this.qs[this.i], last = this.i === 7;
+    padHide();
+    testEl.innerHTML = `<div class="prog">${T('R6_TEST_PROGRESS').replace('{n}', this.i + 1)}</div>
+      <p class="q">${inline(q.text)}</p>` +
+      (q.opts ? `<div class="opts">${q.shown.map((o, k) => `<button class="btn${this.ans[this.i] === o ? ' sel' : ''}" data-o="${k}">${typo(o)}</button>`).join('')}</div>` : '') +
+      `<div class="foot"><button class="btn dark" data-a="next">${T(last ? 'R6_TEST_FINISH' : 'R6_TEST_NEXT')}</button></div>`;
+    if (!q.opts) numpad(100, 330, () => this.next(), q.bin ? '10' : '789456123,0');
+  },
+  next() {
+    const q = this.qs[this.i];
+    if (!q.opts) { if (!padVal.trim()) return; this.ans[this.i] = padVal; }
+    if (this.ans[this.i] == null) return;
+    if (++this.i < 8) return this.showQ();
+    this.result();
+  },
+  result() {
+    padHide();
+    const ok = this.qs.map((q, i) => isCorrect(q, this.ans[i]));
+    const score = ok.filter(Boolean).length;
+    const catOk = c => this.qs.every((q, i) => q.c !== c || ok[i]);
+    if (DEBUG) console.log('[debug] výsledek:', score, this.qs.map((q, i) => `${q.id}: ${this.ans[i]} ${ok[i] ? '✓' : '✗'}`));
+    if (score >= PASS_SCORE) {
+      S.testPassed = true; save();
+      this.closeTest();
+      this.screen();
+      return say('R6_PASS', { vars: { score } });
+    }
+    testEl.innerHTML = `<h2>${T('R6_RESULT').replace('{score}', score)}</h2>
+      <ul class="cats">${CATS.map(c => `<li class="${catOk(c) ? 'ok' : 'ko'}">${catOk(c) ? '✓' : '✗'} ${T('R6_CAT_' + c)}</li>`).join('')}</ul>
+      <div class="foot"><button class="btn" data-a="back">${T('G_BACK')}</button><button class="btn dark" data-a="start">${T('R6_RETRY')}</button></div>`;
+    say('R6_FAIL_' + CATS.find(c => !catOk(c)), { vars: { score } });
+  },
+  click(e) {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.o != null) { this.ans[this.i] = this.qs[this.i].shown[b.dataset.o]; this.showQ(); }
+    else if (b.dataset.a === 'next') this.next();
+    else if (b.dataset.a === 'start') { hideBubble(); this.start(); }
+    else if (b.dataset.a === 'back') { this.closeTest(); say(this.task()); }
+  },
+
+  sendSos() {
+    this.termHot.remove(); this.termHot = null;
+    $('#ant').classList.add('up');
+    $('#waves').innerHTML = [0, .4, .8].map(d => `<circle class="wave" cx="240" cy="168" r="40" style="animation-delay:${d}s"/>`).join('');
+    const morse = '... --- ...', bin = [...'SOS'].map(ch => ch.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+    let n = 0;
+    const tick = setInterval(() => {
+      n++;
+      const m = morse.slice(0, Math.min(n, morse.length)), b = bin.slice(0, Math.max(0, n - morse.length) * 2);
+      $('#tscreen').innerHTML = `<text x="800" y="500" text-anchor="middle" font-size="26" fill="#8A9BB0">${T('R6_SOS_SENDING')}</text>
+        <text x="800" y="565" text-anchor="middle" font-size="52" font-weight="700" letter-spacing="6" fill="#3DDC97">${m}</text>
+        <text x="800" y="620" text-anchor="middle" font-size="22" fill="#5AC8FA">${b}</text>`;
+    }, 3000 / (morse.length + 14));
+    setTimeout(() => {
+      clearInterval(tick);
+      S.sos = true; save();
+      topbar();
+      say('R6_SOS', { then: () => go(8) });
+    }, 3000);
+  },
+  task() { return S.sos ? 'G_ROOM_DONE_BACK' : 'R6_TASK'; },
+  hints: () => ['R6_HINT_1', 'R6_HINT_2', 'R6_HINT_3'],
+  solution: () => 'Klikni na terminál, splň test (správné odpovědi vypíše konzole po spuštění), pak VYSLAT SOS.',
+};
+testEl.addEventListener('click', e => { e.stopPropagation(); room6.click(e); });
+
+
+// ===== MÍSTNOST 7: CVIČIŠTĚ =====
+const rand = n => Math.random() * n | 0;
+const fmt = n => { const [i, d] = String(+n.toFixed(6)).split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (d ? ',' + d : ''); };
+const fill = (t, v) => typo(t.replace(/\{(\w+)\}/g, (_, k) => v[k]));
+const trEl = $('#trainer');
+const tsvg = () => trEl.querySelector('.tsvg'), tbody = () => trEl.querySelector('.tb');
+let trBtn = null;
+function tmsg(html, btn, fn) {
+  trEl.querySelector('.tm span').innerHTML = html;
+  const b = trEl.querySelector('.tm button');
+  b.hidden = !btn; b.textContent = btn || '';
+  trBtn = fn;
+}
+// ukázka krok po kroku: stránka textu (// v Textaci) + stav kresby
+function runDemo(id, steps, done) {
+  const pages = TEXTS[id].split(' // ');
+  let i = 0;
+  const show = () => {
+    steps[i]?.();
+    tmsg(inline(pages[i]), i < pages.length - 1 ? TEXTS.G_NEXT : TEXTS.TRAIN_NEXT, () => { if (++i < pages.length) show(); else done(); });
+  };
+  show();
+}
+
+// --- A: Asteroidová střelnice ---
+const AST = 'M0-92L52-70L90-18L78 44L30 86L-36 84L-84 40L-90-24L-52-74Z';
+const TA = {
+  book: 1,
+  start() { this.round = 0; this.next(); },
+  next() {
+    this.round++;
+    const nb = this.nb = this.round <= 5 ? 4 : 5, t = this.target = 1 + rand((1 << nb) - 1), set = new Set([t]), k = 2 + rand(2);
+    while (set.size < k + 1) {   // jiná čísla lišící se v jednom nebo dvou bitech
+      let v = t ^ (1 << rand(nb));
+      if (rand(2)) v ^= 1 << rand(nb);
+      if (v > 0) set.add(v);
+    }
+    this.ast = shuffle([...set]); this.lock = false;
+    this.draw();
+    tmsg(this.round === 6 ? T('TRAIN_A_LEVELUP') : '');
+  },
+  draw(labels) {
+    const n = this.ast.length, t = String(this.target).padStart(2, ' ');
+    let h = `<circle cx="800" cy="540" r="56" fill="none" stroke="#5AC8FA" stroke-width="4"/>
+      <path d="M800 470V510M800 570V610M730 540H770M830 540H870" stroke="#5AC8FA" stroke-width="4"/>
+      <rect x="740" y="616" width="120" height="96" rx="12" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+      <g style="color:#3DDC97" filter="url(#glow)">${seg7(t[0], 752, 632)}${seg7(t[1], 804, 632)}</g>`;
+    this.ast.forEach((v, i) => {
+      const x = 800 + (i - (n - 1) / 2) * 330, y = 250 + (i % 2) * 100, bits = v.toString(2).padStart(this.nb, '0');
+      h += `<g class="astw" style="animation-duration:${2.6 + i * .7}s"><g id="as${i}" class="ast clickable" transform="translate(${x} ${y})">
+        <path d="${AST}" fill="#3D5578" stroke="#8A9BB0" stroke-width="5"/>` +
+        [...bits].map((b, j) => `<text x="${(j - (bits.length - 1) / 2) * 34}" y="16" text-anchor="middle" font-size="44" font-weight="700" fill="#F2F5F9">${b}</text>` +
+          (labels ? `<text x="${(j - (bits.length - 1) / 2) * 34}" y="-36" text-anchor="middle" font-size="22" font-weight="700" fill="#5AC8FA">${1 << (bits.length - 1 - j)}</text>` : '')).join('') +
+        `</g></g>`;
+    });
+    tsvg().innerHTML = h;
+    if (!labels) this.ast.forEach((_, i) => $('#as' + i).addEventListener('click', () => this.shoot(i)));
+  },
+  explode(i) {
+    const a = $('#as' + i);
+    a.classList.remove('clickable');
+    a.innerHTML = Array.from({ length: 9 }, (_, k) => `<path class="frag" style="--dx:${Math.cos(k * .7) * 140 | 0}px;--dy:${Math.sin(k * .7) * 140 | 0}px" d="M0-20L18 0L0 16L-16 2Z" fill="${k % 2 ? '#FF6B4A' : '#8A9BB0'}"/>`).join('');
+  },
+  shoot(i) {
+    if (this.lock) return;
+    const v = this.ast[i], bits = v.toString(2).padStart(this.nb, '0');
+    if (v !== this.target) { fx($('#as' + i), false); return tmsg(fill(TEXTS.TRAIN_A_MISS, { bits, value: v, target: this.target })); }
+    this.lock = true;
+    this.explode(i);
+    tmsg(fill(TEXTS.TRAIN_A_HIT, { bits, decomp: decomp(v), target: v }));
+    const gen = trGen;
+    setTimeout(() => { if (gen === trGen) this.next(); }, 1800);
+  },
+  demo() {
+    this.lock = true; this.nb = 4; this.target = 13; this.ast = [13];
+    runDemo('TRAIN_A_DEMO', [() => this.draw(true), () => this.draw(true), () => this.explode(0)], () => { this.round = Math.max(0, this.round - 1); this.next(); });
+  },
+};
+
+// --- B: Sčítačka ---
+function genB(l) {
+  for (;;) {
+    const a = 1 + rand(15), b = 1 + rand(15);
+    if (l === 1 ? (a & b) === 0 : l === 2 ? (a & b) !== 0 : l === 3 ? (a & b) === b && a > b : a > b && (a & b) !== b) return [a, b];
+  }
+}
+const TB = {
+  book: 4, level: 1,
+  start() { this.streak = 0; this.newProblem(); },
+  get sub() { return this.level >= 3; },
+  newProblem() {
+    [this.a, this.b] = genB(this.level);
+    this.res = Array(5).fill('0'); this.car = Array(5).fill(''); this.bad = -1; this.ok = false; this.demoOn = false;
+    this.draw(); tmsg('');
+  },
+  draw() {
+    const op = this.sub ? '−' : '+', w = this.sub ? 4 : 5, val = this.sub ? this.a - this.b : this.a + this.b;
+    const row = n => [4, 3, 2, 1, 0].map(i => `<div class="d">${i < 4 ? (n >> i) & 1 : ''}</div>`).join('');
+    let g = '<div></div>' + [4, 3, 2, 1, 0].map(i => i > 0 && i < w ? `<button class="car" data-c="${i}">${this.car[i]}</button>` : '<div></div>').join('');
+    g += '<div></div>' + row(this.a) + `<div class="d">${op}</div>` + row(this.b) + '<div></div><div class="line"></div><div></div>';
+    g += [4, 3, 2, 1, 0].map(i => i < w ? `<button class="cell${i === this.bad ? ' bad' : this.ok ? ' good' : ''}" data-r="${i}">${this.res[i]}</button>` : '<div></div>').join('');
+    tbody().innerHTML = `<div class="lv">${[1, 2, 3, 4].map(l => `<button class="btn${l === this.level ? ' on' : ''}${l === this.offer ? ' offer' : ''}" data-l="${l}">${T('TRAIN_B_LVL_' + l)}</button>`).join('')}</div>
+      <div class="rules">${T('TRAIN_B_RULES')}</div>
+      <div class="sgrid">${g}</div>
+      <div class="dec">${this.a} ${op} ${this.b} = ${val}</div>
+      ${this.demoOn || this.ok ? '' : `<button class="btn chk" data-t="check">${T('TRAIN_CHECK')}</button>`}`;
+    tsvg().innerHTML = '';
+  },
+  click(b) {
+    if (this.demoOn) return;
+    if (b.dataset.l) { this.level = +b.dataset.l; this.offer = 0; this.streak = 0; return this.newProblem(); }
+    if (this.ok) return;
+    if (b.dataset.c) { const i = +b.dataset.c; this.car[i] = this.car[i] ? '' : '1'; }
+    if (b.dataset.r) { const i = +b.dataset.r; this.res[i] = this.res[i] === '1' ? '0' : '1'; this.bad = -1; }
+    if (b.dataset.t === 'check') return this.check();
+    this.draw();
+  },
+  check() {
+    const w = this.sub ? 4 : 5, val = this.sub ? this.a - this.b : this.a + this.b;
+    this.bad = [0, 1, 2, 3, 4].find(i => i < w && this.res[i] !== String((val >> i) & 1)) ?? -1;
+    if (this.bad >= 0) { this.draw(); return tmsg(T('TRAIN_B_WRONG')); }
+    this.ok = true;
+    if (++this.streak >= 3 && this.level < 4) this.offer = this.level + 1;
+    this.draw();
+    const op = this.sub ? '−' : '+', p4 = n => n.toString(2).padStart(4, '0');
+    tmsg(fill(TEXTS.TRAIN_B_OK, { a: p4(this.a), op, b: p4(this.b), result: p4(val), dec: `${this.a} ${op} ${this.b} = ${val}` }), TEXTS.TRAIN_NEXT, () => this.newProblem());
+  },
+  demo() {
+    this.demoOn = true; this.bad = -1; this.ok = false;
+    const sub = this.sub;
+    [this.a, this.b] = sub ? [6, 3] : [5, 3];
+    this.res = Array(5).fill(''); this.car = Array(5).fill('');
+    const set = (r, c) => () => { Object.assign(this.res, r); Object.assign(this.car, c); this.draw(); };
+    const steps = sub
+      ? [set({}, {}), set({ 0: '1' }, { 1: '1' }), set({ 1: '1' }, { 2: '1' }), set({ 2: '0', 3: '0' }, {}), set({}, {})]
+      : [set({}, {}), set({ 0: '0' }, { 1: '1' }), set({}, {}), set({ 1: '0' }, { 2: '1' }), set({ 2: '0', 3: '1' }, { 3: '1' }), set({ 4: '0' }, {})];
+    runDemo(sub ? 'TRAIN_B_DEMO_SUB' : 'TRAIN_B_DEMO_ADD', steps, () => this.newProblem());
+  },
+};
+
+// --- C: Převodník ---
+function genC(hard) {
+  const kind = hard ? rand(3) : 0, down = rand(2) === 1, n = 1 + rand(9);
+  const step = (k, dn) => dn ? `${LADDER[k]} → ${LADDER[k + 1]} je × ${k === 4 ? 8 : '1 000'}` : `${LADDER[k + 1]} → ${LADDER[k]} je ÷ ${k === 4 ? 8 : '1 000'}`;
+  if (kind === 2) {   // bity s předponou: Mb ↔ MB
+    const p = ['k', 'M', 'G'][rand(3)];
+    return down ? { from: p + 'B', to: p + 'b', v: n, ans: n * 8, dir: 'down', steps: [4], path: `${p}B → ${p}b je × 8` }
+      : { from: p + 'b', to: p + 'B', v: n * 8, ans: n, dir: 'up', steps: [4], path: `${p}b → ${p}B je ÷ 8` };
+  }
+  if (kind === 1) {   // dva schody
+    const k = rand(3), f = 1e6;
+    return down ? { from: LADDER[k], to: LADDER[k + 2], v: n, ans: n * f, dir: 'down', steps: [k, k + 1], path: step(k, true) + ', ' + step(k + 1, true) }
+      : { from: LADDER[k + 2], to: LADDER[k], v: n * f, ans: n, dir: 'up', steps: [k, k + 1], path: step(k + 1, false) + ', ' + step(k, false) };
+  }
+  if (rand(4) === 0) return down ? { from: 'B', to: 'b', v: n, ans: n * 8, dir: 'down', steps: [4], path: step(4, true) }
+    : { from: 'b', to: 'B', v: n * 8, ans: n, dir: 'up', steps: [4], path: step(4, false) };
+  const k = rand(4), up = n * 1000 + (rand(2) ? 500 : 0);
+  return down ? { from: LADDER[k], to: LADDER[k + 1], v: n, ans: n * 1000, dir: 'down', steps: [k], path: step(k, true) }
+    : { from: LADDER[k + 1], to: LADDER[k], v: up, ans: up / 1000, dir: 'up', steps: [k], path: step(k, false) };
+}
+const TC = {
+  book: 3,
+  start() { this.correct = 0; this.newProblem(); },
+  newProblem() { this.p = genC(this.correct >= 5); this.draw({}); tmsg(''); numpad(760, 330, v => this.answer(v)); },
+  q() { return `${fmt(this.p.v)} ${this.p.from}`; },
+  draw(lit, solved) {
+    tsvg().innerHTML = ladderSvg(420, 180, lit);
+    tbody().innerHTML = `<div class="cq">${typo(this.q())} = ${solved ? typo(fmt(this.p.ans)) : '?'} ${this.p.to}</div>`;
+  },
+  answer(v) {
+    const p = this.p, ok = Math.abs(parseNum(v) - p.ans) < 1e-9, a = typo(`${fmt(p.ans)} ${p.to}`);
+    if (ok) this.correct++;
+    padHide();
+    this.draw(p, true);
+    tmsg(ok ? fill(TEXTS.TRAIN_C_OK, { q: this.q(), a }) : fill(TEXTS.TRAIN_C_WRONG, { a, path: typo(p.path) }), TEXTS.TRAIN_NEXT, () => this.newProblem());
+  },
+  demo() {
+    padHide();
+    this.p = { from: 'GB', to: 'MB', v: 3, ans: 3000, dir: 'down', steps: [1] };
+    runDemo('TRAIN_C_DEMO', [() => this.draw(this.p), () => this.draw(this.p, true)], () => this.newProblem());
+  },
+};
+
+// --- D: Pexeso pojmů ---
+const TD = {
+  book: 5,
+  start() { this.deal(); },
+  deal() {
+    this.cards = shuffle(TEXTS.TRAIN_D_PAIRS.flatMap(([t, d], i) => [{ i, txt: `<b>${typo(t)}</b>` }, { i, txt: typo(d) }]));
+    this.open = []; this.matched = new Set(); this.busy = false;
+    this.draw(); tmsg('');
+  },
+  draw() {
+    tsvg().innerHTML = '';
+    tbody().innerHTML = `<div class="memo">${this.cards.map((c, k) => {
+      const m = this.matched.has(c.i), f = this.open.includes(k);
+      return `<button class="mc${m ? ' m' : f ? ' f' : ''}" data-k="${k}">${m || f ? c.txt
+        : '<svg width="70" height="70" viewBox="0 0 70 70"><path d="M35 6C50 20 52 40 46 56H24C18 40 20 20 35 6Z" fill="#5AC8FA"/><circle cx="35" cy="30" r="7" fill="#0F1B2D"/><path d="M24 50L12 62L26 58M46 50L58 62L44 58" fill="#3D5578"/></svg>'}</button>`;
+    }).join('')}</div>`;
+  },
+  click(b) {
+    const k = +b.dataset.k;
+    if (b.dataset.k == null || this.busy || this.open.includes(k) || this.matched.has(this.cards[k].i)) return;
+    this.open.push(k);
+    this.draw();
+    if (this.open.length < 2) return;
+    const [x, y] = this.open;
+    if (this.cards[x].i !== this.cards[y].i) {
+      this.busy = true;
+      const gen = trGen;
+      return setTimeout(() => { if (gen !== trGen) return; this.open = []; this.busy = false; this.draw(); }, 1100);
+    }
+    const [term, definition] = TEXTS.TRAIN_D_PAIRS[this.cards[x].i];
+    this.matched.add(this.cards[x].i); this.open = [];
+    this.draw();
+    if (this.matched.size === 8) tmsg(T('TRAIN_D_DONE'), TEXTS.TRAIN_D_AGAIN, () => this.deal());
+    else tmsg(fill(TEXTS.TRAIN_D_MATCH, { term, definition }));
+  },
+  demo() {   // ukázka: otočí jednu správnou dvojici
+    this.deal();
+    this.busy = true;
+    const ks = this.cards.map((c, k) => c.i === 0 ? k : -1).filter(k => k >= 0);
+    this.open = ks; this.draw();
+    const [term, definition] = TEXTS.TRAIN_D_PAIRS[0];
+    tmsg(fill(TEXTS.TRAIN_D_MATCH, { term, definition }), TEXTS.TRAIN_NEXT, () => this.deal());
+  },
+};
+
+const TRAINERS = { A: TA, B: TB, C: TC, D: TD };
+let trGen = 0;   // zneplatní odložené kroky po zavření trenažéru
+const room7 = {
+  name: 'ROOM_7', bajtik: [800, 790],
+  get book() { return this.tr ? this.tr.book : null; },
+  render() {
+    this.tr = null;
+    const icon = {
+      A: c => `<path d="${AST}" transform="translate(${c - 30} 395) scale(.45)" fill="#3D5578" stroke="#8A9BB0" stroke-width="8"/><circle cx="${c + 40}" cy="400" r="22" fill="none" stroke="#5AC8FA" stroke-width="4"/><path d="M${c + 40} 372v56M${c + 12} 400h56" stroke="#5AC8FA" stroke-width="3"/>`,
+      B: c => `<text x="${c}" y="415" text-anchor="middle" font-size="44" font-weight="700" fill="#3DDC97">1+1=10</text>`,
+      C: c => `<path d="M${c - 30} 345V445M${c + 30} 345V445M${c - 30} 365H${c + 30}M${c - 30} 395H${c + 30}M${c - 30} 425H${c + 30}" stroke="#8A9BB0" stroke-width="6"/>`,
+      D: c => `<rect x="${c - 70}" y="350" width="60" height="84" rx="8" fill="#5AC8FA"/><rect x="${c + 10}" y="350" width="60" height="84" rx="8" fill="#F2F5F9"/>`,
+    };
+    $('#room').innerHTML = wall() + `<path d="M0 760H1600" stroke="#3D5578" stroke-width="4" stroke-dasharray="40 30"/>` + door('d7', 80, 250, 220, 530) +
+      ['A', 'B', 'C', 'D'].map((k, i) => {
+        const x = 340 + i * 310, c = x + 140;
+        return `<g id="st${k}"><rect x="${x}" y="170" width="280" height="56" rx="10" fill="#071018" stroke="#3D5578" stroke-width="3"/>
+          <text x="${c}" y="206" text-anchor="middle" font-size="19" font-weight="700" fill="#5AC8FA">${T('TRAIN_' + k + '_NAME')}</text>
+          <rect x="${x}" y="240" width="280" height="500" rx="18" fill="#2C3E5A" stroke="#3D5578" stroke-width="4"/>
+          <rect x="${x + 24}" y="262" width="232" height="200" rx="10" fill="#071018" stroke="#3D5578" stroke-width="3"/>${icon[k](c)}
+          <rect x="${x + 40}" y="500" width="200" height="120" rx="12" fill="#1B2A41"/>
+          <circle cx="${x + 90}" cy="560" r="22" fill="#FF6B4A" stroke="#C94F35" stroke-width="3"/><circle cx="${x + 190}" cy="560" r="22" fill="#3DDC97" stroke="#2BAF77" stroke-width="3"/>
+          <rect x="${x + 60}" y="740" width="30" height="40" fill="#3D5578"/><rect x="${x + 190}" y="740" width="30" height="40" fill="#3D5578"/></g>`;
+      }).join('');
+    hot($('#d7'), 190, 515, () => openDoor('d7', () => go(5)));
+    ['A', 'B', 'C', 'D'].forEach((k, i) => hot($('#st' + k), 480 + i * 310, 300, () => this.open(k)));
+  },
+  open(k) {
+    hideBubble(); closeMenu();
+    this.tr = TRAINERS[k]; trGen++;
+    bajtikEl.style.visibility = 'hidden';
+    $('#hot').classList.add('zoomed', 'solo');
+    trEl.innerHTML = `<div class="th"><h2>${T('TRAIN_' + k + '_NAME')}</h2><button class="btn" data-t="demo">${T('TRAIN_DEMO')}</button>
+      <button class="btn x" data-t="close" title="${TEXTS.G_CLOSE}">×</button></div>
+      <p class="ti">${T('TRAIN_' + k + '_INTRO')}</p>
+      <svg class="tsvg" viewBox="0 0 1600 836" width="1600" height="836"></svg><div class="tb"></div>
+      <div class="tm"><span></span><button class="btn" data-t="msg" hidden></button></div>`;
+    trEl.hidden = false;
+    this.tr.start();
+  },
+  close() {
+    if (!this.tr) return;
+    trGen++; padHide();
+    trEl.hidden = true; trEl.innerHTML = '';
+    this.tr = null;
+    bajtikEl.style.visibility = '';
+    $('#hot').classList.remove('zoomed', 'solo');
+  },
+  enter(first) { say(first ? 'R7_INTRO' : 'R7_REVISIT'); },
+  exit() { this.close(); },
+  task: () => 'R7_TASK',
+  hints: () => ['R7_TASK'],
+  solution: () => 'Cvičiště nemá řešení, jen trénink.',
+};
+trEl.addEventListener('click', e => {
+  e.stopPropagation();
+  const b = e.target.closest('button');
+  if (!b || !room7.tr) return;
+  if (b.dataset.t === 'close') return room7.close();
+  if (b.dataset.t === 'demo') { trGen++; return room7.tr.demo(); }
+  if (b.dataset.t === 'msg') return trBtn?.();
+  room7.tr.click?.(b);
+});
+
+// ===== VÍTĚZNÁ OBRAZOVKA A DIPLOM =====
+// samostatná kresba Bajtíka bez filtrů (diplom se tiskne bez zbytku scény)
+const bajtikMini = (w = 90) => `<svg width="${w}" height="${w * 180 / 140}" viewBox="0 0 140 180">
+  <line x1="70" y1="24" x2="70" y2="9" stroke="#2E8FC0" stroke-width="4"/><circle cx="70" cy="7" r="6" fill="#3DDC97"/>
+  <rect x="12" y="22" width="116" height="138" rx="50" fill="#5AC8FA" stroke="#2E8FC0" stroke-width="4"/>
+  <rect x="28" y="42" width="84" height="52" rx="16" fill="#071018"/>${EYES['radost']}
+  <rect x="28" y="112" width="84" height="18" rx="9" fill="#2E8FC0"/></svg>`;
+const SYS_ICONS = [
+  '<path d="M26 4L10 30H24L18 52L38 22H24Z" fill="#3DDC97"/>',
+  '<path d="M8 12q10-5 20 1q10-6 20-1v32q-10-5-20 1q-10-6-20-1z M28 13v32" fill="none" stroke="#3DDC97" stroke-width="4" stroke-linejoin="round"/>',
+  '<path d="M28 4L34 22L52 28L34 34L28 52L22 34L4 28L22 22Z" fill="#3DDC97"/>',
+  '<path d="M28 52V24M18 52H38" stroke="#3DDC97" stroke-width="5"/><circle cx="28" cy="20" r="5" fill="#3DDC97"/><path d="M16 8a16 16 0 0 0 0 24M40 8a16 16 0 0 1 0 24" fill="none" stroke="#3DDC97" stroke-width="4"/>',
+];
+const czDate = d => `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`;
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+const room8 = {
+  name: 'WIN_TITLE', book: null, bajtik: [200, 790], lateRing: true,
+  render() {
+    let stars = '';
+    for (let i = 0; i < 120; i++) stars += `<circle cx="${rnd() * 1600 | 0}" cy="${rnd() * 900 | 0}" r="${(1 + rnd() * 2).toFixed(1)}" fill="#F2F5F9" opacity="${(.3 + rnd() * .7).toFixed(2)}"/>`;
+    $('#room').innerHTML = `<rect width="1600" height="900" fill="#0F1B2D"/>${stars}
+      <g transform="translate(1260 400)">
+        <rect x="-150" y="-12" width="300" height="24" rx="10" fill="#3D5578"/>
+        <rect x="-230" y="-60" width="80" height="120" rx="8" fill="#2C3E5A" stroke="#5AC8FA" stroke-width="3"/>
+        <rect x="150" y="-60" width="80" height="120" rx="8" fill="#2C3E5A" stroke="#5AC8FA" stroke-width="3"/>
+        <circle r="70" fill="#2C3E5A" stroke="#5AC8FA" stroke-width="5"/><circle r="30" fill="#071018" stroke="#3D5578" stroke-width="4"/>
+        <text y="120" text-anchor="middle" font-size="30" font-weight="700" fill="#5AC8FA">${T('R4_MAP_STATION')}</text></g>
+      <g class="rescue"><g transform="translate(880 400)">
+        <path d="M-120-26H40L90 0L40 26H-120Z" fill="#F2F5F9" stroke="#8A9BB0" stroke-width="4"/>
+        <path d="M-90-26L-60-60H-20L-30-26M-90 26L-60 60H-20L-30 26" fill="#FF6B4A"/>
+        <circle cx="30" r="10" fill="#5AC8FA"/><path d="M-120-12L-170 0L-120 12" fill="#FFB547"/></g></g>`;
+    const win = $('#win');
+    win.innerHTML = `<h1>${T('WIN_TITLE')}</h1><p>${T('WIN_TEXT')}</p>`;
+    win.hidden = false;
+    const f = $('#winform');
+    f.innerHTML = `<label for="pname">${T('WIN_NAME_LABEL')}</label>
+      <div class="row"><input id="pname" maxlength="40" autocomplete="off" placeholder="${T('WIN_NAME_PLACEHOLDER')}">
+      <button class="btn" id="getdip" disabled>${T('WIN_GET_DIPLOMA')}</button></div>`;
+    f.hidden = false;
+    const inp = $('#pname'), btn = $('#getdip');
+    inp.value = S.playerName;
+    const upd = () => { btn.disabled = inp.value.trim().length < 2; };
+    inp.oninput = () => { S.playerName = inp.value; save(); upd(); };
+    inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter' && !btn.disabled) this.diploma(); };
+    btn.onclick = e => { e.stopPropagation(); this.diploma(); };
+    f.onclick = e => e.stopPropagation();
+    upd();
+  },
+  enter() {
+    setTimeout(() => { if (cur === this) { showBajtikRing(); say('WIN_BAJTIK'); } }, 1500);
+  },
+  exit() { $('#win').hidden = $('#winform').hidden = true; },
+  diploma() {
+    const names = TEXTS.DIPLOMA_SYSTEMS.split(' · ');
+    $('#diploma').innerHTML = `<h1>${T('DIPLOMA_TITLE')}</h1><p class="sub">${T('DIPLOMA_SUBTITLE')}</p>
+      <p class="who">${esc(S.playerName.trim())}</p><p class="txt">${T('DIPLOMA_TEXT')}</p>
+      <div class="sys">${names.map((n, i) => `<div><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="27" fill="#1B2A41"/>${SYS_ICONS[i]}</svg>${typo(n)}</div>`).join('')}</div>
+      <div class="foot"><div>${typo(TEXTS.DIPLOMA_DATE.replace('{date}', czDate(new Date())))}</div>
+        <div class="sign">${bajtikMini()}<div>${T('DIPLOMA_SIGN')}</div><div class="ps">${T('DIPLOMA_PS')}</div></div></div>`;
+    $('#dipwrap .bar').innerHTML = `<button class="btn" data-a="close">${T('G_CLOSE')}</button><button class="btn dark" data-a="print">${T('DIPLOMA_PRINT')}</button>`;
+    $('#dipwrap').hidden = false;
+  },
+  task: () => 'WIN_BAJTIK',
+  hints: () => [],
+};
+$('#dipwrap').addEventListener('click', e => {
+  e.stopPropagation();
+  const a = e.target.dataset.a;
+  if (a === 'close') $('#dipwrap').hidden = true;
+  if (a === 'print') window.print();
+});
+const ROOMS = { 1: room1, 2: room2, 3: room3, 4: room4, 5: room5, 6: room6, 7: room7, 8: room8 };
+
+// ===== ŠKÁLOVÁNÍ =====
+function fit() {
+  const s = Math.min(innerWidth / 1600, innerHeight / 900);
+  $('#stage').style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+fit();
+
+// ===== START =====
+function startScreen() {
+  const el = $('#start'), saved = load();
+  const btn = (id, fn, dark) => `<button class="btn${dark ? ' dark' : ''}" data-id="${id}">${T(id)}</button>`;
+  el.innerHTML = `<svg width="180" height="230" viewBox="0 -10 140 190"><use href="#bb" width="140" height="180"/>${EYES['radost']}</svg>
+    <h1>${T('G_TITLE')}</h1><p>${T('G_SUBTITLE')}</p>
+    <div class="btns">${saved ? btn('G_CONTINUE') + btn('G_RESTART') : btn('G_NEW')}</div>`;
+  const actions = {
+    G_NEW: () => begin(fresh()),
+    G_CONTINUE: () => begin(saved),
+    G_RESTART: () => {
+      el.querySelector('p').textContent = T('G_RESTART_CONFIRM');
+      el.querySelector('.btns').innerHTML = btn('G_YES_RESTART') + btn('G_BACK');
+    },
+    G_YES_RESTART: () => begin(fresh()),
+    G_BACK: startScreen,
+  };
+  el.onclick = e => { const id = e.target.dataset?.id; if (id) { e.stopPropagation(); actions[id](); } };
+  el.hidden = false;
+}
+function begin(state) {
+  S = state;
+  $('#start').hidden = true;
+  fadeEl.style.opacity = 1;
+  go(S.room);
+}
+
+const jump = +P.get('room');
+if (ROOMS[jump]) begin(stateForRoom(jump));
+else startScreen();
+</script>
+</body>
+</html>
