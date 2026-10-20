@@ -81,7 +81,7 @@ Výraz uvedený na začátku stránky v hranatých závorkách platí od té str
 | --- | --- | --- |
 | R2\_INTRO | vylekaný | Rozvodna! Reaktor skoro nedává energii, musíme mu ji poslat ručně. // \[neutrální\] Každá páka posílá jiné množství energie. Nahoře je **1** (zapnuto), dole **0** (vypnuto). // Displeje ukazují, kolik která páka posílá. Nastav součet přesně na číslo z mého seznamu a stiskni ODESLAT ENERGII. |
 | R2\_TASK | neutrální | Nastav páky tak, aby součet byl {target}. Pak stiskni ODESLAT ENERGII. |
-| R2\_OK\_1 | radost | Přesně! A víš co? Páky teď ukazují {bits}. Tak se {target} píše ve **dvojkové soustavě**. |
+| R2\_OK\_1 | radost | Správně! Zleva páky ukazovaly {bits}. Tak se {target} píše ve **dvojkové soustavě**. |
 | R2\_OK\_2 | radost | Paráda, další světýlko je zelené! {target} je ve dvojkové soustavě {bits}. |
 | R2\_OK\_3 | radost | Sedí to! {target} = {bits}. Ty už mluvíš jako počítač. |
 | R2\_OK\_DARK | radost | Naslepo a správně! {target} je {bits}. |
