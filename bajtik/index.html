@@ -91,6 +91,9 @@ button{font:inherit}
 #winform input{flex:1;font:inherit;font-size:30px;padding:10px 16px;border-radius:14px;border:3px solid #FFD23F;background:#F2F5F9;color:#0F1B2D;user-select:text;-webkit-user-select:text}
 #winform .btn{white-space:nowrap}
 #winform .btn:disabled{opacity:.45;cursor:default}
+#replay{position:absolute;z-index:4;left:40px;right:40px;top:808px;display:flex;gap:12px;justify-content:center;align-items:center}
+#replay span{font-size:24px;color:#8A9BB0}
+#replay .btn{font-size:22px;padding:8px 16px}
 .rescue{animation:rescue 5s ease-out forwards}
 @keyframes rescue{from{transform:translate(-900px,140px)}to{transform:none}}
 #dipwrap{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.7)}
@@ -119,7 +122,7 @@ button{font:inherit}
 /* trenažéry */
 #trainer{position:absolute;z-index:4;left:0;top:64px;width:1600px;height:836px;background:#0F1B2D}
 #trainer .tsvg{position:absolute;left:0;top:0}
-#trainer .th{position:absolute;left:30px;right:30px;top:14px;display:flex;gap:14px;align-items:center}
+#trainer .th{position:absolute;z-index:1;left:30px;right:30px;top:14px;display:flex;gap:14px;align-items:center}
 #trainer .th h2{flex:1;margin:0;font-size:36px}
 #trainer .th .x{width:56px;height:56px;padding:0;font-size:30px}
 #trainer .ti{position:absolute;left:30px;top:76px;margin:0;font-size:24px;color:#8A9BB0}
@@ -135,6 +138,7 @@ button{font:inherit}
 #trainer .lv{left:30px;top:124px;display:flex;gap:10px}
 #trainer .lv .btn{font-size:22px;padding:8px 16px}
 #trainer .lv .on{background:#5AC8FA}
+#trainer .lv .btn:disabled{opacity:.4;cursor:default}
 #trainer .lv .offer{box-shadow:0 0 0 4px #FFD23F}
 #trainer .rules{left:30px;top:196px;font-size:24px;color:#8A9BB0}
 #trainer .sgrid{left:520px;top:250px;display:grid;grid-template-columns:repeat(6,84px);gap:8px;font-size:44px;font-weight:700;text-align:center}
@@ -154,7 +158,7 @@ button{font:inherit}
 #hot.solo .hot.bj{display:none}
 
 /* minitest */
-#test{position:absolute;z-index:4;left:40px;top:120px;width:1160px;height:756px;background:#0F1B2D;border:4px solid #3D5578;border-radius:22px;
+#test{position:absolute;z-index:4;left:40px;top:120px;width:1040px;height:756px;background:#0F1B2D;border:4px solid #3D5578;border-radius:22px;
   padding:40px 56px;display:flex;flex-direction:column}
 #test h2{margin:0 0 8px;font-size:40px}
 #test .prog{color:#8A9BB0;font-size:24px;margin-bottom:12px}
@@ -162,13 +166,16 @@ button{font:inherit}
 #test .opts{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1000px}
 #test .opts .btn{text-align:left;font-size:26px;padding:18px 22px;min-height:96px}
 #test .opts .btn.sel{background:#FFF6D6;border-color:#FFD23F;box-shadow:0 0 0 3px #FFD23F}
+#test .opts .btn.good{background:#D8F7E9;border-color:#3DDC97;box-shadow:0 0 0 3px #3DDC97}
+#test .opts .btn.bad{background:#FFE1DA;border-color:#FF6B4A;box-shadow:0 0 0 3px #FF6B4A}
+#test .fb{font-size:30px;margin:0}#test .fb b{color:#3DDC97}#test .fb .ko{color:#FF6B4A;text-decoration:line-through}
 #test .foot{margin-top:auto;display:flex;gap:16px;justify-content:flex-end}
 #test .foot .btn{font-size:28px;padding:12px 34px}
 #test .cats{list-style:none;padding:0;margin:20px 0;font-size:32px}
 #test .cats li{margin:10px 0}
 #test .cats .ok{color:#3DDC97}#test .cats .ko{color:#FF6B4A}
-#test .btn.dark,#numpad .btn.dark{background:#3D5578;border-color:#8A9BB0}
-#test .btn.dark:hover,#numpad .btn.dark:hover{background:#4C668C}
+#test .btn.dark,#numpad .btn.dark,#replay .btn.dark{background:#3D5578;border-color:#8A9BB0}
+#test .btn.dark:hover,#numpad .btn.dark:hover,#replay .btn.dark:hover{background:#4C668C}
 .wave{fill:none;stroke:#5AC8FA;stroke-width:4;transform-box:fill-box;transform-origin:center;animation:wave 1.2s ease-out infinite}
 @keyframes wave{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.8);opacity:0}}
 .ant{transition:transform .8s ease-out}
@@ -269,6 +276,7 @@ button{font:inherit}
   <div id="trainer" hidden></div>
   <div id="win" hidden></div>
   <div id="winform" hidden></div>
+  <div id="replay" hidden></div>
   <div id="dipwrap" hidden><div class="bar"></div><div id="diploma"></div></div>
   <div id="numpad" hidden></div>
   <div id="tome" hidden><div class="pages"><section></section><section></section></div><button class="btn x">×</button></div>
@@ -282,7 +290,7 @@ button{font:inherit}
 // ===== TEXTY (doslova z dokumentu Bajtík – Textace; hláška = [výraz, text], // odděluje stránky) =====
 const TEXTS = {
   ROOM_1: 'Technická místnost', ROOM_2: 'Rozvodna', ROOM_3: 'Archiv', ROOM_4: 'Navigace',
-  ROOM_5: 'Rozcestí', ROOM_6: 'Kajuta', ROOM_7: 'Cvičiště',
+  ROOM_5: 'Rozcestí', ROOM_6: 'Kajuta', ROOM_7: 'Cvičiště', ROOM_9: 'Měřírna',
 
   G_TITLE: 'Bajtík a ztracená loď',
   G_SUBTITLE: 'Oprav loď, poznej dvojkovou soustavu a vyšli SOS.',
@@ -319,7 +327,8 @@ const TEXTS = {
   R2_NEED: 'Reaktor potřebuje:', R2_SEND: 'ODESLAT ENERGII',
   R2_INTRO: ['vylekaný', 'Rozvodna! Reaktor skoro nedává energii, musíme mu ji poslat ručně. // [neutrální] Každá páka posílá jiné množství energie. Nahoře je **1** (zapnuto), dole **0** (vypnuto). // Displeje ukazují, kolik která páka posílá. Nastav součet přesně na číslo z mého seznamu a stiskni ODESLAT ENERGII.'],
   R2_TASK: ['neutrální', 'Nastav páky tak, aby součet byl {target}. Pak stiskni ODESLAT ENERGII.'],
-  R2_OK_1: ['radost', 'Přesně! A víš co? Páky teď ukazují {bits}. Tak se {target} píše ve **dvojkové soustavě**.'],
+  //R2_OK_1: ['radost', 'Přesně! A víš co? Páky teď ukazují {bits}. Tak se {target} píše ve **dvojkové soustavě**.'],
+  R2_OK_1: ['radost', 'Správně! Z leva páky ukazovali {bits}. Tak se {target} píše ve **dvojkové soustavě**.'],
   R2_OK_2: ['radost', 'Paráda, další světýlko je zelené! {target} je ve dvojkové soustavě {bits}.'],
   R2_OK_3: ['radost', 'Sedí to! {target} = {bits}. Ty už mluvíš jako počítač.'],
   R2_OK_DARK: ['radost', 'Naslepo a správně! {target} je {bits}.'],
@@ -336,11 +345,35 @@ const TEXTS = {
   R3_INTRO: ['neutrální', 'Lodní archiv. Počítač tu drží dveře zamčené, dokud mu neukážeš, že soustavám rozumíš. // [přemýšlí] Desítková a dvojková totiž nejsou jediné! Spoj každou soustavu na stole s tím, k čemu se dnes používá. // [neutrální] Nevíš si rady? Knihy v regálu ti to vysvětlí. Klikni na ně.'],
   R3_TASK: ['neutrální', 'Spoj každou soustavu s jejím použitím a dej ZKONTROLOVAT. Když nevíš, čti knihy v regálu.'],
   R3_RESULT: ['přemýšlí', 'Máš {correct} ze 7 správně. Zelené zůstanou, ostatní zkus spojit znovu.'],
-  R3_DONE: ['radost', 'Všech 7 správně, archiv odemyká dveře! // Soustav je spousta, ale v počítačích vládne ta dvojková. Jdeme do navigace.'],
+  R3_DONE: ['radost', 'Všech 7 správně, archiv odemyká dveře! // Soustav je spousta, ale v počítačích vládne ta dvojková. Jdeme do měřírny.'],
   R3_HINT_1: ['přemýšlí', 'Každá kniha v regálu patří k jednomu použití. Přečti si ji a najdi, o které soustavě mluví.'],
   R3_HINT_2: ['přemýšlí', 'Začni tím, co znáš: běžné počítání je 10 a počítače 2. Zbytek najdeš v knihách.'],
   R3_HINT_3: ['neutrální', 'Minuty jsou 60, tucet 12, barvy na webu 16 a letadla mají kódy v osmičkové. Zbývá francouzština.'],
   R3_CHECK: 'ZKONTROLOVAT',
+
+  R9_E1_TITLE: 'BIT', R9_E2_TITLE: 'BAJT', R9_E3_TITLE: 'PŘEDPONY', R9_E4_TITLE: 'V PRAXI',
+  R9_INTRO: ['neutrální', 'Měřírna! Než půjdeme do navigace, musíš znát jednotky, ve kterých počítač měří data. // [přemýšlí] Na stěně jsou čtyři vitríny. Klikni na tu rozsvícenou, vysvětlím ti ji a pak se tě na něco zeptám. // [neutrální] Odpovídáš na tabuli pod vitrínami. Až budou všechny čtyři zelené, dveře se otevřou.'],
+  R9_TASK: ['neutrální', 'Klikni na rozsvícenou vitrínu a poslechni si, co ukazuje.'],
+  R9_E1: ['neutrální', 'Tohle je **bit**, nejmenší kousek informace. Má jen dvě možnosti: **0**, nebo **1**. Jako ta kontrolka: zhasnuto, nebo rozsvíceno. // Bit je **jednotka** jako metr nebo gram. Metr měří délku, gram hmotnost a bit měří informaci. Značí se malým **b**.'],
+  R9_E2: ['neutrální', 'Jeden bit toho moc neřekne. Počítač proto bity skládá po osmi a osmi bitům se říká **bajt**. // Do jednoho bajtu se vejde třeba jedno písmeno: 01000001 je A. // [varování] Pozor na značky! Bit je malé **b**, bajt velké **B**. Jedno písmenko, osmkrát větší rozdíl.'],
+  R9_E3: ['neutrální', 'Bajt je malá jednotka, jedna fotka jich má miliony. Proto se přidávají **předpony**, úplně stejně jako u metrů a gramů. // **Kilo** znamená 1 000×: 1 km = 1 000 m, 1 kg = 1 000 g a 1 kB = 1 000 B. // Každá další předpona je zase 1 000× víc: **mega** (MB), **giga** (GB) a **tera** (TB).'],
+  R9_E4: ['neutrální', 'K čemu to je? V **bajtech** se měří, kolik místa data zaberou. Fotka z mobilu má asi 3 MB, film asi 4 GB. // [přemýšlí] Rychlost internetu se ale udává v **bitech** za sekundu, třeba 100 Mb/s. Malé b, megabity! // [neutrální] Až uvidíš jednotku, vždy se podívej, jestli je b malé, nebo velké.'],
+  R9_Q1: ['neutrální', 'Kolik různých hodnot může mít jeden bit?'],
+  R9_Q2: ['neutrální', 'Kolik bitů je 1 B?'],
+  R9_Q3: ['neutrální', 'Kolik kB je 1 MB?'],
+  R9_Q4: ['neutrální', 'Která značka znamená megabajt?'],
+  // možnosti na tabuli, správná první (zobrazí se zamíchané)
+  R9_A1: ['2', '1', '10'], R9_A2: ['8', '1', '10'], R9_A3: ['1 000', '100', '8'], R9_A4: ['MB', 'Mb', 'mB'],
+  R9_OK_1: ['radost', 'Ano, dvě: 0 a 1. Proto počítače mluví dvojkovou soustavou.'],
+  R9_OK_2: ['radost', 'Přesně, 1 B = 8 b. Velké B je bajt, malé b je bit.'],
+  R9_OK_3: ['radost', 'Ano, 1 MB = 1 000 kB. Každá předpona je 1 000× víc, jako u metrů a kilometrů.'],
+  R9_WRONG: ['varování', 'To nesedí. Klikni znovu na vitrínu a poslechni si ji ještě jednou.'],
+  R9_DONE: ['radost', 'Všechny vitríny svítí zeleně! Bit, bajt i předpony znáš. // MB je megabajt, Mb megabit, osmkrát menší. Teď to využijeme v navigaci, dveře jsou otevřené.'],
+  R9_HINT_1: ['přemýšlí', 'Klikni na vitrínu, která svítí. Odpověď je schovaná v tom, co ti o ní řeknu.'],
+  R9_Q1_HINT: ['neutrální', 'Bit je jako vypínač: buď 0, nebo 1. Kolik je to možností?'],
+  R9_Q2_HINT: ['neutrální', 'Velké B je bajt. Spočítej kontrolky ve vitríně BAJT.'],
+  R9_Q3_HINT: ['neutrální', 'Mega je hned po kilo a každá předpona je 1 000× víc.'],
+  R9_Q4_HINT: ['neutrální', 'Mega se píše velkým M a bajt velkým B.'],
 
   R4_PANEL_A: 'Datová páska', R4_PANEL_B: 'Žebřík jednotek', R4_PANEL_C: 'Paměťové moduly',
   R4_LEN: 'Délka kusu', R4_SPLIT: 'ROZDĚLIT', R4_GARBAGE: 'nesmyslná data', R4_INSERT: 'VLOŽIT', R4_RACK: 'nejmenší → největší',
@@ -348,7 +381,7 @@ const TEXTS = {
   R4_MAP_STATION: 'Orion-7',
   R4_INTRO: ['vylekaný', 'Navigace je prázdná! Bez hvězdné mapy nevíme, kde jsme, a SOS by nikdo nenašel. // [neutrální] Mapu nahrajeme přes tři panely. Začni panelem A, datovou páskou.'],
   R4A_TASK: ['neutrální', 'Nastav délku kusu tak, aby z pásky vyšla smysluplná data, a dej ROZDĚLIT.'],
-  R4A_OK: ['radost', 'Funguje to! Kus o 8 bitech se jmenuje **bajt** a počítač čte data právě po bajtech. // 24 bitů jsou tedy 3 bajty. A vyšlo z nich BAJ… skoro moje jméno!'],
+  R4A_OK: ['radost', 'Funguje to! Kus o 8 bitech je **bajt**, jako ve vitríně v měřírně. Počítač čte data právě po bajtech. // 24 bitů jsou tedy 3 bajty. A vyšlo z nich BAJ… skoro moje jméno!'],
   R4A_WRONG: ['přemýšlí', 'Hmm, z toho vyšla jen změť znaků. Zkus jinou délku kusu.'],
   R4A_UNIT_Q: ['neutrální', 'Navigace hlásí velikost pásky: 3 _. Doplň správnou značku.'],
   R4A_DONE: ['radost', 'Správně! Malé **b** je bit, velké **B** je bajt. Jedno písmenko, osmkrát větší rozdíl.'],
@@ -356,7 +389,7 @@ const TEXTS = {
   R4A_HINT_1: ['přemýšlí', 'Počítač čte data po kouscích, které mají vždy stejný počet bitů. Zkoušej různé délky.'],
   R4A_HINT_2: ['přemýšlí', 'Ten správný kousek se jmenuje bajt. Kolik bitů má bajt? Je to v učebnici.'],
   R4A_HINT_3: ['neutrální', 'Nastav délku kusu na 8.'],
-  R4B_INTRO: ['neutrální', 'Velká data měříme v kilobajtech, megabajtech, gigabajtech… Každý schod nahoru je 1 000× víc, jako u metrů a kilometrů. // Jen mezi bity a bajty je schod 8×. // [přemýšlí] Vidíš cedulku? Někde, třeba u operační paměti nebo ve Windows, se počítá po 1 024. My tu počítáme po 1 000, ale vždy čti zadání!'],
+  R4B_INTRO: ['neutrální', 'Předpony už znáš z měřírny: kilobajty, megabajty, gigabajty… Na žebříku je každý schod nahoru je 1 000× víc, jako u metrů a kilometrů. // Jen mezi bity a bajty je schod 8×. // [přemýšlí] Vidíš cedulku? Někde, třeba u operační paměti nebo ve Windows, se počítá po 1 024. My tu počítáme po 1 000, ale vždy čti zadání!'],
   R4B_Q1: ['neutrální', 'Hvězdná mapa má 4 GB. Starý počítač přijímá velikost jen v MB. Kolik MB má mapa?'],
   R4B_Q2: ['neutrální', 'Modul motorů hlásí 2 500 kB. Kolik je to MB?'],
   R4B_Q3: ['neutrální', 'Kontrolní otázka: kolik bitů je 1 kB?'],
@@ -391,6 +424,10 @@ const TEXTS = {
   R6_TEST_PROGRESS: 'Otázka {n} z 8',
   R6_TEST_NEXT: 'Další',
   R6_TEST_FINISH: 'Vyhodnotit',
+  R6_TEST_CHECK: 'Zkontrolovat',
+  R6_FB_YOURS: 'Tvoje odpověď:', R6_FB_RIGHT: 'Správně:',
+  R6_FB_OK: ['radost', 'Správně! {why}'],
+  R6_FB_KO: ['přemýšlí', 'Tohle nevyšlo, správně je **{right}**. // {why}'],
   R6_RESULT: 'Výsledek: {score} z 8',
   R6_CAT_A: 'Pojmy', R6_CAT_B: 'Dvojková → desítková', R6_CAT_C: 'Počítání ve dvojkové', R6_CAT_D: 'Jednotky',
   R6_RETRY: 'Zkusit znovu',
@@ -411,6 +448,7 @@ const TEXTS = {
   WIN_NAME_LABEL: 'Tvoje jméno na diplom',
   WIN_NAME_PLACEHOLDER: 'Jméno a příjmení',
   WIN_GET_DIPLOMA: 'Získat diplom',
+  WIN_REPLAY: 'Zahrát si znovu:', WIN_REPLAY_ALL: 'Celou hru',
   DIPLOMA_TITLE: 'Diplom',
   DIPLOMA_SUBTITLE: 'za záchranu vesmírné lodi',
   DIPLOMA_TEXT: 'za opravu reaktoru, archivu a navigace a za vyslání signálu SOS. Dvojková soustava, bity a bajty už pro tebe nejsou žádná záhada.',
@@ -425,11 +463,13 @@ const TEXTS = {
   R7_TASK: ['neutrální', 'Vyber si automat a trénuj. Až si budeš věřit, vrať se do kajuty k testu.'],
   TRAIN_A_NAME: 'A · Asteroidová střelnice', TRAIN_B_NAME: 'B · Sčítačka', TRAIN_C_NAME: 'C · Převodník', TRAIN_D_NAME: 'D · Pexeso pojmů',
   TRAIN_DEMO: 'Ukázka', TRAIN_NEXT: 'Další příklad', TRAIN_CHECK: 'Zkontrolovat',
-  TRAIN_A_INTRO: 'Zaměřovač ukazuje desítkové číslo. Sestřel asteroid, na kterém je to samé číslo ve dvojkové.',
+  TRAIN_A_INTRO: 'Zaměřovač ukazuje desítkové číslo. Sestřel asteroid, na kterém je to samé číslo ve dvojkové. Takhle postupně všechny 4.',
   TRAIN_A_DEMO: 'Cíl je 13. // Hodnoty pozic zleva jsou 8, 4, 2, 1. // Asteroid 1101: 8 + 4 + 0 + 1 = 13. Zásah!',
   TRAIN_A_HIT: 'Zásah! {bits} = {decomp} = {target}.',
   TRAIN_A_MISS: 'Vedle! {bits} je {value}, ne {target}.',
-  TRAIN_A_LEVELUP: 'Výborně, přidáváme pátý bit s hodnotou 16.',
+  TRAIN_A_LVL_1: 'Level 1 · 3 bity', TRAIN_A_LVL_2: 'Level 2 · 4 bity', TRAIN_A_LVL_3: 'Level 3 · 5 bitů', TRAIN_A_LVL_4: 'Level 4 · 6 bitů',
+  TRAIN_A_CLEAR: 'Všechny 4 asteroidy sestřelené! Odemyká se další level s bitem navíc.', TRAIN_A_NEXT_LVL: 'Další level',
+  TRAIN_A_CLEAR_LAST: 'Všechny 4 asteroidy sestřelené i se 6 bity. Mistrovská střelba!', TRAIN_A_AGAIN: 'Nová vlna',
   TRAIN_B_INTRO: 'Počítej pod sebou zprava doleva, stejně jako v desítkové. Kliknutím měníš číslici 0 ↔ 1.',
   TRAIN_B_RULES: '0 + 0 = 0 · 0 + 1 = 1 · 1 + 1 = 10 · 1 + 1 + 1 = 11',
   TRAIN_B_DEMO_ADD: 'Sčítáme 0101 + 0011, tedy 5 + 3. // Vpravo: 1 + 1 = 2 a dvojka se ve dvojkové píše 10. Píšu 0 a 1 přenáším doleva. // Pamatuješ na počítadla v technické místnosti? Když se kolečko přetočí, poskočí to vedlejší. To je přenos. // Další sloupec: 0 + 1 + přenos 1 = 10. Zase píšu 0 a přenáším 1. // Třetí sloupec: 1 + 0 + 1 = 10, píšu 0, přenos 1. Poslední: 0 + 0 + 1 = 1. // Výsledek je 1000, tedy 8. Sedí to!',
@@ -458,9 +498,11 @@ const TEXTS = {
   TEST_A_6: ['Proč počítače používají dvojkovou soustavu?', ['Jejich spínače mají jen dva stavy: proud teče, nebo neteče', 'Je to nejstarší soustava', 'Lidé mají dvě ruce', 'Čísla v ní jsou kratší než v desítkové']],
   TEST_A_7: ['Ve které soustavě počítáme minuty a sekundy?', ['šedesátkové', 'dvanáctkové', 'desítkové', 'dvacítkové']],
   TEST_A_8: ['Jaká je správná značka pro bajt?', ['B', 'b', 'Bt', 'bj']],
+  TEST_B_WHY: 'Sečti hodnoty pozic, kde je jednička: {decomp} = {ans}.',
   TEST_B_Q: 'Jaké desítkové číslo je ve dvojkové soustavě **{bits}**?',
   TEST_B_1: ['1010', 10], TEST_B_2: ['0111', 7], TEST_B_3: ['1100', 12], TEST_B_4: ['01001', 9],
   TEST_B_5: ['10001', 17], TEST_B_6: ['10110', 22], TEST_B_7: ['11001', 25], TEST_B_8: ['11111', 31],
+  TEST_C_WHY: 'V desítkové je to {a} {op} {b} = {dec} a {dec} se dvojkově píše {bin}.',
   TEST_C_Q: 'Spočítej ve dvojkové soustavě: **{priklad}**',
   TEST_C_1: ['0101 + 0010', '111'], TEST_C_2: ['0011 + 0001', '100'], TEST_C_3: ['0110 + 0011', '1001'], TEST_C_4: ['1001 + 0110', '1111'],
   TEST_C_5: ['1011 + 0101', '10000'], TEST_C_6: ['0111 − 0010', '101'], TEST_C_7: ['1100 − 0100', '1000'], TEST_C_8: ['1010 − 0011', '111'],
@@ -468,6 +510,23 @@ const TEXTS = {
   TEST_D_5: ['500 MB = ? GB', 0.5], TEST_D_6: ['16 b = ? B', 2],
   TEST_D_7: ['Který soubor je největší?', ['1,5 GB', '1 200 MB', '800 000 kB', '9 000 Mb']],
   TEST_D_8: ['Internet má rychlost 80 Mb/s. Kolik MB stáhne za 1 sekundu?', ['10', '80', '640', '8']],
+  // vysvětlení k otázkám A a D (B a C se skládají z TEST_B_WHY a TEST_C_WHY)
+  TEST_A_1_WHY: 'Dvojková soustava má jen dvě číslice, 0 a 1. Proto dvojková.',
+  TEST_A_2_WHY: 'Bit je nejmenší kousek informace, jen 0, nebo 1. Bajt je až skupina 8 bitů.',
+  TEST_A_3_WHY: 'Bajt je skupina 8 bitů, proto 1 B = 8 b.',
+  TEST_A_4_WHY: 'Základ říká, kolik různých číslic soustava má: desítková 10, dvojková 2.',
+  TEST_A_5_WHY: 'Barvy se píší šestnáctkově, proto v nich jsou písmena A–F. FF je 255, nejsilnější světlo.',
+  TEST_A_6_WHY: 'Tranzistor v počítači zná jen dva stavy: proud teče, nebo neteče. Na to stačí 1 a 0.',
+  TEST_A_7_WHY: 'Minuta má 60 sekund a hodina 60 minut, to je šedesátková soustava.',
+  TEST_A_8_WHY: 'Bajt se píše velkým B, malé b je bit.',
+  TEST_D_1_WHY: 'Z GB na MB je schod dolů, takže násobíš: 3 × 1 000 = 3 000 MB.',
+  TEST_D_2_WHY: 'Z MB na GB je schod nahoru, takže dělíš: 5 000 ÷ 1 000 = 5 GB.',
+  TEST_D_3_WHY: 'Bajt má 8 bitů, takže 1 B = 8 b.',
+  TEST_D_4_WHY: 'Z MB na kB je schod dolů, takže násobíš: 2 × 1 000 = 2 000 kB.',
+  TEST_D_5_WHY: 'Z MB na GB je schod nahoru, takže dělíš: 500 ÷ 1 000 = 0,5 GB.',
+  TEST_D_6_WHY: 'Z bitů na bajty dělíš osmi: 16 ÷ 8 = 2 B.',
+  TEST_D_7_WHY: 'Převeď vše na MB: 1,5 GB = 1 500 MB, 800 000 kB = 800 MB. // 9 000 Mb jsou megabity, takže ÷ 8 = 1 125 MB. Největší je 1,5 GB.',
+  TEST_D_8_WHY: 'Mb jsou megabity a na megabajty se dělí osmi: 80 ÷ 8 = 10 MB.',
 
   R4_DONE: ['radost', 'Mapa je nahraná! Nejbližší je stanice Orion-7, tam pošleme SOS. // Navigace opravená. Vysílač je kousek odsud.'],
   R3_CARD_16: 'Barvy na webu, např. #FF0000 = červená',
@@ -849,19 +908,21 @@ function openDoor(id, cb) {
 }
 
 // ===== STAV =====
-const fresh = () => ({ room: 1, visited: [], r2: { solved: 0 }, r3: { locked: [] }, r4: { a: false, b: 0, c: false }, testPassed: false, sos: false, playerName: '' });
+const fresh = () => ({ room: 1, visited: [], r2: { solved: 0 }, r3: { locked: [] }, r9: { solved: 0 }, r4: { a: false, b: 0, c: false }, testPassed: false, sos: false, playerName: '' });
 let S = fresh();
 function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
 function load() { try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); return s && s.room ? { ...fresh(), ...s } : null; } catch (e) { return null; } }
-// ?room=N: místnost N se splněnými předchozími
+// ?room=N: místnost N se splněnými předchozími; Měřírna (9) přibyla až dodatečně mezi Archiv a Navigaci
+const ORDER = [1, 2, 3, 9, 4, 5, 6, 7, 8];
 function stateForRoom(n) {
-  const s = fresh();
+  const s = fresh(), past = ORDER.slice(0, ORDER.indexOf(n));
   s.room = n;
-  for (let i = 1; i < n; i++) s.visited.push(i);
-  if (n > 2) s.r2.solved = 6;
-  if (n > 3) s.r3.locked = [2, 8, 10, 12, 16, 20, 60];
-  if (n > 4) s.r4 = { a: true, b: 3, c: true };
-  if (n > 7) { s.testPassed = true; s.sos = true; }
+  s.visited = past;
+  if (past.includes(2)) s.r2.solved = 6;
+  if (past.includes(3)) s.r3.locked = [2, 8, 10, 12, 16, 20, 60];
+  if (past.includes(9)) s.r9.solved = 4;
+  if (past.includes(4)) s.r4 = { a: true, b: 3, c: true };
+  if (past.includes(7)) { s.testPassed = true; s.sos = true; }
   return s;
 }
 const systems = () => [S.r2.solved >= 6, S.r3.locked.length >= 7, S.r4.a && S.r4.b >= 3 && S.r4.c, S.sos];
@@ -1213,7 +1274,7 @@ function roll(wheel, a, b) {   // protočení kolečka počítadla, 200 ms
 // ===== MÍSTNOST 2: ROZVODNA =====
 const LV = [16, 8, 4, 2, 1], LX = i => 520 + i * 150, SUMX = 1290;
 const bits5 = n => n.toString(2).padStart(5, '0');
-const decomp = n => LV.filter(v => n & v).join(' + ');
+const decomp = n => [32, ...LV].filter(v => n & v).join(' + ');   // 32 kvůli 6bitovému levelu střelnice
 const room2 = {
   name: 'ROOM_2', book: 1, bajtik: [200, 790],
   targets: [5, 12, 19, 10, 26, 31],
@@ -1396,7 +1457,7 @@ const room3 = {
     this.cardHots = {};
     BASES.forEach((b, j) => { if (!this.isLocked(b)) this.cardHots['L' + j] = hot($('#cL' + j), 372, CY(j), () => this.pick('L', j)); });
     USES.forEach((b, k) => { if (!this.isLocked(b)) this.cardHots['R' + k] = hot($('#cR' + k), 1058, CY(k), () => this.pick('R', k)); });
-    this.door = hot($('#d3'), 1495, 690, () => this.done() ? openDoor('d3', () => go(4)) : say('G_DOOR_LOCKED'), !this.done());
+    this.door = hot($('#d3'), 1495, 690, () => this.done() ? openDoor('d3', () => go(9)) : say('G_DOOR_LOCKED'), !this.done());
     this.checkHot = null;
     this.update();
   },
@@ -1461,6 +1522,80 @@ const room3 = {
   task() { return this.done() ? 'G_ROOM_DONE_BACK' : 'R3_TASK'; },
   hints() { return this.done() ? [] : ['R3_HINT_1', 'R3_HINT_2', 'R3_HINT_3']; },
   solution: () => BASES.map(b => `${b} → ${TEXTS['R3_CARD_' + b]}`).join(' | '),
+};
+
+// ===== MÍSTNOST 9: MĚŘÍRNA (mezi Archivem a Navigací) =====
+const EXX = i => 510 + i * 222;   // levý okraj vitríny
+const EX_ROWS = [['0, nebo 1', 'značka b'], ['1 B = 8 b', '= písmeno A'],
+  ['1 km = 1 000 m', '1 kg = 1 000 g', '1 kB = 1 000 B', '1 MB = 1 000 kB'], ['fotka ≈ 3 MB', 'film ≈ 4 GB', 'internet', '100 Mb/s']];
+const room9 = {
+  name: 'ROOM_9', book: 3, bajtik: [170, 790],
+  get i() { return S.r9.solved; },
+  done() { return S.r9.solved >= 4; },
+  render() {
+    this.hs = []; this.asked = false; this.miss = 0; this.bit = 1;
+    $('#room').innerHTML = wall() + `
+      <rect x="500" y="560" width="890" height="190" rx="18" fill="#071018" stroke="#3D5578" stroke-width="4"/>
+      ${door('d9', 1400, 250, 180, 530)}<g id="r9"></g>`;
+    this.door = hot($('#d9'), 1490, 515, () => this.done() ? openDoor('d9', () => go(4)) : say('G_DOOR_LOCKED'), !this.done());
+    this.draw();
+  },
+  draw() {
+    this.hs.forEach(h => h.remove()); this.hs = [];
+    let h = '';
+    for (let k = 0; k < 4; k++) {
+      const x = EXX(k), ok = k < this.i, on = k === this.i, cx = x + 102;
+      const rows = EX_ROWS[k], ry = k < 2 ? 400 : 240;
+      h += `<g id="ex${k}" opacity="${ok || on ? 1 : .4}"><rect x="${x}" y="130" width="205" height="400" rx="16" fill="#2C3E5A" stroke="${ok ? '#3DDC97' : on ? '#FFD23F' : '#3D5578'}" stroke-width="4"/>
+        <circle cx="${x + 182}" cy="154" r="10" fill="${ok ? '#3DDC97' : '#FF6B4A'}"/>
+        <text x="${cx - 8}" y="192" text-anchor="middle" font-size="28" font-weight="700" letter-spacing="1" fill="#F2F5F9">${T(`R9_E${k + 1}_TITLE`)}</text>` +
+        rows.map((r, j) => `<text x="${cx}" y="${ry + j * (k < 2 ? 40 : 44)}" text-anchor="middle" font-size="24" fill="#F2F5F9">${typo(r)}</text>`).join('');
+      if (k === 0) h += `<circle id="r9lamp" cx="${cx}" cy="262" r="40" fill="${this.bit ? '#FFD23F' : '#071018'}" stroke="#8A9BB0" stroke-width="4"/>
+        <g id="r9bit" style="color:#3DDC97">${seg7(String(this.bit), cx - 15, 314, 30, 50)}</g>`;
+      if (k === 1) h += [...'01000001'].map((b, j) => `<circle cx="${cx - 77 + j * 22}" cy="272" r="9" fill="${b === '1' ? '#3DDC97' : '#071018'}" stroke="#3D5578" stroke-width="2"/>`).join('') +
+        `<text x="${cx}" y="322" text-anchor="middle" font-size="22" fill="#8A9BB0">01000001</text>`;
+      h += '</g>';
+    }
+    if (this.asked) this.opts.forEach((o, j) => { h += btnSvg('ans' + j, 540 + j * 290, 610, 200, 90, typo(o), 40); });
+    $('#r9').innerHTML = h;
+    if (this.done()) return;
+    this.hs.push(hot($('#ex' + this.i), EXX(this.i) + 102, 482, () => this.explain()));
+    if (this.asked) this.opts.forEach((o, j) => this.hs.push(hot($('#ans' + j), 540 + j * 290 + 235, 655, () => this.answer(j))));
+  },
+  explain() {
+    const n = this.i + 1;
+    say('R9_E' + n, { then: () => {
+      if (!this.asked) { this.asked = true; this.opts = shuffle(TEXTS['R9_A' + n]); this.draw(); }
+      say(this.task());
+    } });
+  },
+  answer(j) {
+    const n = this.i + 1;
+    if (this.opts[j] !== TEXTS['R9_A' + n][0]) {
+      fx($('#ans' + j), false);
+      this.miss++;
+      return say('R9_WRONG', { then: this.miss === 2 ? () => say('G_HINT_OFFER') : undefined });
+    }
+    S.r9.solved++; save();
+    this.asked = false; this.miss = 0; resetHint();
+    this.draw();
+    fx($('#ex' + (n - 1)), true);
+    if (!this.done()) return say('R9_OK_' + n, { then: () => say(this.task()) });
+    this.door.lock(false);
+    say('R9_DONE');
+  },
+  enter(first) {
+    this.timer = setInterval(() => {   // kontrolka ve vitríně BIT bliká 1 ↔ 0
+      this.bit ^= 1;
+      $('#r9lamp').setAttribute('fill', this.bit ? '#FFD23F' : '#071018');
+      $('#r9bit').innerHTML = seg7(String(this.bit), EXX(0) + 87, 314, 30, 50);
+    }, 1000);
+    say(first ? 'R9_INTRO' : this.task());
+  },
+  exit() { clearInterval(this.timer); },
+  task() { return this.done() ? 'G_ROOM_DONE_BACK' : this.asked ? `R9_Q${this.i + 1}` : 'R9_TASK'; },
+  hints() { return this.done() ? [] : ['R9_HINT_1', `R9_Q${this.i + 1}_HINT`]; },
+  solution: () => [1, 2, 3, 4].map(n => TEXTS['R9_A' + n][0]).join(' · '),
 };
 
 // ===== MÍSTNOST 4: NAVIGACE =====
@@ -1779,8 +1914,12 @@ const CATS = ['A', 'B', 'C', 'D'];
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 function makeQ(c, n) {
   const d = TEXTS[`TEST_${c}_${n}`], q = { c, id: `TEST_${c}_${n}` };
-  if (c === 'B') return { ...q, text: TEXTS.TEST_B_Q.replace('{bits}', d[0]), ans: d[1] };
-  if (c === 'C') return { ...q, text: TEXTS.TEST_C_Q.replace('{priklad}', d[0]), bin: d[1] };
+  if (c === 'B') return { ...q, text: TEXTS.TEST_B_Q.replace('{bits}', d[0]), ans: d[1], why: fill(TEXTS.TEST_B_WHY, { decomp: decomp(d[1]), ans: d[1] }) };
+  if (c === 'C') {
+    const [a, op, b] = d[0].split(' '), x = parseInt(a, 2), y = parseInt(b, 2);
+    return { ...q, text: TEXTS.TEST_C_Q.replace('{priklad}', d[0]), bin: d[1], why: fill(TEXTS.TEST_C_WHY, { a: x, op, b: y, dec: op === '+' ? x + y : x - y, bin: d[1] }) };
+  }
+  q.why = TEXTS[q.id + '_WHY'];
   if (Array.isArray(d[1])) return { ...q, text: d[0], opts: d[1], shown: shuffle(d[1]) };
   return { ...q, text: d[0], ans: d[1] };
 }
@@ -1854,23 +1993,33 @@ const room6 = {
     padHide();
   },
   start() {
-    this.qs = drawTest(); this.i = 0; this.ans = [];
+    this.qs = drawTest(); this.i = 0; this.ans = []; this.fb = false;
     if (DEBUG) console.log('[debug] test:', this.qs.map(q => q.opts ? q.opts[0] : q.bin || q.ans).join(' · '));
     this.showQ();
   },
-  showQ() {
-    const q = this.qs[this.i], last = this.i === 7;
+  showQ() {   // this.fb: odpověď je zkontrolovaná a ukazuje se zpětná vazba
+    const q = this.qs[this.i], last = this.i === 7, a = this.ans[this.i], fb = this.fb, ok = fb && isCorrect(q, a);
+    const right = q.opts ? q.opts[0] : q.bin || fmt(q.ans);
+    const optCls = o => !fb ? (a === o ? ' sel' : '') : o === q.opts[0] ? ' good' : a === o ? ' bad' : '';
     padHide();
     testEl.innerHTML = `<div class="prog">${T('R6_TEST_PROGRESS').replace('{n}', this.i + 1)}</div>
       <p class="q">${inline(q.text)}</p>` +
-      (q.opts ? `<div class="opts">${q.shown.map((o, k) => `<button class="btn${this.ans[this.i] === o ? ' sel' : ''}" data-o="${k}">${typo(o)}</button>`).join('')}</div>` : '') +
-      `<div class="foot"><button class="btn dark" data-a="next">${T(last ? 'R6_TEST_FINISH' : 'R6_TEST_NEXT')}</button></div>`;
-    if (!q.opts) numpad(100, 330, () => this.next(), q.bin ? '10' : '789456123,0');
+      (q.opts ? `<div class="opts">${q.shown.map((o, k) => `<button class="btn${optCls(o)}" data-o="${k}">${typo(o)}</button>`).join('')}</div>` : '') +
+      (fb && !q.opts ? `<p class="fb">${T('R6_FB_YOURS')} <span class="${ok ? '' : 'ko'}">${esc(a)}</span>${ok ? ' ✓' : ` · ${T('R6_FB_RIGHT')} <b>${typo(right)}</b>`}</p>` : '') +
+      `<div class="foot"><button class="btn dark" data-a="next">${T(!fb ? 'R6_TEST_CHECK' : last ? 'R6_TEST_FINISH' : 'R6_TEST_NEXT')}</button></div>`;
+    if (!q.opts && !fb) numpad(100, 330, () => this.next(), q.bin ? '10' : '789456123,0');
+    if (fb) say(ok ? 'R6_FB_OK' : 'R6_FB_KO', { vars: { right, why: q.why }, then: () => this.next() });
   },
   next() {
     const q = this.qs[this.i];
-    if (!q.opts) { if (!padVal.trim()) return; this.ans[this.i] = padVal; }
-    if (this.ans[this.i] == null) return;
+    if (!this.fb) {
+      if (!q.opts) { if (!padVal.trim()) return; this.ans[this.i] = padVal; }
+      if (this.ans[this.i] == null) return;
+      this.fb = true;
+      return this.showQ();
+    }
+    hideBubble();
+    this.fb = false;
     if (++this.i < 8) return this.showQ();
     this.result();
   },
@@ -1894,7 +2043,7 @@ const room6 = {
   click(e) {
     const b = e.target.closest('button');
     if (!b) return;
-    if (b.dataset.o != null) { this.ans[this.i] = this.qs[this.i].shown[b.dataset.o]; this.showQ(); }
+    if (b.dataset.o != null) { if (this.fb) return; this.ans[this.i] = this.qs[this.i].shown[b.dataset.o]; this.showQ(); }
     else if (b.dataset.a === 'next') this.next();
     else if (b.dataset.a === 'start') { hideBubble(); this.start(); }
     else if (b.dataset.a === 'back') { this.closeTest(); say(this.task()); }
@@ -1954,36 +2103,37 @@ function runDemo(id, steps, done) {
 // --- A: Asteroidová střelnice ---
 const AST = 'M0-92L52-70L90-18L78 44L30 86L-36 84L-84 40L-90-24L-52-74Z';
 const TA = {
-  book: 1,
-  start() { this.round = 0; this.next(); },
-  next() {
-    this.round++;
-    const nb = this.nb = this.round <= 5 ? 4 : 5, t = this.target = 1 + rand((1 << nb) - 1), set = new Set([t]), k = 2 + rand(2);
-    while (set.size < k + 1) {   // jiná čísla lišící se v jednom nebo dvou bitech
-      let v = t ^ (1 << rand(nb));
-      if (rand(2)) v ^= 1 << rand(nb);
-      if (v > 0) set.add(v);
-    }
-    this.ast = shuffle([...set]); this.lock = false;
-    this.draw();
-    tmsg(this.round === 6 ? T('TRAIN_A_LEVELUP') : '');
+  book: 1, level: 1, max: 1,   // max = nejvyšší odemčený level
+  start() { this.load(this.level); },
+  load(l) {
+    this.level = l; this.nb = l + 2;
+    const set = new Set();
+    while (set.size < 4) set.add(1 + rand((1 << this.nb) - 1));
+    this.ast = shuffle([...set]); this.dead = new Set(); this.lock = false;
+    this.aim(); this.bar(); this.draw(); tmsg('');
   },
+  bar() {
+    tbody().innerHTML = `<div class="lv">${[1, 2, 3, 4].map(k => `<button class="btn${k === this.level ? ' on' : ''}" data-l="${k}"${k > this.max ? ' disabled' : ''}>${T('TRAIN_A_LVL_' + k)}</button>`).join('')}</div>`;
+  },
+  aim() { const live = this.ast.filter(v => !this.dead.has(v)); this.target = live[rand(live.length)]; },
+  click(b) { const l = +b.dataset.l; if (l && l <= this.max) { trGen++; this.load(l); } },
   draw(labels) {
-    const n = this.ast.length, t = String(this.target).padStart(2, ' ');
+    const n = this.ast.length, t = String(this.target).padStart(2, ' '), big = this.nb > 4, dx = big ? 30 : 34;
     let h = `<circle cx="800" cy="540" r="56" fill="none" stroke="#5AC8FA" stroke-width="4"/>
       <path d="M800 470V510M800 570V610M730 540H770M830 540H870" stroke="#5AC8FA" stroke-width="4"/>
       <rect x="740" y="616" width="120" height="96" rx="12" fill="#071018" stroke="#3D5578" stroke-width="3"/>
       <g style="color:#3DDC97" filter="url(#glow)">${seg7(t[0], 752, 632)}${seg7(t[1], 804, 632)}</g>`;
     this.ast.forEach((v, i) => {
-      const x = 800 + (i - (n - 1) / 2) * 330, y = 250 + (i % 2) * 100, bits = v.toString(2).padStart(this.nb, '0');
+      if (this.dead.has(v)) return;
+      const x = 800 + (i - (n - 1) / 2) * 330, y = 330 + (i % 2) * 70, bits = v.toString(2).padStart(this.nb, '0');
       h += `<g class="astw" style="animation-duration:${2.6 + i * .7}s"><g id="as${i}" class="ast clickable" transform="translate(${x} ${y})">
-        <path d="${AST}" fill="#3D5578" stroke="#8A9BB0" stroke-width="5"/>` +
-        [...bits].map((b, j) => `<text x="${(j - (bits.length - 1) / 2) * 34}" y="16" text-anchor="middle" font-size="44" font-weight="700" fill="#F2F5F9">${b}</text>` +
-          (labels ? `<text x="${(j - (bits.length - 1) / 2) * 34}" y="-36" text-anchor="middle" font-size="22" font-weight="700" fill="#5AC8FA">${1 << (bits.length - 1 - j)}</text>` : '')).join('') +
+        <path d="${AST}" transform="scale(${big ? 1.2 : 1})" fill="#3D5578" stroke="#8A9BB0" stroke-width="5"/>` +
+        [...bits].map((b, j) => `<text x="${(j - (bits.length - 1) / 2) * dx}" y="16" text-anchor="middle" font-size="${big ? 40 : 44}" font-weight="700" fill="#F2F5F9">${b}</text>` +
+          (labels ? `<text x="${(j - (bits.length - 1) / 2) * dx}" y="-36" text-anchor="middle" font-size="22" font-weight="700" fill="#5AC8FA">${1 << (bits.length - 1 - j)}</text>` : '')).join('') +
         `</g></g>`;
     });
     tsvg().innerHTML = h;
-    if (!labels) this.ast.forEach((_, i) => $('#as' + i).addEventListener('click', () => this.shoot(i)));
+    if (!labels) this.ast.forEach((v, i) => { if (!this.dead.has(v)) $('#as' + i).addEventListener('click', () => this.shoot(i)); });
   },
   explode(i) {
     const a = $('#as' + i);
@@ -1995,14 +2145,27 @@ const TA = {
     const v = this.ast[i], bits = v.toString(2).padStart(this.nb, '0');
     if (v !== this.target) { fx($('#as' + i), false); return tmsg(fill(TEXTS.TRAIN_A_MISS, { bits, value: v, target: this.target })); }
     this.lock = true;
+    this.dead.add(v);
     this.explode(i);
     tmsg(fill(TEXTS.TRAIN_A_HIT, { bits, decomp: decomp(v), target: v }));
     const gen = trGen;
-    setTimeout(() => { if (gen === trGen) this.next(); }, 1800);
+    if (this.dead.size === 4) {   // vlna sestřelená → odemknout další level
+      this.max = Math.max(this.max, Math.min(this.level + 1, 4));
+      this.bar();
+      return setTimeout(() => {
+        if (gen !== trGen) return;
+        if (this.level < 4) tmsg(T('TRAIN_A_CLEAR'), TEXTS.TRAIN_A_NEXT_LVL, () => this.load(this.level + 1));
+        else tmsg(T('TRAIN_A_CLEAR_LAST'), TEXTS.TRAIN_A_AGAIN, () => this.load(4));
+      }, 1200);
+    }
+    setTimeout(() => { if (gen === trGen) { this.aim(); this.lock = false; this.draw(); } }, 1200);
   },
   demo() {
-    this.lock = true; this.nb = 4; this.target = 13; this.ast = [13];
-    runDemo('TRAIN_A_DEMO', [() => this.draw(true), () => this.draw(true), () => this.explode(0)], () => { this.round = Math.max(0, this.round - 1); this.next(); });
+    const keep = [this.nb, this.target, this.ast, this.dead];
+    this.lock = true; this.nb = 4; this.target = 13; this.ast = [13]; this.dead = new Set();
+    runDemo('TRAIN_A_DEMO', [() => this.draw(true), () => this.draw(true), () => this.explode(0)], () => {
+      [this.nb, this.target, this.ast, this.dead] = keep; this.lock = false; this.draw(); tmsg('');
+    });
   },
 };
 
@@ -2269,11 +2432,24 @@ const room8 = {
     btn.onclick = e => { e.stopPropagation(); this.diploma(); };
     f.onclick = e => e.stopPropagation();
     upd();
+    // znovu celá hra, nebo jedna místnost (se splněnými předchozími jako ?room=N); jméno na diplom zůstává
+    const r = $('#replay');
+    r.innerHTML = `<span>${T('WIN_REPLAY')}</span><button class="btn dark" data-n="1">${T('WIN_REPLAY_ALL')}</button>` +
+      ORDER.filter(n => n !== 5 && n !== 8).map(n => `<button class="btn" data-n="${n}">${T('ROOM_' + n)}</button>`).join('');
+    r.onclick = e => {
+      e.stopPropagation();
+      const n = +e.target.dataset.n;
+      if (!n) return;
+      const name = S.playerName;
+      S = stateForRoom(n); S.playerName = name;
+      go(n);
+    };
+    r.hidden = false;
   },
   enter() {
     setTimeout(() => { if (cur === this) { showBajtikRing(); say('WIN_BAJTIK'); } }, 1500);
   },
-  exit() { $('#win').hidden = $('#winform').hidden = true; },
+  exit() { $('#win').hidden = $('#winform').hidden = $('#replay').hidden = true; },
   diploma() {
     const names = TEXTS.DIPLOMA_SYSTEMS.split(' · ');
     $('#diploma').innerHTML = `<h1>${T('DIPLOMA_TITLE')}</h1><p class="sub">${T('DIPLOMA_SUBTITLE')}</p>
@@ -2293,7 +2469,7 @@ $('#dipwrap').addEventListener('click', e => {
   if (a === 'close') $('#dipwrap').hidden = true;
   if (a === 'print') window.print();
 });
-const ROOMS = { 1: room1, 2: room2, 3: room3, 4: room4, 5: room5, 6: room6, 7: room7, 8: room8 };
+const ROOMS = { 1: room1, 2: room2, 3: room3, 9: room9, 4: room4, 5: room5, 6: room6, 7: room7, 8: room8 };
 
 // ===== ŠKÁLOVÁNÍ =====
 function fit() {

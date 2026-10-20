@@ -26,6 +26,7 @@ Klikačka (point-and-click) pro samostatnou práci v 1. ročníku SŠ na 35–45
 1. Technická místnost (tutoriál ovládání)
 2. Rozvodna (binárka)
 3. Archiv (soustavy a jejich použití)
+3a. Měřírna (co je bit, bajt a předpony; výklad u vitrín, `?room=9`)
 4. Navigace (bity, bajty, jednotky)
 5. Rozcestí → Kajuta (minitest a SOS) nebo Cvičiště (procvičování); žák se mezi nimi může libovolně vracet
 6. Vítězná obrazovka s diplomem
@@ -182,7 +183,13 @@ Každá místnost je čelní pohled na jednu stěnu lodi s pruhem podlahy dole. 
 
 **Ovládání:** klik na kartu soustavy ji vybere (rámeček), klik na kartu použití je spojí čarou. Každá karta má nejvýše jedno spojení; klik na spojenou kartu spojení zruší. Klik na knihu otevře překryv s otevřenou knihou (dvoustrana, text z Textace `R3_BOOK_*`), zavírá se křížkem.
 
-**Vyhodnocení:** správné dvojice zezelenají a zamknou se (už nejdou rozpojit), špatné červeně bliknou a rozpojí se. Bajtík řekne `R3_RESULT` s počtem správných. Při 7/7 → `R3_DONE`, odemknou se dveře, rozsvítí se 2. kontrolka. Dveře → Navigace.
+**Vyhodnocení:** správné dvojice zezelenají a zamknou se (už nejdou rozpojit), špatné červeně bliknou a rozpojí se. Bajtík řekne `R3_RESULT` s počtem správných. Při 7/7 → `R3_DONE`, odemknou se dveře, rozsvítí se 2. kontrolka. Dveře → Měřírna.
+
+### 4.3a Měřírna (bit, bajt, předpony)
+
+**Účel:** než žák v Navigaci jednotky používá, dozví se, co znamenají: bit (0/1, značka b), bajt (8 bitů, značka B), předpony kilo/mega/giga/tera po 1 000 stejně jako u metrů a gramů, a k čemu se používají (velikost souboru v B, rychlost internetu v b/s). **Učebnice:** kap. 4.
+
+**Rozvržení:** čtyři vitríny vedle sebe (BIT s blikající kontrolkou 0/1, BAJT s 8 kontrolkami 01000001, PŘEDPONY, V PRAXI), pod nimi tabule na odpovědi, dveře vpravo, Bajtík vlevo dole. Vitríny jdou popořadě, aktivní má žlutý rámeček. Klik → Bajtík ji vysvětlí (`R9_E*`), pak se na tabuli objeví 3 možnosti (`R9_A*`) a otázka `R9_Q*`. Správně → vitrína zezelená; špatně → `R9_WRONG`. Po čtvrté → `R9_DONE`, dveře → Navigace. Stav `r9: { solved: 0–4 }`; systém lodi to není.
 
 ### 4.4 Navigace (bity, bajty, jednotky)
 
@@ -232,7 +239,7 @@ Chodba se dvojími dveřmi: vlevo „KAJUTA – VYSÍLAČ SOS“, vpravo „CVI�
 
 | Stanoviště | Kategorie testu | Mechanika | Učebnice |
 | --- | --- | --- | --- |
-| A – Asteroidová střelnice | B: dvojková → desítková | Zaměřovač ukazuje desítkové číslo, 3–4 asteroidy s binárními čísly pomalu plují; klik na správný ho rozstřelí a ukáže rozklad (13 = 8 + 4 + 1), špatný se odrazí. Prvních 5 kol 4 bity, pak 5 bitů. | kap. 2 |
+| A – Asteroidová střelnice | B: dvojková → desítková | Vlna 4 asteroidů s binárními čísly; zaměřovač ukazuje desítkové číslo jednoho z nich. Klik na správný ho rozstřelí a ukáže rozklad (13 = 8 + 4 + 1), špatný se odrazí. Po sestřelení všech 4 se odemkne další level o bit delší (3–6 bitů); mezi odemčenými levely lze přepínat. | kap. 2 |
 | B – Sčítačka | C: sčítání a odčítání | Příklad pod sebou (4–5 bitů). Žák klikáním přepíná číslice výsledku a políčka přenosu (0/1) zprava doleva, pak „Zkontrolovat“; chybný sloupec se zvýrazní. Pod příkladem kontrola v desítkové (5 + 3 = 8). Pořadí: sčítání bez přenosu → s přenosem → odčítání bez výpůjčky → s výpůjčkou. | kap. 5 |
 | C – Převodník | D: jednotky | Žebřík z Navigace a náhodné zadání („3 GB = ? MB“, „2 500 MB = ? GB“, „16 Mb = ? MB“, „1 B = ? b“). Po odpovědi se rozsvítí cesta po žebříku. | kap. 4 |
 | D – Pexeso pojmů | A: pojmy | 8 dvojic pojem–vysvětlení (Textace `TRAIN_D_PAIRS`), otáčení karet, po dohrání nové rozdání. | kap. 6 |

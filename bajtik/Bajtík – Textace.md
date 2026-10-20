@@ -19,6 +19,7 @@ Bajtík tyká, mluví krátce a vesele a nikdy nezesměšňuje chybu. Jedna str�
 | ROOM\_5 | Rozcestí |
 | ROOM\_6 | Kajuta |
 | ROOM\_7 | Cvičiště |
+| ROOM\_9 | Měřírna |
 
 ### Úvodní obrazovka a ovládání
 
@@ -126,7 +127,7 @@ Pořadí: R2\_OK\_1 po 1. čísle, R2\_OK\_2 po 2., R2\_OK\_3 po 3. (pak hned R2
 | R3\_INTRO | neutrální | Lodní archiv. Počítač tu drží dveře zamčené, dokud mu neukážeš, že soustavám rozumíš. // \[přemýšlí\] Desítková a dvojková totiž nejsou jediné! Spoj každou soustavu na stole s tím, k čemu se dnes používá. // \[neutrální\] Nevíš si rady? Knihy v regálu ti to vysvětlí. Klikni na ně. |
 | R3\_TASK | neutrální | Spoj každou soustavu s jejím použitím a dej ZKONTROLOVAT. Když nevíš, čti knihy v regálu. |
 | R3\_RESULT | přemýšlí | Máš {correct} ze 7 správně. Zelené zůstanou, ostatní zkus spojit znovu. |
-| R3\_DONE | radost | Všech 7 správně, archiv odemyká dveře! // Soustav je spousta, ale v počítačích vládne ta dvojková. Jdeme do navigace. |
+| R3\_DONE | radost | Všech 7 správně, archiv odemyká dveře! // Soustav je spousta, ale v počítačích vládne ta dvojková. Jdeme do měřírny. |
 | R3\_HINT\_1 | přemýšlí | Každá kniha v regálu patří k jednomu použití. Přečti si ji a najdi, o které soustavě mluví. |
 | R3\_HINT\_2 | přemýšlí | Začni tím, co znáš: běžné počítání je 10 a počítače 2. Zbytek najdeš v knihách. |
 | R3\_HINT\_3 | neutrální | Minuty jsou 60, tucet 12, barvy na webu 16 a letadla mají kódy v osmičkové. Zbývá francouzština. |
@@ -164,6 +165,53 @@ Levý sloupec v tomto pořadí: **2, 8, 10, 12, 16, 20, 60**. Pravý sloupec v p
 
 **R3\_BOOK\_60 – Čas a mapy** Minuta má 60 sekund a hodina 60 minut: čas zapisujeme v **šedesátkové soustavě**. Stejně se dělí úhly: kruh má 360 stupňů a stupeň 60 úhlových minut. Proto zeměpisná poloha na mapě vypadá třeba takto: 49° 12′ 30″. Šedesátku vymysleli už staří Babyloňané, protože jde dělit 2, 3, 4, 5, 6, 10, 12, 15, 20 i 30.
 
+## 3a. Měřírna
+
+Vložená mezi Archiv a Navigaci (v kódu místnost 9). Čtyři vitríny jdou popořadě; klik na vitrínu = výklad, pak otázka se třemi možnostmi na tabuli.
+
+### Popisky
+
+| ID | Text |
+| --- | --- |
+| R9\_E1\_TITLE | BIT |
+| R9\_E2\_TITLE | BAJT |
+| R9\_E3\_TITLE | PŘEDPONY |
+| R9\_E4\_TITLE | V PRAXI |
+
+### Hlášky
+
+| ID | Výraz | Text |
+| --- | --- | --- |
+| R9\_INTRO | neutrální | Měřírna! Než půjdeme do navigace, musíš znát jednotky, ve kterých počítač měří data. // \[přemýšlí\] Na stěně jsou čtyři vitríny. Klikni na tu rozsvícenou, vysvětlím ti ji a pak se tě na něco zeptám. // \[neutrální\] Odpovídáš na tabuli pod vitrínami. Až budou všechny čtyři zelené, dveře se otevřou. |
+| R9\_TASK | neutrální | Klikni na rozsvícenou vitrínu a poslechni si, co ukazuje. |
+| R9\_E1 | neutrální | Tohle je **bit**, nejmenší kousek informace. Má jen dvě možnosti: **0**, nebo **1**. Jako ta kontrolka: zhasnuto, nebo rozsvíceno. // Bit je **jednotka** jako metr nebo gram. Metr měří délku, gram hmotnost a bit měří informaci. Značí se malým **b**. |
+| R9\_E2 | neutrální | Jeden bit toho moc neřekne. Počítač proto bity skládá po osmi a osmi bitům se říká **bajt**. // Do jednoho bajtu se vejde třeba jedno písmeno: 01000001 je A. // \[varování\] Pozor na značky! Bit je malé **b**, bajt velké **B**. Jedno písmenko, osmkrát větší rozdíl. |
+| R9\_E3 | neutrální | Bajt je malá jednotka, jedna fotka jich má miliony. Proto se přidávají **předpony**, úplně stejně jako u metrů a gramů. // **Kilo** znamená 1 000×: 1 km = 1 000 m, 1 kg = 1 000 g a 1 kB = 1 000 B. // Každá další předpona je zase 1 000× víc: **mega** (MB), **giga** (GB) a **tera** (TB). |
+| R9\_E4 | neutrální | K čemu to je? V **bajtech** se měří, kolik místa data zaberou. Fotka z mobilu má asi 3 MB, film asi 4 GB. // \[přemýšlí\] Rychlost internetu se ale udává v **bitech** za sekundu, třeba 100 Mb/s. Malé b, megabity! // \[neutrální\] Až uvidíš jednotku, vždy se podívej, jestli je b malé, nebo velké. |
+| R9\_Q1 | neutrální | Kolik různých hodnot může mít jeden bit? |
+| R9\_Q2 | neutrální | Kolik bitů je 1 B? |
+| R9\_Q3 | neutrální | Kolik kB je 1 MB? |
+| R9\_Q4 | neutrální | Která značka znamená megabajt? |
+| R9\_OK\_1 | radost | Ano, dvě: 0 a 1. Proto počítače mluví dvojkovou soustavou. |
+| R9\_OK\_2 | radost | Přesně, 1 B = 8 b. Velké B je bajt, malé b je bit. |
+| R9\_OK\_3 | radost | Ano, 1 MB = 1 000 kB. Každá předpona je 1 000× víc, jako u metrů a kilometrů. |
+| R9\_WRONG | varování | To nesedí. Klikni znovu na vitrínu a poslechni si ji ještě jednou. |
+| R9\_DONE | radost | Všechny vitríny svítí zeleně! Bit, bajt i předpony znáš. // MB je megabajt, Mb megabit, osmkrát menší. Teď to využijeme v navigaci, dveře jsou otevřené. |
+| R9\_HINT\_1 | přemýšlí | Klikni na vitrínu, která svítí. Odpověď je schovaná v tom, co ti o ní řeknu. |
+| R9\_Q1\_HINT | neutrální | Bit je jako vypínač: buď 0, nebo 1. Kolik je to možností? |
+| R9\_Q2\_HINT | neutrální | Velké B je bajt. Spočítej kontrolky ve vitríně BAJT. |
+| R9\_Q3\_HINT | neutrální | Mega je hned po kilo a každá předpona je 1 000× víc. |
+| R9\_Q4\_HINT | neutrální | Mega se píše velkým M a bajt velkým B. |
+
+### Možnosti na tabuli (správná první, zobrazují se zamíchané)
+
+| ID | Možnosti |
+| --- | --- |
+| R9\_A1 | 2 · 1 · 10 |
+| R9\_A2 | 8 · 1 · 10 |
+| R9\_A3 | 1 000 · 100 · 8 |
+| R9\_A4 | MB · Mb · mB |
+
 ## 4. Navigace
 
 ### Popisky
@@ -187,7 +235,7 @@ Levý sloupec v tomto pořadí: **2, 8, 10, 12, 16, 20, 60**. Pravý sloupec v p
 | --- | --- | --- |
 | R4\_INTRO | vylekaný | Navigace je prázdná! Bez hvězdné mapy nevíme, kde jsme, a SOS by nikdo nenašel. // \[neutrální\] Mapu nahrajeme přes tři panely. Začni panelem A, datovou páskou. |
 | R4A\_TASK | neutrální | Nastav délku kusu tak, aby z pásky vyšla smysluplná data, a dej ROZDĚLIT. |
-| R4A\_OK | radost | Funguje to! Kus o 8 bitech se jmenuje **bajt** a počítač čte data právě po bajtech. // 24 bitů jsou tedy 3 bajty. A vyšlo z nich BAJ… skoro moje jméno! |
+| R4A\_OK | radost | Funguje to! Kus o 8 bitech je **bajt**, jako ve vitríně v měřírně. Počítač čte data právě po bajtech. // 24 bitů jsou tedy 3 bajty. A vyšlo z nich BAJ… skoro moje jméno! |
 | R4A\_WRONG | přemýšlí | Hmm, z toho vyšla jen změť znaků. Zkus jinou délku kusu. |
 | R4A\_UNIT\_Q | neutrální | Navigace hlásí velikost pásky: 3 \_. Doplň správnou značku. |
 | R4A\_DONE | radost | Správně! Malé **b** je bit, velké **B** je bajt. Jedno písmenko, osmkrát větší rozdíl. |
@@ -200,7 +248,7 @@ Levý sloupec v tomto pořadí: **2, 8, 10, 12, 16, 20, 60**. Pravý sloupec v p
 
 | ID | Výraz | Text |
 | --- | --- | --- |
-| R4B\_INTRO | neutrální | Velká data měříme v kilobajtech, megabajtech, gigabajtech… Každý schod nahoru je 1 000× víc, jako u metrů a kilometrů. // Jen mezi bity a bajty je schod 8×. // \[přemýšlí\] Vidíš cedulku? Někde, třeba u operační paměti nebo ve Windows, se počítá po 1 024. My tu počítáme po 1 000, ale vždy čti zadání! |
+| R4B\_INTRO | neutrální | Předpony už znáš z měřírny: kilobajty, megabajty, gigabajty… Na žebříku je každý schod nahoru je 1 000× víc, jako u metrů a kilometrů. // Jen mezi bity a bajty je schod 8×. // \[přemýšlí\] Vidíš cedulku? Někde, třeba u operační paměti nebo ve Windows, se počítá po 1 024. My tu počítáme po 1 000, ale vždy čti zadání! |
 | R4B\_Q1 | neutrální | Hvězdná mapa má 4 GB. Starý počítač přijímá velikost jen v MB. Kolik MB má mapa? |
 | R4B\_Q2 | neutrální | Modul motorů hlásí 2 500 kB. Kolik je to MB? |
 | R4B\_Q3 | neutrální | Kontrolní otázka: kolik bitů je 1 kB? |
@@ -255,6 +303,11 @@ Všechny hlášky jsou rodově neutrální (žádné „připravený“, „zaš
 | R6\_TEST\_PROGRESS | – | Otázka {n} z 8 |
 | R6\_TEST\_NEXT | – | Další |
 | R6\_TEST\_FINISH | – | Vyhodnotit |
+| R6\_TEST\_CHECK | – | Zkontrolovat |
+| R6\_FB\_YOURS | – | Tvoje odpověď: |
+| R6\_FB\_RIGHT | – | Správně: |
+| R6\_FB\_OK | radost | Správně! {why} |
+| R6\_FB\_KO | přemýšlí | Tohle nevyšlo, správně je **{right}**. // {why} |
 | R6\_RESULT | – | Výsledek: {score} z 8 |
 | R6\_CAT\_A | – | Pojmy |
 | R6\_CAT\_B | – | Dvojková → desítková |
@@ -340,6 +393,31 @@ Znění všech: „Spočítej ve dvojkové soustavě: **{priklad}**“
 | TEST\_D\_7 | výběr | Který soubor je největší? | 1,5 GB · 1 200 MB · 800 000 kB · 9 000 Mb |
 | TEST\_D\_8 | výběr | Internet má rychlost 80 Mb/s. Kolik MB stáhne za 1 sekundu? | 10 · 80 · 640 · 8 |
 
+### Zpětná vazba po každé otázce
+
+Žák nejdřív dá ZKONTROLOVAT: výběr ukáže správnou možnost zeleně a zvolenou špatnou červeně, u čísla se vypíše jeho odpověď a správná. Bajtík řekne `R6_FB_OK`, nebo `R6_FB_KO`, s vysvětlením `{why}`. Dál se pokračuje tlačítkem DALŠÍ v testu nebo „Dál ›“ v bublině.
+
+| ID | Text vysvětlení |
+| --- | --- |
+| TEST\_B\_WHY | Sečti hodnoty pozic, kde je jednička: {decomp} = {ans}. |
+| TEST\_C\_WHY | V desítkové je to {a} {op} {b} = {dec} a {dec} se dvojkově píše {bin}. |
+| TEST\_A\_1\_WHY | Dvojková soustava má jen dvě číslice, 0 a 1. Proto dvojková. |
+| TEST\_A\_2\_WHY | Bit je nejmenší kousek informace, jen 0, nebo 1. Bajt je až skupina 8 bitů. |
+| TEST\_A\_3\_WHY | Bajt je skupina 8 bitů, proto 1 B = 8 b. |
+| TEST\_A\_4\_WHY | Základ říká, kolik různých číslic soustava má: desítková 10, dvojková 2. |
+| TEST\_A\_5\_WHY | Barvy se píší šestnáctkově, proto v nich jsou písmena A–F. FF je 255, nejsilnější světlo. |
+| TEST\_A\_6\_WHY | Tranzistor v počítači zná jen dva stavy: proud teče, nebo neteče. Na to stačí 1 a 0. |
+| TEST\_A\_7\_WHY | Minuta má 60 sekund a hodina 60 minut, to je šedesátková soustava. |
+| TEST\_A\_8\_WHY | Bajt se píše velkým B, malé b je bit. |
+| TEST\_D\_1\_WHY | Z GB na MB je schod dolů, takže násobíš: 3 × 1 000 = 3 000 MB. |
+| TEST\_D\_2\_WHY | Z MB na GB je schod nahoru, takže dělíš: 5 000 ÷ 1 000 = 5 GB. |
+| TEST\_D\_3\_WHY | Bajt má 8 bitů, takže 1 B = 8 b. |
+| TEST\_D\_4\_WHY | Z MB na kB je schod dolů, takže násobíš: 2 × 1 000 = 2 000 kB. |
+| TEST\_D\_5\_WHY | Z MB na GB je schod nahoru, takže dělíš: 500 ÷ 1 000 = 0,5 GB. |
+| TEST\_D\_6\_WHY | Z bitů na bajty dělíš osmi: 16 ÷ 8 = 2 B. |
+| TEST\_D\_7\_WHY | Převeď vše na MB: 1,5 GB = 1 500 MB, 800 000 kB = 800 MB. // 9 000 Mb jsou megabity, takže ÷ 8 = 1 125 MB. Největší je 1,5 GB. |
+| TEST\_D\_8\_WHY | Mb jsou megabity a na megabajty se dělí osmi: 80 ÷ 8 = 10 MB. |
+
 ## 7. Cvičiště
 
 ### Místnost a společné popisky
@@ -361,13 +439,17 @@ Znění všech: „Spočítej ve dvojkové soustavě: **{priklad}**“
 
 | ID | Text |
 | --- | --- |
-| TRAIN\_A\_INTRO | Zaměřovač ukazuje desítkové číslo. Sestřel asteroid, na kterém je to samé číslo ve dvojkové. |
+| TRAIN\_A\_INTRO | Zaměřovač ukazuje desítkové číslo. Sestřel asteroid, na kterém je to samé číslo ve dvojkové. Takhle postupně všechny 4. |
 | TRAIN\_A\_DEMO | Cíl je 13. // Hodnoty pozic zleva jsou 8, 4, 2, 1. // Asteroid 1101: 8 + 4 + 0 + 1 = 13. Zásah! |
 | TRAIN\_A\_HIT | Zásah! {bits} = {decomp} = {target}. |
 | TRAIN\_A\_MISS | Vedle! {bits} je {value}, ne {target}. |
-| TRAIN\_A\_LEVELUP | Výborně, přidáváme pátý bit s hodnotou 16. |
+| TRAIN\_A\_LVL\_1 – \_4 | Level 1 · 3 bity / Level 2 · 4 bity / Level 3 · 5 bitů / Level 4 · 6 bitů |
+| TRAIN\_A\_CLEAR | Všechny 4 asteroidy sestřelené! Odemyká se další level s bitem navíc. |
+| TRAIN\_A\_NEXT\_LVL | Další level |
+| TRAIN\_A\_CLEAR\_LAST | Všechny 4 asteroidy sestřelené i se 6 bity. Mistrovská střelba! |
+| TRAIN\_A\_AGAIN | Nová vlna |
 
-Generátor: kola 1–5 cíl 1–15 (4 bity), od 6. kola 1–31 (5 bitů). Na asteroidech je správné číslo a 2–3 jiná, která se od něj liší v jednom nebo dvou bitech.
+Generátor: level = vlna 4 různých čísel s n bity (level 1 = 3 bity … level 4 = 6 bitů). Zaměřovač ukazuje vždy jedno z ještě nesestřelených čísel; sestřelené asteroidy nemizí znovu. Po celé vlně se odemkne další level, mezi odemčenými lze přepínat.
 
 ### B – Sčítačka
 
@@ -427,6 +509,8 @@ Generátor: nejdřív 1 schod (např. 3 GB → MB, 7 000 kB → MB, 4 B → b, 2
 | WIN\_NAME\_LABEL | – | Tvoje jméno na diplom |
 | WIN\_NAME\_PLACEHOLDER | – | Jméno a příjmení |
 | WIN\_GET\_DIPLOMA | – | Získat diplom |
+| WIN\_REPLAY | – | Zahrát si znovu: |
+| WIN\_REPLAY\_ALL | – | Celou hru |
 | DIPLOMA\_TITLE | – | Diplom |
 | DIPLOMA\_SUBTITLE | – | za záchranu vesmírné lodi |
 | DIPLOMA\_TEXT | – | za opravu reaktoru, archivu a navigace a za vyslání signálu SOS. Dvojková soustava, bity a bajty už pro tebe nejsou žádná záhada. |
