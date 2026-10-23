@@ -1,0 +1,12 @@
+{
+  "title": "Bobří trénink",
+  "titleHtml": "Bobří <span>trénink</span>",
+  "intro": "Vyber si téma a trénuj. Úlohy jdou od lehkých po mistrovské a můžeš začít kteroukoli. Po každé úloze si přečti, jak se řeší krok za krokem.",
+  "levels": {
+    "1": "Lehká",
+    "2": "Střední",
+    "3": "Těžká",
+    "4": "Mistrovská"
+  },
+  "storageKey": "bobri-trenink-v2"
+}

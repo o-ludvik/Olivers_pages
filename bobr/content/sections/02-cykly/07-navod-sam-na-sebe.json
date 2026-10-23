@@ -1,0 +1,31 @@
+{
+  "title": "Návod sám na sebe",
+  "level": 4,
+  "text": [
+    "Bobr má návod <b>postav(n)</b>. Když je n = 0, nedělá nic. Jinak udělá tohle:",
+    {
+      "code": "postav(n):\n    polož 1 kládu\n    postav(n − 1)\n    postav(n − 1)"
+    }
+  ],
+  "question": "Kolik klád položí příkaz postav(4)?",
+  "answer": {
+    "type": "number",
+    "correct": 15
+  },
+  "hint": "Začni od malých čísel: postav(1) = 1 kláda. Kolik položí postav(2)? A postav(3)?",
+  "solution": {
+    "steps": [
+      "postav(0) = 0 klád.",
+      "postav(1) = 1 + postav(0) + postav(0) = 1.",
+      "postav(2) = 1 + 1 + 1 = 3.",
+      "postav(3) = 1 + 3 + 3 = 7.",
+      "postav(4) = 1 + 7 + 7 = 15."
+    ],
+    "mistake": "Nesnaž se rozkreslit celý postup najednou. Spočítej malé případy a z nich ty větší.",
+    "why": "Návod, který používá sám sebe, se jmenuje rekurze. Počítač ji umí, jen musí mít konec (n = 0).",
+    "traps": {
+      "8": "Zapomněl(a) jsi, že každé postav položí i svou 1 kládu, ne jen ty vnitřní.",
+      "16": "Těsně vedle. postav(4) = 1 + 7 + 7."
+    }
+  }
+}

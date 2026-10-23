@@ -1,0 +1,88 @@
+{
+  "title": "Kdo má začít?",
+  "level": 2,
+  "text": [
+    "Bobři si předávají novinu po čarách, každou minutu o jeden skok dál. Novinu má začít šířit jeden bobr tak, aby ji <b>všichni znali co nejdřív</b>."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "A": [
+          40,
+          110
+        ],
+        "B": [
+          150,
+          110
+        ],
+        "C": [
+          260,
+          110
+        ],
+        "D": [
+          370,
+          110
+        ],
+        "E": [
+          480,
+          110
+        ],
+        "F": [
+          260,
+          220
+        ]
+      },
+      "E": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "B",
+          "C"
+        ],
+        [
+          "C",
+          "D"
+        ],
+        [
+          "D",
+          "E"
+        ],
+        [
+          "C",
+          "F"
+        ]
+      ],
+      "w": 520
+    }
+  },
+  "question": "Který bobr by měl začít?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "bobr B",
+      "bobr C",
+      "bobr D",
+      "bobr F"
+    ],
+    "correct": "B"
+  },
+  "hint": "U každé možnosti spočítej, kolik minut trvá cesta k nejvzdálenějšímu bobrovi.",
+  "solution": {
+    "steps": [
+      "Začne B: nejdál je E (B → C → D → E), 3 minuty.",
+      "Začne C: A i E jsou 2 skoky daleko, F 1 skok. Hotovo za 2 minuty.",
+      "Začne D: nejdál je A, 3 minuty. Začne F: nejdál jsou A a E, 3 minuty.",
+      "Nejlepší je C, všichni vědí za 2 minuty."
+    ],
+    "mistake": "Nehledej bobra s nejvíc sousedy. Hledej toho, od kterého je to k nejvzdálenějšímu nejblíž.",
+    "why": "Tak se hledá nejlepší místo pro server nebo hasičskou zbrojnici: aby to všude bylo co nejblíž.",
+    "traps": {
+      "A": "Od B trvá cesta k E 3 minuty. Zkus C.",
+      "C": "Od D trvá cesta k A 3 minuty.",
+      "D": "Od F trvá cesta k A i E 3 minuty."
+    }
+  }
+}

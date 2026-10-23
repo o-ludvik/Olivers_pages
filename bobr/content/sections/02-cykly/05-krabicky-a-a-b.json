@@ -1,0 +1,36 @@
+{
+  "title": "Krabičky a a b",
+  "level": 2,
+  "text": [
+    "V programu jsou dvě krabičky (proměnné) <b>a</b> a <b>b</b>. Řádky se provádějí shora dolů.",
+    {
+      "code": "a = 2\nb = 5\na = a + b\nb = a + b\na = b − a"
+    }
+  ],
+  "question": "Co je na konci v krabičkách?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "a = 5, b = 12",
+      "a = 7, b = 12",
+      "a = 5, b = 7",
+      "a = 2, b = 5"
+    ],
+    "correct": "A"
+  },
+  "hint": "Po každém řádku si zapiš obě krabičky. Vždy použij číslo, které tam je TEĎ.",
+  "solution": {
+    "steps": [
+      "a = 2, b = 5.",
+      "a = a + b = 2 + 5 = 7. Teď a = 7, b = 5.",
+      "b = a + b = 7 + 5 = 12. Teď a = 7, b = 12.",
+      "a = b − a = 12 − 7 = 5. Konec: a = 5, b = 12."
+    ],
+    "mistake": "Když se krabička změní, staré číslo zmizí. Na dalším řádku už platí nové.",
+    "why": "Sledovat proměnné řádek po řádku je nejdůležitější dovednost při hledání chyb v programu.",
+    "traps": {
+      "B": "Zapomněl(a) jsi poslední řádek a = b − a.",
+      "C": "Ve 4. řádku už je a = 7, takže b = 7 + 5."
+    }
+  }
+}

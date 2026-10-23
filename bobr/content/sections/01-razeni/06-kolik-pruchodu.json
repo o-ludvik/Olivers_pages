@@ -1,0 +1,37 @@
+{
+  "title": "Kolik průchodů?",
+  "level": 3,
+  "text": [
+    "Bobr řadí jako v úloze „Jeden průchod“: jde zleva doprava a prohazuje sousedy, když je levá karta větší. Průchody opakuje tak dlouho, dokud v nějakém průchodu <b>neprohodí nic</b>."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      3,
+      5,
+      1,
+      4,
+      2
+    ]
+  },
+  "question": "Kolik průchodů celkem udělá? (Počítej i ten poslední, ve kterém už nic neprohodí.)",
+  "answer": {
+    "type": "number",
+    "correct": 4
+  },
+  "hint": "Po každém průchodu si napiš celou řadu. Největší číslo vždy doputuje na konec.",
+  "solution": {
+    "steps": [
+      "1. průchod: 3 5 1 4 2 → 3 1 4 2 5 (pětka doputovala na konec).",
+      "2. průchod: 3 1 4 2 5 → 1 3 2 4 5.",
+      "3. průchod: 1 3 2 4 5 → 1 2 3 4 5. Teď je seřazeno, ale bobr to ještě neví.",
+      "4. průchod: nic se neprohodí. Teprve teď bobr ví, že je hotovo.",
+      "Celkem 4 průchody."
+    ],
+    "mistake": "Bobr pozná, že je hotovo, až když jeden celý průchod nic neprohodí. Ten poslední průchod se počítá.",
+    "why": "Počítač „nevidí“, že je řada seřazená. Musí to ověřit kontrolou, a i kontrola stojí čas.",
+    "traps": {
+      "3": "Po 3. průchodu je opravdu seřazeno, ale bobr to ještě neví. Musí udělat ještě jeden průchod bez výměny."
+    }
+  }
+}

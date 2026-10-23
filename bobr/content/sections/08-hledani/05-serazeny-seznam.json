@@ -1,0 +1,24 @@
+{
+  "title": "Seřazený seznam",
+  "level": 3,
+  "text": [
+    "Bobr má seřazený seznam <b>31 jmen</b>. Hledá jedno jméno: otevře vždy prostřední jméno a podle abecedy pozná, jestli hledat v horní, nebo dolní půlce."
+  ],
+  "question": "Kolikrát nejvýš musí jméno otevřít?",
+  "answer": {
+    "type": "number",
+    "correct": 5
+  },
+  "hint": "Po otevření prostředního jména zbude v každé půlce 15 jmen. Pak 7, …",
+  "solution": {
+    "steps": [
+      "31 jmen: otevře 16. jméno, zbude 15 na jedné straně.",
+      "15 → otevře prostřední, zbude 7.",
+      "7 → zbude 3.",
+      "3 → zbude 1.",
+      "1 → otevře ho. Celkem 5 otevření."
+    ],
+    "mistake": "Půlení funguje jen v SEŘAZENÉM seznamu. V neseřazeném bys musel(a) projít všechna jména.",
+    "why": "Proto počítače data řadí: v seřazených datech se hledá mnohem rychleji."
+  }
+}

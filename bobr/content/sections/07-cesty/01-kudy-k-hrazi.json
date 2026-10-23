@@ -1,0 +1,63 @@
+{
+  "title": "Kudy k hrázi?",
+  "level": 1,
+  "text": [
+    "Čísla u cest ukazují, kolik minut cesta trvá."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "A": [
+          50,
+          150
+        ],
+        "B": [
+          200,
+          40
+        ],
+        "C": [
+          350,
+          150
+        ]
+      },
+      "E": [
+        [
+          "A",
+          "B",
+          2
+        ],
+        [
+          "B",
+          "C",
+          3
+        ],
+        [
+          "A",
+          "C",
+          6
+        ]
+      ],
+      "start": "A",
+      "w": 400
+    }
+  },
+  "question": "Kolik minut trvá nejrychlejší cesta z A do C?",
+  "answer": {
+    "type": "number",
+    "correct": 5
+  },
+  "hint": "Porovnej přímou cestu a cestu přes B.",
+  "solution": {
+    "steps": [
+      "Přímo z A do C: 6 minut.",
+      "Přes B: 2 + 3 = 5 minut.",
+      "Nejrychlejší je 5 minut."
+    ],
+    "mistake": "Přímá cesta nemusí být nejrychlejší.",
+    "why": "Navigace v mobilu porovnává cesty přesně takhle.",
+    "traps": {
+      "6": "To je přímá cesta. Zkus cestu přes B."
+    }
+  }
+}

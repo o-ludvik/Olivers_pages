@@ -1,0 +1,30 @@
+{
+  "title": "Přidávání klád",
+  "level": 1,
+  "text": [
+    "Na hrázi leží na začátku <b>2 klády</b>. Bobři pak provedou:",
+    {
+      "code": "opakuj 3×:\n    přidej 4 klády"
+    }
+  ],
+  "question": "Kolik klád bude na hrázi na konci?",
+  "answer": {
+    "type": "number",
+    "correct": 14
+  },
+  "hint": "Napiš si: začátek 2, po 1. opakování…, po 2. opakování…",
+  "solution": {
+    "steps": [
+      "Začátek: 2 klády. To ještě není žádné opakování.",
+      "Po 1. opakování: 2 + 4 = 6.",
+      "Po 2. opakování: 6 + 4 = 10.",
+      "Po 3. opakování: 10 + 4 = 14."
+    ],
+    "mistake": "Začátek se nepočítá jako opakování. Udělej přesně 3 kroky.",
+    "why": "Počet klád je proměnná: krabička, jejíž obsah se v každém opakování změní.",
+    "traps": {
+      "10": "Udělal(a) jsi jen 2 opakování. Začátek se nepočítá, opakování jsou 3.",
+      "12": "To je jen 3 × 4. Na začátku už ale 2 klády ležely."
+    }
+  }
+}

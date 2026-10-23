@@ -1,0 +1,29 @@
+{
+  "title": "Co je v souboru?",
+  "level": 1,
+  "text": [
+    "Bobr má ve složce čtyři soubory. Konec názvu za tečkou (přípona) prozrazuje, co v souboru je."
+  ],
+  "question": "Ve kterém souboru je nejspíš hudba?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "foto.jpg",
+      "pisen.mp3",
+      "ukol.docx",
+      "hra.exe"
+    ],
+    "correct": "B"
+  },
+  "hint": "Která přípona patří zvuku?",
+  "solution": {
+    "steps": [
+      ".jpg je obrázek nebo fotka.",
+      ".mp3 je zvuk, hudba.",
+      ".docx je textový dokument, .exe je program.",
+      "Hudba je v pisen.mp3."
+    ],
+    "mistake": "Soubory .exe od neznámých lidí neotvírej. Jsou to programy a mohou obsahovat virus.",
+    "why": "Podle přípony počítač pozná, kterým programem soubor otevřít."
+  }
+}

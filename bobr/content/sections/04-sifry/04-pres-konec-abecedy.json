@@ -1,0 +1,29 @@
+{
+  "title": "Přes konec abecedy",
+  "level": 2,
+  "text": [
+    "Zašifruj slovo <b class=\"big\">ZUBY</b> posunem o <b>2 místa dopředu</b>. Když dojdeš na konec abecedy, pokračuješ znovu od A (… Y, Z, A, B …)."
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jak bude vypadat zašifrované slovo?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "BWDA"
+    ]
+  },
+  "hint": "Z o dvě dopředu: za Z je A, za A je B.",
+  "solution": {
+    "steps": [
+      "Z → A → B. První písmeno je B.",
+      "U → V → W.",
+      "B → C → D.",
+      "Y → Z → A.",
+      "Šifra: BWDA."
+    ],
+    "mistake": "Abeceda se točí dokola jako ciferník hodin. Za Z přijde zase A.",
+    "why": "Počítání „dokola“ se v informatice jmenuje zbytek po dělení a používá se velmi často."
+  }
+}

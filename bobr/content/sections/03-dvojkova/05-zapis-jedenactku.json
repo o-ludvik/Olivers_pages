@@ -1,0 +1,35 @@
+{
+  "title": "Zapiš jedenáctku",
+  "level": 3,
+  "text": [
+    "Lampy mají hodnoty <b>8, 4, 2, 1</b>. Bobr chce ukázat číslo <b>11</b>."
+  ],
+  "question": "Které lampy musí rozsvítit? (● svítí, ○ nesvítí)",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "● ○ ● ●",
+      "● ● ○ ●",
+      "○ ● ● ●",
+      "● ○ ○ ●"
+    ],
+    "correct": "A"
+  },
+  "hint": "Začni největší lampou. Vejde se 8 do 11? Kolik pak zbývá?",
+  "solution": {
+    "steps": [
+      "Největší hodnota, která se vejde do 11, je 8. Rozsvítím ji. Zbývá 11 − 8 = 3.",
+      "4 se do 3 nevejde. Nechám zhasnutou.",
+      "2 se vejde. Rozsvítím. Zbývá 1.",
+      "1 se vejde. Rozsvítím. Zbývá 0.",
+      "Výsledek: ● ○ ● ●."
+    ],
+    "mistake": "Kontrola: sečti rozsvícené hodnoty. 8 + 2 + 1 = 11.",
+    "why": "Takhle počítač převádí každé číslo do dvojkové soustavy: bere od největší hodnoty.",
+    "traps": {
+      "B": "To je 8 + 4 + 1 = 13.",
+      "C": "To je 4 + 2 + 1 = 7.",
+      "D": "To je 8 + 1 = 9."
+    }
+  }
+}

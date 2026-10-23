@@ -1,0 +1,25 @@
+{
+  "title": "Největší číslo",
+  "level": 3,
+  "text": [
+    "Bobři mají pět lamp s hodnotami <b>16, 8, 4, 2, 1</b>."
+  ],
+  "question": "Jaké největší číslo dokážou ukázat?",
+  "answer": {
+    "type": "number",
+    "correct": 31
+  },
+  "hint": "Největší číslo dostaneš, když svítí všechno.",
+  "solution": {
+    "steps": [
+      "Rozsvítím všech pět lamp.",
+      "16 + 8 + 4 + 2 + 1 = 31."
+    ],
+    "mistake": "32 už by potřebovalo šestou lampu s hodnotou 32.",
+    "why": "Proto se v počítačích objevují čísla jako 31, 63, 255: jsou to maxima pro určitý počet bitů.",
+    "traps": {
+      "5": "To je počet lamp. Sečti jejich hodnoty.",
+      "32": "32 by potřebovalo šestou lampu. Pět lamp dá nejvýš 16 + 8 + 4 + 2 + 1."
+    }
+  }
+}

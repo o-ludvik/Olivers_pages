@@ -1,0 +1,30 @@
+{
+  "title": "Kolik je cest?",
+  "level": 3,
+  "text": [
+    "Bobr jde z levého horního políčka (S) do pravého dolního (H). Smí chodit jen <b>doprava</b> a <b>dolů</b>."
+  ],
+  "visual": {
+    "type": "paths",
+    "data": {
+      "rows": 3,
+      "cols": 4
+    }
+  },
+  "question": "Kolik různých cest existuje?",
+  "answer": {
+    "type": "number",
+    "correct": 10
+  },
+  "hint": "Do každého políčka napiš, kolika cestami se do něj dá dojít: součet cest zleva a shora.",
+  "solution": {
+    "steps": [
+      "Do políček horního řádku a levého sloupce vede jen 1 cesta.",
+      "Druhý řádek: 1, 2, 3, 4 (každé = levé + horní).",
+      "Třetí řádek: 1, 3, 6, 10.",
+      "Do H vede 10 cest."
+    ],
+    "mistake": "Kreslit všechny cesty je zdlouhavé a snadno nějakou vynecháš. Sčítání po políčkách je spolehlivé.",
+    "why": "Skládání velkého výsledku z menších se jmenuje dynamické programování."
+  }
+}

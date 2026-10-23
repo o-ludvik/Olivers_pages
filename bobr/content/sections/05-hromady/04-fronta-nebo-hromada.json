@@ -1,0 +1,31 @@
+{
+  "title": "Fronta, nebo hromada?",
+  "level": 2,
+  "text": [
+    "Do <b>fronty</b> přijdou postupně bobři A, B, C, D. Pak <b>dva bobři</b> odejdou."
+  ],
+  "question": "Kdo zůstane?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "A a B",
+      "C a D",
+      "A a D",
+      "B a C"
+    ],
+    "correct": "B"
+  },
+  "hint": "Ve frontě se odchází zepředu.",
+  "solution": {
+    "steps": [
+      "Fronta zepředu: A, B, C, D.",
+      "Odejde první A, pak B.",
+      "Zůstanou C a D."
+    ],
+    "mistake": "Kdyby to byla hromada, odešli by D a C a zůstali by A a B. Vždy si přečti, jestli jde o frontu, nebo hromadu.",
+    "why": "Fronta a zásobník jsou dvě nejzákladnější datové struktury.",
+    "traps": {
+      "A": "To by platilo pro hromadu. Ve frontě odcházejí ti, co přišli první."
+    }
+  }
+}

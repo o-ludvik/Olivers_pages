@@ -1,0 +1,34 @@
+{
+  "title": "Na lavičce",
+  "level": 1,
+  "text": [
+    "Ali, Bára a Cyril sedí vedle sebe na lavičce.",
+    {
+      "list": [
+        "Bára nesedí na kraji.",
+        "Cyril sedí vpravo od Báry."
+      ]
+    }
+  ],
+  "question": "Kdo sedí úplně vlevo?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "Ali",
+      "Bára",
+      "Cyril",
+      "nedá se zjistit"
+    ],
+    "correct": "A"
+  },
+  "hint": "Kde sedí Bára, když nesedí na kraji?",
+  "solution": {
+    "steps": [
+      "Bára nesedí na kraji, takže sedí uprostřed.",
+      "Cyril sedí vpravo od Báry, tedy úplně vpravo.",
+      "Na levé místo zbývá Ali."
+    ],
+    "mistake": "Začni podmínkou, která nejvíc omezuje. Tady je to Bára.",
+    "why": "Postupné vylučování možností je základ logického uvažování i programování."
+  }
+}

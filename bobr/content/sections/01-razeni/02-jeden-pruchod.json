@@ -1,0 +1,42 @@
+{
+  "title": "Jeden průchod",
+  "level": 1,
+  "text": [
+    "Bobr jde po kartách <b>zleva doprava</b> a porovnává vždy <b>dva sousedy</b>. Když je levá karta větší, prohodí je. Pak se posune o jedno místo doprava."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      4,
+      1,
+      3,
+      2
+    ]
+  },
+  "question": "Jak budou karty ležet po jednom průchodu zleva doprava?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "1 2 3 4",
+      "1 3 2 4",
+      "1 4 3 2",
+      "3 1 2 4"
+    ],
+    "correct": "B"
+  },
+  "hint": "Piš si řadu po každém porovnání. Začni dvojicí 4 a 1.",
+  "solution": {
+    "steps": [
+      "Porovnám 4 a 1: 4 je větší, prohodím. Řada: 1 4 3 2.",
+      "Porovnám 4 a 3: prohodím. Řada: 1 3 4 2.",
+      "Porovnám 4 a 2: prohodím. Řada: 1 3 2 4.",
+      "Došel jsem na konec. Po jednom průchodu: 1 3 2 4."
+    ],
+    "mistake": "Po jednom průchodu ještě nemusí být seřazeno. Největší číslo „probublá“ na konec, ostatní ještě ne.",
+    "why": "Tomuto postupu se říká bublinkové řazení. Průchody se opakují, dokud není seřazeno.",
+    "traps": {
+      "A": "To je úplně seřazená řada. Úloha se ale ptá jen na stav po jednom průchodu.",
+      "C": "Prohodil(a) jsi jen první dvojici. Bobr pokračuje dál až na konec řady."
+    }
+  }
+}

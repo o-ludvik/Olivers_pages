@@ -1,0 +1,44 @@
+{
+  "title": "Hodnoty lamp",
+  "level": 1,
+  "text": [
+    "Bobři si posílají čísla čtyřmi lampami. Každá lampa má svou hodnotu (napsanou nad ní). Číslo zjistíš, když <b>sečteš hodnoty rozsvícených lamp</b>."
+  ],
+  "visual": {
+    "type": "lamps",
+    "data": {
+      "values": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "rows": [
+        [
+          0,
+          1,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "question": "Jaké číslo lampy ukazují?",
+  "answer": {
+    "type": "number",
+    "correct": 4
+  },
+  "hint": "Svítí jen jedna lampa. Jakou má hodnotu?",
+  "solution": {
+    "steps": [
+      "Svítí jen druhá lampa zleva.",
+      "Její hodnota je 4.",
+      "Ostatní nesvítí, nepřičítají nic. Číslo je 4."
+    ],
+    "mistake": "Neříkáš, kolik lamp svítí, ale jakou mají hodnotu.",
+    "why": "Tak si počítač ukládá čísla: každý „bit“ je jedna lampa, která buď svítí (1), nebo ne (0).",
+    "traps": {
+      "1": "Svítí jedna lampa, ale číslo je její hodnota, ne počet lamp."
+    }
+  }
+}

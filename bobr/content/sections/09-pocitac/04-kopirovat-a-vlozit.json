@@ -1,0 +1,24 @@
+{
+  "title": "Kopírovat a vložit",
+  "level": 2,
+  "text": [
+    "V editoru je napsáno <b class=\"big\">LES</b>. Bobr označí <b>LE</b>, dá <b>Kopírovat</b> (Ctrl+C), klikne na konec textu a dá <b>Vložit</b> (Ctrl+V)."
+  ],
+  "question": "Co je teď v editoru?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "LESLE"
+    ]
+  },
+  "hint": "Kopírovat původní text nechá na místě. Vložit přidá kopii.",
+  "solution": {
+    "steps": [
+      "Kopírovat si LE zapamatuje a text se nezmění: LES.",
+      "Vložit na konec přidá LE.",
+      "Výsledek: LESLE."
+    ],
+    "mistake": "Kopírovat nic nemaže. Maže jen Vyjmout.",
+    "why": "Paměti pro kopírovaný text se říká schránka."
+  }
+}

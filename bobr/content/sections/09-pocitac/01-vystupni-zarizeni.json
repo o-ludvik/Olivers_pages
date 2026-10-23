@@ -1,0 +1,28 @@
+{
+  "title": "Výstupní zařízení",
+  "level": 1,
+  "text": [
+    "Vstupní zařízení posílá informace <b>do</b> počítače. Výstupní je <b>z</b> počítače ukazuje nebo přehrává."
+  ],
+  "question": "Které zařízení je výstupní?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "klávesnice",
+      "mikrofon",
+      "tiskárna",
+      "myš"
+    ],
+    "correct": "C"
+  },
+  "hint": "Které zařízení ti něco ukáže nebo vytiskne?",
+  "solution": {
+    "steps": [
+      "Klávesnice, mikrofon a myš posílají počítači to, co děláš.",
+      "Tiskárna dostane od počítače dokument a vytiskne ho.",
+      "Výstupní je tiskárna."
+    ],
+    "mistake": "Ptej se: posílám tím něco počítači, nebo mi počítač něco dává?",
+    "why": "Každý počítač má vstupy (čidla, klávesnice) a výstupy (obrazovka, motory)."
+  }
+}

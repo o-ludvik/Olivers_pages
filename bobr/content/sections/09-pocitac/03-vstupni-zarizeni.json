@@ -1,0 +1,26 @@
+{
+  "title": "Vstupní zařízení",
+  "level": 2,
+  "text": [
+    "<b>klávesnice, monitor, skener, sluchátka, myš, projektor, webkamera</b>"
+  ],
+  "question": "Kolik z těchto zařízení je vstupních?",
+  "answer": {
+    "type": "number",
+    "correct": 4
+  },
+  "hint": "U každého se zeptej: posílám tím něco do počítače?",
+  "solution": {
+    "steps": [
+      "Vstupní: klávesnice (píšu), skener (načte papír), myš (klikám), webkamera (natáčí mě).",
+      "Výstupní: monitor, sluchátka, projektor.",
+      "Vstupních je 4."
+    ],
+    "mistake": "Skener vypadá jako tiskárna, ale papír do počítače NAČÍTÁ. Je vstupní.",
+    "why": "Rozdělit zařízení podle směru informací pomáhá pochopit, jak počítač funguje.",
+    "traps": {
+      "3": "Zapomněl(a) jsi na skener? Ten papír do počítače načítá, je vstupní.",
+      "5": "Sluchátka a projektor jsou výstupní, jen ukazují nebo přehrávají."
+    }
+  }
+}

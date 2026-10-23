@@ -1,0 +1,33 @@
+{
+  "title": "Zdvojování",
+  "level": 2,
+  "text": [
+    "Na začátku má hráz <b>1 kládu</b>. Bobři pak provedou:",
+    {
+      "code": "opakuj 5×:\n    počet klád = počet klád × 2"
+    }
+  ],
+  "question": "Kolik klád bude mít hráz na konci?",
+  "answer": {
+    "type": "number",
+    "correct": 32
+  },
+  "hint": "Udělej si tabulku: začátek 1, po 1. opakování 2, po 2. opakování…",
+  "solution": {
+    "steps": [
+      "Začátek: 1 kláda. To není opakování.",
+      "1. opakování: 1 × 2 = 2.",
+      "2. opakování: 2 × 2 = 4.",
+      "3. opakování: 4 × 2 = 8.",
+      "4. opakování: 8 × 2 = 16.",
+      "5. opakování: 16 × 2 = 32."
+    ],
+    "mistake": "Častá chyba je o jedno zdvojení méně: začátek (1) se omylem počítá jako první krok. Začátek je stav PŘED cyklem.",
+    "why": "Zdvojování roste hrozně rychle. Proto se v informatice tolik mluví o číslech 2, 4, 8, 16, 32, 64…",
+    "traps": {
+      "10": "„× 2“ znamená vynásobit dvěma, ne přičíst 2.",
+      "11": "„× 2“ znamená vynásobit dvěma, ne přičíst 2.",
+      "16": "Udělal(a) jsi jen 4 zdvojení. Začátek (1) ještě není opakování, zdvojit musíš 5×."
+    }
+  }
+}

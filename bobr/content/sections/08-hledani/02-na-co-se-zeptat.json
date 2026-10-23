@@ -1,0 +1,32 @@
+{
+  "title": "Na co se zeptat?",
+  "level": 2,
+  "text": [
+    "Bobřice si myslí číslo od 1 do 16. Bobr se zeptal „Je to 8?“ a ona řekla „<b>víc</b>“."
+  ],
+  "question": "Na které číslo se má bobr zeptat teď, aby postupoval nejchytřeji?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "9",
+      "12",
+      "16",
+      "4"
+    ],
+    "correct": "B"
+  },
+  "hint": "Která čísla ještě připadají v úvahu? Které je mezi nimi uprostřed?",
+  "solution": {
+    "steps": [
+      "„Víc než 8“: v úvahu jsou čísla 9 až 16.",
+      "To je 8 čísel. Prostřední je 12 (nebo 13).",
+      "Otázka na 12 vyřadí polovinu: buď 9–11, nebo 13–16."
+    ],
+    "mistake": "Otázka na 9 vyřadí jen jedno číslo. Vždy se ptej uprostřed zbývajících čísel.",
+    "why": "Stejně hledá počítač slovo v seřazeném slovníku.",
+    "traps": {
+      "D": "4 je menší než 8, to už bobr ví, že není.",
+      "A": "9 vyřadí jen jedno číslo. Lepší je zeptat se uprostřed čísel 9 až 16."
+    }
+  }
+}

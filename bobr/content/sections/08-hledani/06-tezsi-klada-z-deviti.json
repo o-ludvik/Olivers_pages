@@ -1,0 +1,27 @@
+{
+  "title": "Těžší kláda z devíti",
+  "level": 3,
+  "text": [
+    "Bobr má 9 stejně vypadajících klád, jedna je o trochu těžší. Má rovnoramenné váhy bez závaží: na každou misku dá libovolně klád a váhy ukážou, která strana je těžší."
+  ],
+  "question": "Kolik vážení mu jistě stačí?",
+  "answer": {
+    "type": "number",
+    "correct": 2
+  },
+  "hint": "Nevažuj po jedné ani na půlky. Co když klády rozdělíš na tři hromádky po třech?",
+  "solution": {
+    "steps": [
+      "Rozdělím klády na 3 trojice. Dvě trojice dám na váhy.",
+      "Když se jedna miska skloní, těžší kláda je v ní. Když jsou v rovnováze, je ve třetí trojici.",
+      "Z vybrané trojice dám po jedné kládě na každou misku. Těžší je ta skloněná, při rovnováze ta třetí.",
+      "Stačí 2 vážení."
+    ],
+    "mistake": "Váhy mají 3 výsledky (vlevo, vpravo, rovnováha). Proto se vyplatí dělit na třetiny, ne na půlky.",
+    "why": "Dobrý algoritmus využije každou informaci, kterou krok přinese.",
+    "traps": {
+      "3": "Na půlky by to byla 3 vážení. Rozděl klády na třetiny.",
+      "4": "Rozděl klády na tři hromádky po třech."
+    }
+  }
+}

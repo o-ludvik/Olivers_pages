@@ -1,0 +1,44 @@
+{
+  "title": "Dvě kola",
+  "level": 2,
+  "text": [
+    "Bobr zase řadí <b>výběrem</b>: v každém kole najde nejmenší neseřazenou kartu a prohodí ji s první neseřazenou kartou."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      6,
+      3,
+      8,
+      1,
+      5
+    ]
+  },
+  "question": "Jak budou karty ležet po 2. kole?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "1 3 5 6 8",
+      "1 3 8 6 5",
+      "1 6 3 8 5",
+      "1 3 6 8 5"
+    ],
+    "correct": "B"
+  },
+  "hint": "Po 1. kole je 1 na začátku. Ve 2. kole hledej nejmenší kartu jen mezi ostatními. Kde leží?",
+  "solution": {
+    "steps": [
+      "1. kolo: nejmenší je 1, prohodím ji s 6. Řada: 1 3 8 6 5.",
+      "2. kolo: neseřazené jsou 3 8 6 5. Nejmenší je 3.",
+      "Trojka už stojí na prvním neseřazeném místě, takže se nic neprohazuje.",
+      "Po 2. kole: 1 3 8 6 5."
+    ],
+    "mistake": "Častá chyba: spočítat jen 1. kolo, nebo rovnou seřadit všechno. Spočítej přesně tolik kol, kolik úloha chce, a po každém si řadu zapiš.",
+    "why": "Algoritmus dělá vždy stejné kroky, i když se zrovna nic nezmění. Kolo bez prohození je pořád kolo.",
+    "traps": {
+      "A": "Tohle je stav až po 3. kole. Po 2. kole ještě 8, 6 a 5 nejsou seřazené.",
+      "C": "Karty jsi posunul(a). Při řazení výběrem se jen prohodí dvě karty.",
+      "D": "Ve 2. kole je nejmenší neseřazená karta 3 a ta už stojí na svém místě. Nic se neprohodí."
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Korálky",
+  "level": 1,
+  "text": [
+    "Bobřice navléká korálky pořád podle stejného pravidla."
+  ],
+  "visual": {
+    "type": "beads",
+    "data": [
+      "r",
+      "b",
+      "b",
+      "g",
+      "r",
+      "b",
+      "b",
+      "g"
+    ]
+  },
+  "question": "Jakou barvu bude mít 13. korálek?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "červenou",
+      "modrou",
+      "zelenou",
+      "žlutou"
+    ],
+    "correct": "A"
+  },
+  "hint": "Kolik korálků je v jedné opakující se skupině?",
+  "solution": {
+    "steps": [
+      "Opakuje se skupina 4 korálků: červená, modrá, modrá, zelená.",
+      "Korálky 1, 5, 9, 13 jsou vždy první ve skupině.",
+      "13. korálek je červený."
+    ],
+    "mistake": "Nepočítej korálky po jednom až do 13. Najdi délku skupiny a skákej po ní.",
+    "why": "Hledání opakujícího se vzoru pomáhá třeba při kompresi dat.",
+    "traps": {
+      "B": "Zkontroluj délku skupiny: jsou v ní 4 korálky, ne 3."
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Tleskací program",
+  "level": 1,
+  "text": [
+    "Co je uvnitř příkazu <b>opakuj</b>, provede se tolikrát, kolikrát se píše.",
+    {
+      "code": "opakuj 3×:\n    tleskni\n    tleskni"
+    }
+  ],
+  "question": "Kolikrát bobr tleskne?",
+  "answer": {
+    "type": "number",
+    "correct": 6
+  },
+  "hint": "Kolikrát tleskne v jednom opakování? A kolik je opakování?",
+  "solution": {
+    "steps": [
+      "V jednom opakování bobr tleskne 2×.",
+      "Opakování jsou 3.",
+      "3 × 2 = 6 tlesknutí."
+    ],
+    "mistake": "Nesčítej 3 + 2. Číslo u „opakuj“ říká, kolikrát se celé tělo cyklu zopakuje.",
+    "why": "Cyklus šetří psaní: místo šesti řádků „tleskni“ stačí tři.",
+    "traps": {
+      "2": "To je jen jedno opakování. Cyklus se opakuje 3×.",
+      "5": "3 + 2 nestačí. Tělo cyklu (2 tlesknutí) se provede 3×."
+    }
+  }
+}

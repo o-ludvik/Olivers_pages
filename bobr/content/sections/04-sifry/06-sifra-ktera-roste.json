@@ -1,0 +1,30 @@
+{
+  "title": "Šifra, která roste",
+  "level": 3,
+  "text": [
+    "Chytřejší bobr posunul <b>1. písmeno o 1</b>, 2. písmeno o 2, 3. o 3 a 4. o 4 místa dopředu.",
+    "Zašifrované slovo: <b class=\"big\">PUHP</b>"
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jaké slovo bobr zašifroval?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "OSEL"
+    ]
+  },
+  "hint": "Každé písmeno posouvej zpátky o jiný počet: P o 1, U o 2, H o 3, P o 4.",
+  "solution": {
+    "steps": [
+      "P zpět o 1 → O.",
+      "U zpět o 2 → T, S → S.",
+      "H zpět o 3 → G, F, E → E.",
+      "P zpět o 4 → O, N, M, L → L.",
+      "Slovo je OSEL."
+    ],
+    "mistake": "Každé písmeno má jiný posun. Napiš si posun nad každé písmeno, ať se nesplete.",
+    "why": "Když se posun mění, nejde šifra rozluštit tak snadno. Moderní šifry mají klíč dlouhý jako celá zpráva."
+  }
+}

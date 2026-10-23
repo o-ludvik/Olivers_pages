@@ -1,0 +1,34 @@
+{
+  "title": "Kdo snědl mrkev?",
+  "level": 2,
+  "text": [
+    "Jeden ze tří bobrů snědl mrkev.",
+    "<b>Ali:</b> „Byla to Bára.“<br><b>Bára:</b> „Já to nebyla.“<br><b>Cyril:</b> „Já to nebyl.“",
+    "<b>Pravdu mluví jen jeden</b> z nich."
+  ],
+  "question": "Kdo snědl mrkev?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "Ali",
+      "Bára",
+      "Cyril",
+      "nedá se zjistit"
+    ],
+    "correct": "C"
+  },
+  "hint": "Zkus postupně: když to byl Ali, kolik bobrů mluví pravdu? A když Bára? A když Cyril?",
+  "solution": {
+    "steps": [
+      "Snědl to Ali? Pak Ali lže, Bára i Cyril mluví pravdu. Dva pravdomluvní, nesedí.",
+      "Snědla to Bára? Pak Ali i Cyril mluví pravdu. Zase dva, nesedí.",
+      "Snědl to Cyril? Ali lže, Bára mluví pravdu, Cyril lže. Jen jeden mluví pravdu. Sedí!",
+      "Mrkev snědl Cyril."
+    ],
+    "mistake": "Tipování tu snadno selže. Spolehlivější je vyzkoušet všechny možnosti jednu po druhé.",
+    "why": "Vyzkoušet všechny možnosti je strategie, kterou počítač používá, když neví, jak to udělat chytřeji.",
+    "traps": {
+      "B": "Když to byla Bára, mluví pravdu Ali i Cyril. To jsou dva, ale má to být jen jeden."
+    }
+  }
+}

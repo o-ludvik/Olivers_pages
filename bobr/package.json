@@ -1,0 +1,13 @@
+{
+  "name": "bobri-trenink",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test",
+    "new": "node scripts/new-task.mjs"
+  }
+}

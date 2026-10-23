@@ -1,0 +1,36 @@
+{
+  "title": "Vyjmout a vložit",
+  "level": 3,
+  "text": [
+    "V editoru je napsáno <b class=\"big\">KOLO</b>. Bobr:",
+    {
+      "list": [
+        "označí <b>KO</b> na začátku a dá <b>Vyjmout</b> (Ctrl+X)",
+        "klikne na konec textu a dá <b>Vložit</b> (Ctrl+V)",
+        "dá ještě jednou <b>Vložit</b>"
+      ],
+      "ordered": true
+    }
+  ],
+  "question": "Co je teď v editoru?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "LOKOKO"
+    ]
+  },
+  "hint": "Vyjmout text smaže a uloží do schránky. Co zbude po kroku 1?",
+  "solution": {
+    "steps": [
+      "Vyjmout smaže KO a uloží ho do schránky. V editoru zbude LO.",
+      "Vložit na konec: LOKO.",
+      "Ve schránce je pořád KO. Další Vložit: LOKOKO."
+    ],
+    "mistake": "Vyjmout = smazat + zapamatovat. Vložit schránku nevyprázdní, jde vložit vícekrát.",
+    "why": "Schránka si pamatuje vždy to poslední, co jsi zkopíroval(a) nebo vyjmul(a).",
+    "traps": {
+      "KOLOKOKO": "Vyjmout text na původním místě smaže.",
+      "LOKO": "Vložit se dalo dvakrát, schránka se po vložení nevyprázdní."
+    }
+  }
+}

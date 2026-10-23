@@ -1,0 +1,28 @@
+{
+  "title": "Fronta k vodě",
+  "level": 1,
+  "text": [
+    "K napajedlu přišli do fronty bobři <b>A</b>, pak <b>B</b>, pak <b>C</b>. Napít se jde vždy ten, kdo je ve frontě <b>první</b>."
+  ],
+  "question": "Kdo se napije první?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "kdokoli"
+    ],
+    "correct": "A"
+  },
+  "hint": "Jak to chodí ve frontě v obchodě?",
+  "solution": {
+    "steps": [
+      "A přišel první, stojí na začátku fronty.",
+      "Z fronty se odchází zepředu.",
+      "První se napije A."
+    ],
+    "mistake": "Fronta je opak hromady: co přišlo PRVNÍ, odchází PRVNÍ.",
+    "why": "Frontou počítač řídí třeba tisk: dokumenty se tisknou v pořadí, v jakém přišly."
+  }
+}

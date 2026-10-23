@@ -1,0 +1,31 @@
+{
+  "title": "Posun o jedno",
+  "level": 1,
+  "text": [
+    "Bobr zašifroval slovo tak, že každé písmeno nahradil písmenem <b>hned za ním</b> v abecedě (A → B, B → C…).",
+    "Zašifrované slovo: <b class=\"big\">LPMP</b>"
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jaké slovo bobr zašifroval?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "KOLO"
+    ]
+  },
+  "hint": "Při luštění posouvej každé písmeno o jedno místo ZPĚT.",
+  "solution": {
+    "steps": [
+      "Šifrovalo se dopředu, takže luštím dozadu.",
+      "L → K, P → O, M → L, P → O.",
+      "Slovo je KOLO."
+    ],
+    "mistake": "Při luštění jdi opačným směrem než při šifrování.",
+    "why": "Takhle šifroval už Julius Caesar. Proto se tomu říká Caesarova šifra.",
+    "traps": {
+      "MQNQ": "Posunul(a) jsi písmena dopředu. Při luštění se posouvá zpátky."
+    }
+  }
+}

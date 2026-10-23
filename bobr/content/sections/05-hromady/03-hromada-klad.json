@@ -1,0 +1,44 @@
+{
+  "title": "Hromada klád",
+  "level": 2,
+  "text": [
+    "Bobr skládá klády na hromadu a bere jen shora:",
+    {
+      "list": [
+        "položí 1, 2, 3",
+        "vezme kládu",
+        "položí 4",
+        "vezme kládu",
+        "vezme kládu"
+      ],
+      "ordered": true
+    }
+  ],
+  "question": "V jakém pořadí klády odnesl?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "3 4 2",
+      "1 2 4",
+      "3 2 4",
+      "4 3 2"
+    ],
+    "correct": "A"
+  },
+  "hint": "Kresli si hromadu po každém kroku.",
+  "solution": {
+    "steps": [
+      "Hromada zdola: 1, 2, 3. Vezme horní → odnáší 3. Zbývá 1, 2.",
+      "Položí 4. Hromada: 1, 2, 4.",
+      "Vezme horní → 4. Zbývá 1, 2.",
+      "Vezme horní → 2. Zbývá 1.",
+      "Pořadí: 3 4 2."
+    ],
+    "mistake": "Po každém kroku si hromadu nakresli znovu. Nahoře je vždy to, co tam přibylo naposledy.",
+    "why": "Zásobník používá počítač třeba při tlačítku Zpět.",
+    "traps": {
+      "B": "To by bylo jako ve frontě. Na hromadě se bere shora.",
+      "D": "Kládu 4 bobr položil až po prvním odnesení."
+    }
+  }
+}

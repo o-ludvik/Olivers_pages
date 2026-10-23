@@ -1,0 +1,65 @@
+{
+  "title": "Zpráva po řetězu",
+  "level": 1,
+  "text": [
+    "Bobři stojí v řadě a každý se může bavit jen se sousedem. Každou minutu řekne každý bobr, který novinu zná, ji svým sousedům."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "A": [
+          40,
+          60
+        ],
+        "B": [
+          150,
+          60
+        ],
+        "C": [
+          260,
+          60
+        ],
+        "D": [
+          370,
+          60
+        ]
+      },
+      "E": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "B",
+          "C"
+        ],
+        [
+          "C",
+          "D"
+        ]
+      ],
+      "start": "A",
+      "w": 410
+    }
+  },
+  "question": "Bobr A zná novinu. Za kolik minut ji bude znát D?",
+  "answer": {
+    "type": "number",
+    "correct": 3
+  },
+  "hint": "Minuta 1: B. Minuta 2: …",
+  "solution": {
+    "steps": [
+      "Minuta 0: zná A.",
+      "Minuta 1: zná i B.",
+      "Minuta 2: zná i C.",
+      "Minuta 3: zná i D."
+    ],
+    "mistake": "Počítej čáry mezi A a D, ne bobry.",
+    "why": "V počítačové síti putuje zpráva od počítače k počítači a každý skok trvá chvíli.",
+    "traps": {
+      "4": "Počítáš bobry. Počítej čáry (skoky) mezi A a D."
+    }
+  }
+}

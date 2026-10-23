@@ -1,0 +1,107 @@
+{
+  "title": "Cesta přes bažinu",
+  "level": 4,
+  "text": [
+    "Bobr chce co nejrychleji ze startu <b>S</b> do cíle <b>T</b>. Čísla jsou minuty."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "S": [
+          40,
+          130
+        ],
+        "A": [
+          180,
+          40
+        ],
+        "B": [
+          180,
+          220
+        ],
+        "C": [
+          320,
+          40
+        ],
+        "D": [
+          320,
+          220
+        ],
+        "T": [
+          450,
+          130
+        ]
+      },
+      "E": [
+        [
+          "S",
+          "A",
+          3
+        ],
+        [
+          "S",
+          "B",
+          1
+        ],
+        [
+          "B",
+          "A",
+          1
+        ],
+        [
+          "A",
+          "C",
+          4
+        ],
+        [
+          "A",
+          "D",
+          6
+        ],
+        [
+          "B",
+          "D",
+          7
+        ],
+        [
+          "C",
+          "D",
+          1
+        ],
+        [
+          "C",
+          "T",
+          6
+        ],
+        [
+          "D",
+          "T",
+          2
+        ]
+      ],
+      "start": "S",
+      "w": 490
+    }
+  },
+  "question": "Kolik minut trvá nejrychlejší cesta?",
+  "answer": {
+    "type": "number",
+    "correct": 9
+  },
+  "hint": "Ke každému místu zapisuj nejlepší čas. Do A je to rychleji přes B.",
+  "solution": {
+    "steps": [
+      "Do B: 1. Do A: přes B 1 + 1 = 2 (přímo 3).",
+      "Do C: z A 2 + 4 = 6.",
+      "Do D: z C 6 + 1 = 7 (z A 2 + 6 = 8, z B 1 + 7 = 8).",
+      "Do T: z D 7 + 2 = 9 (z C 6 + 6 = 12).",
+      "Nejrychleji S → B → A → C → D → T, 9 minut."
+    ],
+    "mistake": "Cesta s nejméně úseky není nejrychlejší. Rozhodují minuty.",
+    "why": "Dijkstrův algoritmus: vždy vylepšuj nejlepší známý čas do každého místa.",
+    "traps": {
+      "10": "S → B → D → T nebo S → B → A → D → T trvá 10. Existuje cesta o minutu rychlejší."
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "title": "Zpět v prohlížeči",
+  "level": 3,
+  "text": [
+    "Bobr na internetu postupně otevřel stránky <b>A</b>, <b>B</b>, <b>C</b>. Pak:",
+    {
+      "list": [
+        "klikl na <b>Zpět</b>",
+        "klikl na <b>Zpět</b>",
+        "otevřel novou stránku <b>D</b>",
+        "klikl na <b>Zpět</b>"
+      ],
+      "ordered": true
+    }
+  ],
+  "question": "Na které stránce teď je?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct": "A"
+  },
+  "hint": "Prohlížeč si pamatuje stránky jako hromadu. Co se stane s B a C, když otevře novou stránku?",
+  "solution": {
+    "steps": [
+      "Historie: A, B, C. Zpět → B. Zpět → A.",
+      "Bobr otevře D. Prohlížeč zapomene B a C, historie je teď A, D.",
+      "Zpět z D → A."
+    ],
+    "mistake": "Když po kliknutí Zpět otevřeš novou stránku, cesta dopředu se zapomene.",
+    "why": "Historie prohlížeče funguje jako zásobník.",
+    "traps": {
+      "B": "Po otevření D prohlížeč zapomněl B a C. Zpět vede z D na A."
+    }
+  }
+}

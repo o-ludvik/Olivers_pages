@@ -1,0 +1,32 @@
+{
+  "title": "Posun o tři",
+  "level": 2,
+  "text": [
+    "Tentokrát bobr posunul každé písmeno o <b>3 místa dopředu</b> (A → D).",
+    "Zašifrované slovo: <b class=\"big\">EREU</b>"
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jaké slovo bobr zašifroval?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "BOBR"
+    ]
+  },
+  "hint": "Od každého písmena odpočítej 3 místa zpátky. E, D, C, B…",
+  "solution": {
+    "steps": [
+      "E zpět o 3: D, C, B → B.",
+      "R zpět o 3: Q, P, O → O.",
+      "E → B, U → R.",
+      "Slovo je BOBR."
+    ],
+    "mistake": "Častá chyba: posouvat písmena dopředu místo zpátky. Šifrovalo se dopředu, luští se zpátky.",
+    "why": "Posun o 3 je původní Caesarova šifra.",
+    "traps": {
+      "HUHX": "Posunul(a) jsi písmena dopředu. Luští se opačným směrem, o 3 zpátky."
+    }
+  }
+}

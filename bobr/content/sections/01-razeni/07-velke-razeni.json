@@ -1,0 +1,36 @@
+{
+  "title": "Velké řazení",
+  "level": 4,
+  "text": [
+    "Šest karet se má seřadit od nejmenší po největší jen <b>výměnami sousedních karet</b>."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      3,
+      6,
+      1,
+      5,
+      2,
+      4
+    ]
+  },
+  "question": "Kolik výměn je potřeba nejméně?",
+  "answer": {
+    "type": "number",
+    "correct": 8
+  },
+  "hint": "U každé karty spočítej, kolik menších karet leží napravo od ní. Pak čísla sečti.",
+  "solution": {
+    "steps": [
+      "Karta 3: napravo jsou menší 1 a 2 → 2 dvojice.",
+      "Karta 6: napravo jsou menší 1, 5, 2, 4 → 4 dvojice.",
+      "Karta 1: napravo není nic menšího → 0.",
+      "Karta 5: napravo jsou menší 2 a 4 → 2 dvojice.",
+      "Karty 2 a 4: 0.",
+      "Celkem 2 + 4 + 0 + 2 + 0 + 0 = 8 výměn."
+    ],
+    "mistake": "Zkoušet to „od oka“ na šesti kartách je snadné splést. Počítání dvojic je spolehlivější.",
+    "why": "Místo zkoušení si najdeš pravidlo, které dá výsledek rovnou. Tak programátoři odhadují, jak dlouho bude program řadit."
+  }
+}

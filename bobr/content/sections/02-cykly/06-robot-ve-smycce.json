@@ -1,0 +1,61 @@
+{
+  "title": "Robot ve smyčce",
+  "level": 3,
+  "text": [
+    "Robot stojí na <b>S</b> a dívá se <b>nahoru</b>. „Krok“ = jedno políčko dopředu. „Vpravo“ = otočí se na místě doprava (nepohne se).",
+    {
+      "code": "opakuj 3×:\n    krok\n    krok\n    vpravo"
+    }
+  ],
+  "visual": {
+    "type": "grid",
+    "data": [
+      [
+        "A",
+        2,
+        2
+      ],
+      [
+        "B",
+        4,
+        4
+      ],
+      [
+        "C",
+        2,
+        4
+      ],
+      [
+        "D",
+        0,
+        2
+      ]
+    ]
+  },
+  "question": "Na kterém písmenu robot skončí?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct": "C"
+  },
+  "hint": "Po každém otočení si poznamenej, kam se robot dívá: nahoru → doprava → dolů → doleva.",
+  "solution": {
+    "steps": [
+      "1. opakování: 2 kroky nahoru (stojí na D), otočí se doprava.",
+      "2. opakování: 2 kroky doprava (stojí na A), otočí se a dívá se dolů.",
+      "3. opakování: 2 kroky dolů (stojí na C), otočí se doleva.",
+      "Robot skončil na C."
+    ],
+    "mistake": "„Vpravo“ robota neposune. Jen změní směr dalších kroků.",
+    "why": "Robot si musí pamatovat nejen kde stojí, ale i kam se dívá. To je stav robota.",
+    "traps": {
+      "A": "Na A je robot po 2. opakování. Opakování jsou ale 3.",
+      "D": "Na D je robot po 1. opakování. Pokračuj dál."
+    }
+  }
+}

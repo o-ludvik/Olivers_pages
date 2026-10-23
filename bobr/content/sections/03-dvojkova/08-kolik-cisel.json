@@ -1,0 +1,28 @@
+{
+  "title": "Kolik čísel?",
+  "level": 4,
+  "text": [
+    "Bobři mají <b>šest lamp</b> (hodnoty 32, 16, 8, 4, 2, 1). Číslo 0 ukážou tak, že nesvítí nic."
+  ],
+  "question": "Kolik různých čísel dokážou šesti lampami ukázat (včetně nuly)?",
+  "answer": {
+    "type": "number",
+    "correct": 64
+  },
+  "hint": "Jedna lampa: 2 možnosti (svítí / nesvítí). Dvě lampy: 2 × 2. A šest?",
+  "solution": {
+    "steps": [
+      "Každá lampa má 2 stavy: svítí nebo nesvítí.",
+      "Dvě lampy: 2 × 2 = 4 možnosti. Tři lampy: 2 × 2 × 2 = 8.",
+      "Šest lamp: 2 × 2 × 2 × 2 × 2 × 2 = 64.",
+      "Kontrola: největší číslo je 32 + 16 + 8 + 4 + 2 + 1 = 63 a k tomu nula. Čísla 0 až 63 jsou 64 čísla."
+    ],
+    "mistake": "63 je největší číslo, ale úloha se ptá, KOLIK čísel to je. Nula se počítá taky.",
+    "why": "6 bitů dá 64 možností. Proto má třeba šachovnice 64 políček a dá se popsat šesti bity.",
+    "traps": {
+      "12": "6 × 2 nestačí. Možnosti se násobí: 2 × 2 × 2 × 2 × 2 × 2.",
+      "36": "Možnosti se násobí: 2 × 2 × 2 × 2 × 2 × 2.",
+      "63": "63 je největší číslo. Čísel je ale o jedno víc, protože se počítá i 0."
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Výměny sousedů",
+  "level": 2,
+  "text": [
+    "Karty se mají seřadit od nejmenší po největší. Smí se ale jen <b>prohodit dvě sousední karty</b>."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      2,
+      4,
+      1,
+      3
+    ]
+  },
+  "question": "Kolik takových výměn je potřeba nejméně?",
+  "answer": {
+    "type": "number",
+    "correct": 3
+  },
+  "hint": "Spočítej dvojice karet, které stojí ve špatném pořadí (větší je vlevo od menší).",
+  "solution": {
+    "steps": [
+      "Hledám dvojice, kde je větší karta vlevo od menší:",
+      "2 je vlevo od 1 → špatně (1. dvojice).",
+      "4 je vlevo od 1 → špatně (2.), 4 je vlevo od 3 → špatně (3.).",
+      "Každá výměna sousedů opraví právě jednu špatnou dvojici. Výměny jsou tedy 3.",
+      "Kontrola: 2 4 1 3 → 2 1 4 3 → 1 2 4 3 → 1 2 3 4."
+    ],
+    "mistake": "Nestačí koukat, kolik karet je na špatném místě. Počítej špatné dvojice.",
+    "why": "Počet špatných dvojic říká, jak moc je řada „rozházená“. Počítače ho používají k porovnání řadicích postupů.",
+    "traps": {
+      "2": "Zkus to na kartách: po dvou výměnách ještě nebude seřazeno. Spočítej špatné dvojice."
+    }
+  }
+}

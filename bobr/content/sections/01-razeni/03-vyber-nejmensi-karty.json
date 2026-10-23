@@ -1,0 +1,43 @@
+{
+  "title": "Výběr nejmenší karty",
+  "level": 2,
+  "text": [
+    "Bobr řadí karty <b>výběrem</b>. V každém kole najde mezi neseřazenými kartami tu nejmenší a <b>prohodí ji</b> s první neseřazenou kartou. Ostatní karty se nehýbou."
+  ],
+  "visual": {
+    "type": "cards",
+    "data": [
+      5,
+      8,
+      2,
+      9,
+      4
+    ]
+  },
+  "question": "Jak budou karty ležet po 1. kole?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "2 8 5 9 4",
+      "2 5 8 9 4",
+      "2 4 5 8 9",
+      "8 5 2 9 4"
+    ],
+    "correct": "A"
+  },
+  "hint": "Najdi nejmenší kartu. Se kterou kartou se prohodí? Jen tyhle dvě se pohnou.",
+  "solution": {
+    "steps": [
+      "Nejmenší karta je 2 (na 3. místě).",
+      "První neseřazená karta je 5 (na 1. místě).",
+      "Prohodím 2 a 5. Karty 8, 9 a 4 zůstanou, kde byly.",
+      "Po 1. kole: 2 8 5 9 4."
+    ],
+    "mistake": "Karty se neposouvají jako ve frontě. Vymění si místa jen dvě karty.",
+    "why": "Řazení výběrem je jeden ze základních řadicích algoritmů. Každé kolo dá na správné místo jednu kartu.",
+    "traps": {
+      "B": "Posunul(a) jsi 5 a 8 doprava. Při výběru se ale jen prohodí dvě karty: 2 a 5.",
+      "C": "To je úplně seřazená řada. Po 1. kole je na správném místě jen jedna karta."
+    }
+  }
+}

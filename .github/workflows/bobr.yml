@@ -1,0 +1,28 @@
+# Bobří trénink (bobr/): testy, build a kontrola, že commitnutý bobr/dist/ odpovídá zdrojům.
+# Nic nenasazuje – Pages se dál nasazuje přímo z větve.
+name: Bobří trénink
+on:
+  push:
+    paths: ["bobr/**", ".github/workflows/bobr.yml"]
+  pull_request:
+    paths: ["bobr/**", ".github/workflows/bobr.yml"]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bobr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
+      - run: npm run build
+      - name: dist/ je aktuální
+        run: |
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            git status --short -- dist
+            echo "::error::Commitnutý bobr/dist/ neodpovídá zdrojům. Spusť npm run build a commitni dist/."
+            exit 1
+          fi

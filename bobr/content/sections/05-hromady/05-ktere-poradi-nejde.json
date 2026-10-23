@@ -1,0 +1,32 @@
+{
+  "title": "Které pořadí nejde?",
+  "level": 3,
+  "text": [
+    "Ke hrázi připlouvají klády <b>1, 2, 3, 4</b> přesně v tomto pořadí. Bobr připlutou kládu položí na hromadu a kdykoli může odnést kládu z vrchu hromady na hráz."
+  ],
+  "question": "Které pořadí klád na hrázi bobr vytvořit NEDOKÁŽE?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "2 1 3 4",
+      "1 4 3 2",
+      "4 1 2 3",
+      "3 2 1 4"
+    ],
+    "correct": "C"
+  },
+  "hint": "Aby jako první odnesl kládu 4, musí na hromadu položit všechny klády. Která je pak nahoře?",
+  "solution": {
+    "steps": [
+      "Pro 4 1 2 3: aby jako první odnesl 4, musí položit 1, 2, 3, 4.",
+      "Hromada zdola: 1, 2, 3, 4. Odnese 4. Nahoře je teď 3.",
+      "Další má být 1, ale ta leží úplně dole. Nejde to.",
+      "Ostatní pořadí jdou, třeba 1 4 3 2: polož 1, odnes 1, polož 2, 3, 4, odnes 4, 3, 2."
+    ],
+    "mistake": "Ověřuj každou možnost postupně a kresli si hromadu.",
+    "why": "Zásobník mění pořadí věcí jen některými způsoby. Programátor musí vědět, které zvládne.",
+    "traps": {
+      "B": "Zkus to: polož 1, odnes 1, polož 2, 3, 4 a odnášej 4, 3, 2. Jde to."
+    }
+  }
+}

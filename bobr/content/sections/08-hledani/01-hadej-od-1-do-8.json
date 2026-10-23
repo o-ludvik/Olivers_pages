@@ -1,0 +1,26 @@
+{
+  "title": "Hádej od 1 do 8",
+  "level": 1,
+  "text": [
+    "Bobřice si myslí číslo od 1 do 8. Bobr se ptá na čísla a ona odpovídá „víc“, „míň“, nebo „uhodl jsi“. Bobr se ptá chytře: vždy na číslo zhruba uprostřed."
+  ],
+  "question": "Kolik otázek mu vždycky stačí, aby číslo určitě poznal?",
+  "answer": {
+    "type": "number",
+    "correct": 3
+  },
+  "hint": "Každá odpověď vyřadí asi polovinu čísel. 8 → 4 → …",
+  "solution": {
+    "steps": [
+      "Na začátku je 8 možností.",
+      "Po 1. otázce zbudou nejvýš 4.",
+      "Po 2. otázce nejvýš 2.",
+      "Po 3. otázce zbude 1 číslo. Stačí 3 otázky."
+    ],
+    "mistake": "Ptát se 1, 2, 3, 4… je pomalé: v nejhorším případě 8 otázek.",
+    "why": "Půlení intervalu (binární vyhledávání) je jeden z nejdůležitějších algoritmů.",
+    "traps": {
+      "8": "Tolik otázek potřebuješ, když hádáš po jednom. Ptej se na prostřední číslo."
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Najdi klíč",
+  "level": 3,
+  "text": [
+    "Bobr zašifroval slovo <b>BOBR</b> a vyšlo mu <b class=\"big\">GTGW</b>. Všechna písmena posunul o stejný počet míst dopředu."
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "O kolik míst písmena posunul?",
+  "answer": {
+    "type": "number",
+    "correct": 5
+  },
+  "hint": "Počítej, kolik kroků je z B do G.",
+  "solution": {
+    "steps": [
+      "B → C, D, E, F, G. To je 5 kroků.",
+      "Kontrola u dalšího písmene: O → P, Q, R, S, T. Také 5.",
+      "Klíč je posun o 5."
+    ],
+    "mistake": "Klíč si vždy ověř aspoň na dvou písmenech.",
+    "why": "Když útočník zná kousek původní zprávy, umí najít klíč. Proto je Caesarova šifra slabá.",
+    "traps": {
+      "4": "Spočítej kroky znovu: C, D, E, F, G je pět kroků."
+    }
+  }
+}

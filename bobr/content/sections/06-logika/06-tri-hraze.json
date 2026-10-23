@@ -1,0 +1,37 @@
+{
+  "title": "Tři hráze",
+  "level": 3,
+  "text": [
+    "Ema, Filip a Gita bydlí ve třech hrázích vedle sebe (vlevo, uprostřed, vpravo). Hráze jsou modrá, zelená a žlutá.",
+    {
+      "list": [
+        "Ema bydlí úplně vlevo.",
+        "Žlutá hráz je úplně vpravo.",
+        "Gita nebydlí v modré hrázi.",
+        "Filip nebydlí vedle Emy."
+      ]
+    }
+  ],
+  "question": "Kdo bydlí v zelené hrázi?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "Ema",
+      "Filip",
+      "Gita",
+      "nedá se zjistit"
+    ],
+    "correct": "C"
+  },
+  "hint": "Kde bydlí Filip, když nebydlí vedle Emy?",
+  "solution": {
+    "steps": [
+      "Ema je vlevo. Vedle ní je prostřední místo, tam Filip nebydlí. Filip je vpravo.",
+      "Gitě zbývá prostředek.",
+      "Vpravo je žlutá hráz (Filip). Ema a Gita mají modrou a zelenou.",
+      "Gita nebydlí v modré, takže bydlí v zelené. Ema má modrou."
+    ],
+    "mistake": "Podmínky nečti jen jednou. Vracej se k nim, když něco zjistíš.",
+    "why": "Takové úlohy počítač řeší tak, že zkouší možnosti a škrtá ty, které porušují podmínky."
+  }
+}

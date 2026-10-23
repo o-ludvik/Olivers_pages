@@ -1,0 +1,82 @@
+[
+  {
+    "id": "first",
+    "name": "První kláda",
+    "desc": "Vyřeš první úlohu",
+    "rule": {
+      "type": "solved",
+      "min": 1
+    }
+  },
+  {
+    "id": "ten",
+    "name": "Desítka",
+    "desc": "Vyřeš 10 úloh",
+    "rule": {
+      "type": "solved",
+      "min": 10
+    }
+  },
+  {
+    "id": "thirty",
+    "name": "Pilný bobr",
+    "desc": "Vyřeš 30 úloh",
+    "rule": {
+      "type": "solved",
+      "min": 30
+    }
+  },
+  {
+    "id": "sharp",
+    "name": "Ostrý zub",
+    "desc": "5 úloh hned napoprvé",
+    "rule": {
+      "type": "perfect",
+      "min": 5
+    }
+  },
+  {
+    "id": "explorer",
+    "name": "Průzkumník",
+    "desc": "Aspoň 1 úloha v každém tématu",
+    "rule": {
+      "type": "everySection"
+    }
+  },
+  {
+    "id": "topic",
+    "name": "Mistr tématu",
+    "desc": "Vyřeš celé jedno téma",
+    "rule": {
+      "type": "sectionsComplete",
+      "min": 1
+    }
+  },
+  {
+    "id": "brave",
+    "name": "Odvážlivec",
+    "desc": "Vyřeš 3 mistrovské úlohy",
+    "rule": {
+      "type": "level",
+      "level": 4,
+      "min": 3
+    }
+  },
+  {
+    "id": "stubborn",
+    "name": "Nevzdávám to",
+    "desc": "Vyřeš úlohu po 3 chybách bez zobrazení řešení",
+    "rule": {
+      "type": "stubborn",
+      "min": 1
+    }
+  },
+  {
+    "id": "all",
+    "name": "Bobří profesor",
+    "desc": "Vyřeš úplně všechno",
+    "rule": {
+      "type": "all"
+    }
+  }
+]

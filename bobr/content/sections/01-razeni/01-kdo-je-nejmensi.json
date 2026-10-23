@@ -1,0 +1,36 @@
+{
+  "title": "Kdo je nejmenší?",
+  "level": 1,
+  "text": [
+    "Bobři se změřili, ale vždy jen dva najednou:",
+    {
+      "list": [
+        "Ota je vyšší než Ema.",
+        "Ema je vyšší než Ivo.",
+        "Lea je vyšší než Ota."
+      ]
+    }
+  ],
+  "question": "Kdo je nejmenší?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "Ota",
+      "Ema",
+      "Ivo",
+      "Lea"
+    ],
+    "correct": "C"
+  },
+  "hint": "Zkus bobry seřadit do řady od nejvyššího. Kdo je pod Emou?",
+  "solution": {
+    "steps": [
+      "Lea je vyšší než Ota, takže Lea stojí před Otou: Lea, Ota.",
+      "Ota je vyšší než Ema: Lea, Ota, Ema.",
+      "Ema je vyšší než Ivo: Lea, Ota, Ema, Ivo.",
+      "Na konci řady stojí Ivo. Je nejmenší."
+    ],
+    "mistake": "Z jednoho porovnání nevíš všechno. Ivo není v žádné dvojici vyšší, a proto je nejmenší.",
+    "why": "Počítač řadí věci právě takhle: porovnává vždy jen dvě a z mnoha porovnání poskládá celé pořadí."
+  }
+}

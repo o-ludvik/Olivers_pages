@@ -1,0 +1,40 @@
+{
+  "title": "Zpět po novém psaní",
+  "level": 4,
+  "text": [
+    "V prázdném editoru bobr napíše <b>K</b>, <b>O</b>, <b>L</b>. Pak:",
+    {
+      "list": [
+        "<b>Zpět</b>",
+        "<b>Zpět</b>",
+        "napíše <b>A</b>",
+        "<b>Znovu</b>",
+        "<b>Zpět</b>"
+      ],
+      "ordered": true
+    }
+  ],
+  "question": "Co je v editoru?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "K"
+    ]
+  },
+  "hint": "Pozor na krok 3: když po vracení napíšeš něco nového, editor zapomene, co šlo vrátit Znovu.",
+  "solution": {
+    "steps": [
+      "Po psaní: KOL. Zpět → KO. Zpět → K.",
+      "Napíše A: KA. Editor zapomene vrácené O a L.",
+      "Znovu nemá co zopakovat, nic se nestane.",
+      "Zpět vrátí poslední skutečnou změnu, napsané A: K."
+    ],
+    "mistake": "Častá chyba je odpověď s A na konci. Zpět nevrací Znovu, které nic neudělalo. Vrací poslední skutečnou změnu.",
+    "why": "Seznam kroků pro Znovu se po nové změně maže. Jinak by editor nevěděl, co vrátit.",
+    "traps": {
+      "KA": "Znovu nic neudělalo, takže ho Zpět nevrací. Zpět vrátí poslední skutečnou změnu, napsané A.",
+      "KOA": "Po napsání A editor zapomněl vrácené O. Znovu ho už nevrátí.",
+      "KO": "Po napsání A editor zapomněl vrácené O a L."
+    }
+  }
+}

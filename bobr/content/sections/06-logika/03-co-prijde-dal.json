@@ -1,0 +1,28 @@
+{
+  "title": "Co přijde dál?",
+  "level": 2,
+  "text": [
+    "Bobr píše čísla podle pravidla: <b class=\"big\">2, 5, 11, 23, ?</b>"
+  ],
+  "question": "Jaké číslo přijde dál?",
+  "answer": {
+    "type": "number",
+    "correct": 47
+  },
+  "hint": "Zkus, co se stane s číslem, když ho vynásobíš dvěma.",
+  "solution": {
+    "steps": [
+      "2 × 2 = 4, + 1 = 5.",
+      "5 × 2 = 10, + 1 = 11.",
+      "11 × 2 = 22, + 1 = 23.",
+      "Pravidlo: číslo × 2 + 1.",
+      "23 × 2 + 1 = 47."
+    ],
+    "mistake": "Rozdíly 3, 6, 12 se zdvojují. I tak dojdeš k výsledku: 23 + 24 = 47.",
+    "why": "Najít pravidlo z několika příkladů je přesně to, co dělá strojové učení.",
+    "traps": {
+      "35": "Rozdíly nejsou pořád stejné: 3, 6, 12… další je 24.",
+      "46": "Jen × 2 nestačí, zkontroluj to na prvních číslech."
+    }
+  }
+}

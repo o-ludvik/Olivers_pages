@@ -1,0 +1,29 @@
+{
+  "title": "Zrcadlová abeceda",
+  "level": 4,
+  "text": [
+    "Bobr používá zrcadlovou abecedu: <b>A ↔ Z, B ↔ Y, C ↔ X</b>… První písmeno abecedy se zamění s posledním, druhé s předposledním a tak dál.",
+    "Zašifrované slovo: <b class=\"big\">SIZA</b>"
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jaké slovo bobr zašifroval?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "HRAZ"
+    ]
+  },
+  "hint": "Napiš si abecedu a pod ni stejnou abecedu pozpátku. Pak hledej písmena.",
+  "solution": {
+    "steps": [
+      "Pod ABCDEFGHIJKLM napíšu ZYXWVUTSRQPON.",
+      "S je 19. písmeno, k němu patří 8. písmeno H.",
+      "I ↔ R, Z ↔ A, A ↔ Z.",
+      "Slovo je HRAZ (hráz)."
+    ],
+    "mistake": "Tady se nic neposouvá. Každé písmeno má svou dvojici.",
+    "why": "Této šifře se říká Atbaš a je stará přes 2500 let. Šifruje i luští se úplně stejně."
+  }
+}

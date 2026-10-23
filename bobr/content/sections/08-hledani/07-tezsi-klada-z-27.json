@@ -1,0 +1,26 @@
+{
+  "title": "Těžší kláda z 27",
+  "level": 4,
+  "text": [
+    "Teď má bobr <b>27 klád</b> a jedna je těžší. Váhy jsou stejné jako v minulé úloze."
+  ],
+  "question": "Kolik vážení mu jistě stačí?",
+  "answer": {
+    "type": "number",
+    "correct": 3
+  },
+  "hint": "Každé vážení zmenší počet podezřelých klád na třetinu.",
+  "solution": {
+    "steps": [
+      "27 klád rozdělím na 3 hromádky po 9. Jedno vážení → zbude 9 podezřelých.",
+      "9 rozdělím na 3 × 3. Druhé vážení → zbudou 3.",
+      "3 rozdělím na 1 + 1 + 1. Třetí vážení → zbude 1.",
+      "Stačí 3 vážení."
+    ],
+    "mistake": "27 = 3 × 3 × 3. Kolikrát dělíš třemi, tolik vážení potřebuješ.",
+    "why": "Stejný princip jako půlení, jen dělíš na třetiny, protože váhy dávají tři odpovědi.",
+    "traps": {
+      "5": "Na půlky by to bylo 5 vážení. Váhy ale umí rozdělit na třetiny."
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "title": "Zrádná oklika",
+  "level": 2,
+  "text": [
+    "Bobr plave z rybníka <b>A</b> do rybníka <b>E</b>. Čísla jsou minuty."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "A": [
+          40,
+          130
+        ],
+        "B": [
+          180,
+          40
+        ],
+        "C": [
+          180,
+          220
+        ],
+        "D": [
+          320,
+          40
+        ],
+        "E": [
+          440,
+          130
+        ]
+      },
+      "E": [
+        [
+          "A",
+          "B",
+          4
+        ],
+        [
+          "A",
+          "C",
+          1
+        ],
+        [
+          "C",
+          "B",
+          2
+        ],
+        [
+          "B",
+          "D",
+          1
+        ],
+        [
+          "C",
+          "D",
+          6
+        ],
+        [
+          "D",
+          "E",
+          2
+        ],
+        [
+          "C",
+          "E",
+          9
+        ]
+      ],
+      "start": "A",
+      "w": 480
+    }
+  },
+  "question": "Kolik minut trvá nejrychlejší cesta z A do E?",
+  "answer": {
+    "type": "number",
+    "correct": 6
+  },
+  "hint": "Ke každému rybníku si napiš, za kolik nejméně minut se tam dá doplavat. Do B je to rychleji oklikou.",
+  "solution": {
+    "steps": [
+      "Do C: 1 minuta.",
+      "Do B: přímo 4, ale přes C jen 1 + 2 = 3.",
+      "Do D: přes B 3 + 1 = 4 (přes C by to bylo 1 + 6 = 7).",
+      "Do E: přes D 4 + 2 = 6 (přímo z C 1 + 9 = 10).",
+      "Nejrychleji: A → C → B → D → E, 6 minut."
+    ],
+    "mistake": "Snadno se přehlédne okliku přes C. Zapisuj si k rybníkům nejlepší čas a vylepšuj ho.",
+    "why": "Tento postup se jmenuje Dijkstrův algoritmus a používají ho všechny navigace.",
+    "traps": {
+      "7": "A → B → D → E trvá 7. Do B se ale dá doplavat rychleji přes C.",
+      "10": "A → C → E trvá 10. Zkus delší, ale rychlejší cestu."
+    }
+  }
+}

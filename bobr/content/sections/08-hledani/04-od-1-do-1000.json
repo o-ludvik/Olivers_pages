@@ -1,0 +1,25 @@
+{
+  "title": "Od 1 do 1000",
+  "level": 3,
+  "text": [
+    "Bobřice si myslí číslo od <b>1 do 1000</b>."
+  ],
+  "question": "Kolik otázek bobrovi vždycky stačí, když se ptá co nejchytřeji?",
+  "answer": {
+    "type": "number",
+    "correct": 10
+  },
+  "hint": "1000 → 500 → 250 → … Počítej šipky.",
+  "solution": {
+    "steps": [
+      "1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1.",
+      "To je 10 půlení, tedy 10 otázek."
+    ],
+    "mistake": "Zkoušet 5, 6, 7, 8, 9… nepomůže. Napiš si půlení a spočítej šipky.",
+    "why": "2 × 2 × … (10×) = 1024. Proto 10 otázek stačí i na 1000 čísel.",
+    "traps": {
+      "9": "Spočítej šipky znovu: 1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1.",
+      "500": "500 je první otázka, ne počet otázek."
+    }
+  }
+}

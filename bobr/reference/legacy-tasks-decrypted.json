@@ -1,0 +1,2217 @@
+[
+ {
+  "id": "r1",
+  "topic": "razeni",
+  "level": 1,
+  "title": "Kdo je nejmenší?",
+  "text": "<p>Bobři se změřili, ale vždy jen dva najednou:</p><ul><li>Ota je vyšší než Ema.</li><li>Ema je vyšší než Ivo.</li><li>Lea je vyšší než Ota.</li></ul>",
+  "question": "Kdo je nejmenší?",
+  "type": "choice",
+  "options": [
+   "Ota",
+   "Ema",
+   "Ivo",
+   "Lea"
+  ],
+  "hint": "Zkus bobry seřadit do řady od nejvyššího. Kdo je pod Emou?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "Lea je vyšší než Ota, takže Lea stojí před Otou: Lea, Ota.",
+    "Ota je vyšší než Ema: Lea, Ota, Ema.",
+    "Ema je vyšší než Ivo: Lea, Ota, Ema, Ivo.",
+    "Na konci řady stojí Ivo. Je nejmenší."
+   ],
+   "mistake": "Z jednoho porovnání nevíš všechno. Ivo není v žádné dvojici vyšší, a proto je nejmenší.",
+   "why": "Počítač řadí věci právě takhle: porovnává vždy jen dvě a z mnoha porovnání poskládá celé pořadí."
+  }
+ },
+ {
+  "id": "r2",
+  "topic": "razeni",
+  "level": 1,
+  "title": "Jeden průchod",
+  "text": "<p>Bobr jde po kartách <b>zleva doprava</b> a porovnává vždy <b>dva sousedy</b>. Když je levá karta větší, prohodí je. Pak se posune o jedno místo doprava.</p>",
+  "visual": [
+   "cards",
+   [
+    4,
+    1,
+    3,
+    2
+   ]
+  ],
+  "question": "Jak budou karty ležet po jednom průchodu zleva doprava?",
+  "type": "choice",
+  "options": [
+   "1 2 3 4",
+   "1 3 2 4",
+   "1 4 3 2",
+   "3 1 2 4"
+  ],
+  "hint": "Piš si řadu po každém porovnání. Začni dvojicí 4 a 1.",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "Porovnám 4 a 1: 4 je větší, prohodím. Řada: 1 4 3 2.",
+    "Porovnám 4 a 3: prohodím. Řada: 1 3 4 2.",
+    "Porovnám 4 a 2: prohodím. Řada: 1 3 2 4.",
+    "Došel jsem na konec. Po jednom průchodu: 1 3 2 4."
+   ],
+   "mistake": "Po jednom průchodu ještě nemusí být seřazeno. Největší číslo „probublá“ na konec, ostatní ještě ne.",
+   "why": "Tomuto postupu se říká bublinkové řazení. Průchody se opakují, dokud není seřazeno.",
+   "traps": {
+    "A": "To je úplně seřazená řada. Úloha se ale ptá jen na stav po jednom průchodu.",
+    "C": "Prohodil(a) jsi jen první dvojici. Bobr pokračuje dál až na konec řady."
+   }
+  }
+ },
+ {
+  "id": "r3",
+  "topic": "razeni",
+  "level": 2,
+  "title": "Výběr nejmenší karty",
+  "text": "<p>Bobr řadí karty <b>výběrem</b>. V každém kole najde mezi neseřazenými kartami tu nejmenší a <b>prohodí ji</b> s první neseřazenou kartou. Ostatní karty se nehýbou.</p>",
+  "visual": [
+   "cards",
+   [
+    5,
+    8,
+    2,
+    9,
+    4
+   ]
+  ],
+  "question": "Jak budou karty ležet po 1. kole?",
+  "type": "choice",
+  "options": [
+   "2 8 5 9 4",
+   "2 5 8 9 4",
+   "2 4 5 8 9",
+   "8 5 2 9 4"
+  ],
+  "hint": "Najdi nejmenší kartu. Se kterou kartou se prohodí? Jen tyhle dvě se pohnou.",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Nejmenší karta je 2 (na 3. místě).",
+    "První neseřazená karta je 5 (na 1. místě).",
+    "Prohodím 2 a 5. Karty 8, 9 a 4 zůstanou, kde byly.",
+    "Po 1. kole: 2 8 5 9 4."
+   ],
+   "mistake": "Karty se neposouvají jako ve frontě. Vymění si místa jen dvě karty.",
+   "why": "Řazení výběrem je jeden ze základních řadicích algoritmů. Každé kolo dá na správné místo jednu kartu.",
+   "traps": {
+    "B": "Posunul(a) jsi 5 a 8 doprava. Při výběru se ale jen prohodí dvě karty: 2 a 5.",
+    "C": "To je úplně seřazená řada. Po 1. kole je na správném místě jen jedna karta."
+   }
+  }
+ },
+ {
+  "id": "r4",
+  "topic": "razeni",
+  "level": 2,
+  "title": "Dvě kola",
+  "text": "<p>Bobr zase řadí <b>výběrem</b>: v každém kole najde nejmenší neseřazenou kartu a prohodí ji s první neseřazenou kartou.</p>",
+  "visual": [
+   "cards",
+   [
+    6,
+    3,
+    8,
+    1,
+    5
+   ]
+  ],
+  "question": "Jak budou karty ležet po 2. kole?",
+  "type": "choice",
+  "options": [
+   "1 3 5 6 8",
+   "1 3 8 6 5",
+   "1 6 3 8 5",
+   "1 3 6 8 5"
+  ],
+  "hint": "Po 1. kole je 1 na začátku. Ve 2. kole hledej nejmenší kartu jen mezi ostatními. Kde leží?",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "1. kolo: nejmenší je 1, prohodím ji s 6. Řada: 1 3 8 6 5.",
+    "2. kolo: neseřazené jsou 3 8 6 5. Nejmenší je 3.",
+    "Trojka už stojí na prvním neseřazeném místě, takže se nic neprohazuje.",
+    "Po 2. kole: 1 3 8 6 5."
+   ],
+   "mistake": "Nejčastější chyba ve třídě: děti spočítaly jen 1. kolo, nebo seřadily všechno. Spočítej přesně tolik kol, kolik úloha chce, a po každém si řadu zapiš.",
+   "why": "Algoritmus dělá vždy stejné kroky, i když se zrovna nic nezmění. Kolo bez prohození je pořád kolo.",
+   "traps": {
+    "A": "Tohle je stav až po 3. kole. Po 2. kole ještě 8, 6 a 5 nejsou seřazené.",
+    "C": "Karty jsi posunul(a). Při řazení výběrem se jen prohodí dvě karty.",
+    "D": "Ve 2. kole je nejmenší neseřazená karta 3 a ta už stojí na svém místě. Nic se neprohodí."
+   }
+  }
+ },
+ {
+  "id": "r5",
+  "topic": "razeni",
+  "level": 2,
+  "title": "Výměny sousedů",
+  "text": "<p>Karty se mají seřadit od nejmenší po největší. Smí se ale jen <b>prohodit dvě sousední karty</b>.</p>",
+  "visual": [
+   "cards",
+   [
+    2,
+    4,
+    1,
+    3
+   ]
+  ],
+  "question": "Kolik takových výměn je potřeba nejméně?",
+  "type": "number",
+  "hint": "Spočítej dvojice karet, které stojí ve špatném pořadí (větší je vlevo od menší).",
+  "sol": {
+   "a": 3,
+   "steps": [
+    "Hledám dvojice, kde je větší karta vlevo od menší:",
+    "2 je vlevo od 1 → špatně (1. dvojice).",
+    "4 je vlevo od 1 → špatně (2.), 4 je vlevo od 3 → špatně (3.).",
+    "Každá výměna sousedů opraví právě jednu špatnou dvojici. Výměny jsou tedy 3.",
+    "Kontrola: 2 4 1 3 → 2 1 4 3 → 1 2 4 3 → 1 2 3 4."
+   ],
+   "mistake": "Nestačí koukat, kolik karet je na špatném místě. Počítej špatné dvojice.",
+   "why": "Počet špatných dvojic říká, jak moc je řada „rozházená“. Počítače ho používají k porovnání řadicích postupů.",
+   "traps": {
+    "2": "Zkus to na kartách: po dvou výměnách ještě nebude seřazeno. Spočítej špatné dvojice."
+   }
+  }
+ },
+ {
+  "id": "r6",
+  "topic": "razeni",
+  "level": 3,
+  "title": "Kolik průchodů?",
+  "text": "<p>Bobr řadí jako v úloze „Jeden průchod“: jde zleva doprava a prohazuje sousedy, když je levá karta větší. Průchody opakuje tak dlouho, dokud v nějakém průchodu <b>neprohodí nic</b>.</p>",
+  "visual": [
+   "cards",
+   [
+    3,
+    5,
+    1,
+    4,
+    2
+   ]
+  ],
+  "question": "Kolik průchodů celkem udělá? (Počítej i ten poslední, ve kterém už nic neprohodí.)",
+  "type": "number",
+  "hint": "Po každém průchodu si napiš celou řadu. Největší číslo vždy doputuje na konec.",
+  "sol": {
+   "a": 4,
+   "steps": [
+    "1. průchod: 3 5 1 4 2 → 3 1 4 2 5 (pětka doputovala na konec).",
+    "2. průchod: 3 1 4 2 5 → 1 3 2 4 5.",
+    "3. průchod: 1 3 2 4 5 → 1 2 3 4 5. Teď je seřazeno, ale bobr to ještě neví.",
+    "4. průchod: nic se neprohodí. Teprve teď bobr ví, že je hotovo.",
+    "Celkem 4 průchody."
+   ],
+   "mistake": "Bobr pozná, že je hotovo, až když jeden celý průchod nic neprohodí. Ten poslední průchod se počítá.",
+   "why": "Počítač „nevidí“, že je řada seřazená. Musí to ověřit kontrolou, a i kontrola stojí čas.",
+   "traps": {
+    "3": "Po 3. průchodu je opravdu seřazeno, ale bobr to ještě neví. Musí udělat ještě jeden průchod bez výměny."
+   }
+  }
+ },
+ {
+  "id": "r7",
+  "topic": "razeni",
+  "level": 4,
+  "title": "Velké řazení",
+  "text": "<p>Šest karet se má seřadit od nejmenší po největší jen <b>výměnami sousedních karet</b>.</p>",
+  "visual": [
+   "cards",
+   [
+    3,
+    6,
+    1,
+    5,
+    2,
+    4
+   ]
+  ],
+  "question": "Kolik výměn je potřeba nejméně?",
+  "type": "number",
+  "hint": "U každé karty spočítej, kolik menších karet leží napravo od ní. Pak čísla sečti.",
+  "sol": {
+   "a": 8,
+   "steps": [
+    "Karta 3: napravo jsou menší 1 a 2 → 2 dvojice.",
+    "Karta 6: napravo jsou menší 1, 5, 2, 4 → 4 dvojice.",
+    "Karta 1: napravo není nic menšího → 0.",
+    "Karta 5: napravo jsou menší 2 a 4 → 2 dvojice.",
+    "Karty 2 a 4: 0.",
+    "Celkem 2 + 4 + 0 + 2 + 0 + 0 = 8 výměn."
+   ],
+   "mistake": "Zkoušet to „od oka“ na šesti kartách je snadné splést. Počítání dvojic je spolehlivější.",
+   "why": "Místo zkoušení si najdeš pravidlo, které dá výsledek rovnou. Tak programátoři odhadují, jak dlouho bude program řadit."
+  }
+ },
+ {
+  "id": "c1",
+  "topic": "cykly",
+  "level": 1,
+  "title": "Tleskací program",
+  "text": "<p>Co je uvnitř příkazu <b>opakuj</b>, provede se tolikrát, kolikrát se píše.</p><div class=\"code\">opakuj 3×:\n    tleskni\n    tleskni</div>",
+  "question": "Kolikrát bobr tleskne?",
+  "type": "number",
+  "hint": "Kolikrát tleskne v jednom opakování? A kolik je opakování?",
+  "sol": {
+   "a": 6,
+   "steps": [
+    "V jednom opakování bobr tleskne 2×.",
+    "Opakování jsou 3.",
+    "3 × 2 = 6 tlesknutí."
+   ],
+   "mistake": "Nesčítej 3 + 2. Číslo u „opakuj“ říká, kolikrát se celé tělo cyklu zopakuje.",
+   "why": "Cyklus šetří psaní: místo šesti řádků „tleskni“ stačí tři.",
+   "traps": {
+    "2": "To je jen jedno opakování. Cyklus se opakuje 3×.",
+    "5": "3 + 2 nestačí. Tělo cyklu (2 tlesknutí) se provede 3×."
+   }
+  }
+ },
+ {
+  "id": "c2",
+  "topic": "cykly",
+  "level": 1,
+  "title": "Přidávání klád",
+  "text": "<p>Na hrázi leží na začátku <b>2 klády</b>. Bobři pak provedou:</p><div class=\"code\">opakuj 3×:\n    přidej 4 klády</div>",
+  "question": "Kolik klád bude na hrázi na konci?",
+  "type": "number",
+  "hint": "Napiš si: začátek 2, po 1. opakování…, po 2. opakování…",
+  "sol": {
+   "a": 14,
+   "steps": [
+    "Začátek: 2 klády. To ještě není žádné opakování.",
+    "Po 1. opakování: 2 + 4 = 6.",
+    "Po 2. opakování: 6 + 4 = 10.",
+    "Po 3. opakování: 10 + 4 = 14."
+   ],
+   "mistake": "Začátek se nepočítá jako opakování. Udělej přesně 3 kroky.",
+   "why": "Počet klád je proměnná: krabička, jejíž obsah se v každém opakování změní.",
+   "traps": {
+    "10": "Udělal(a) jsi jen 2 opakování. Začátek se nepočítá, opakování jsou 3.",
+    "12": "To je jen 3 × 4. Na začátku už ale 2 klády ležely."
+   }
+  }
+ },
+ {
+  "id": "c3",
+  "topic": "cykly",
+  "level": 2,
+  "title": "Zdvojování",
+  "text": "<p>Na začátku má hráz <b>1 kládu</b>. Bobři pak provedou:</p><div class=\"code\">opakuj 5×:\n    počet klád = počet klád × 2</div>",
+  "question": "Kolik klád bude mít hráz na konci?",
+  "type": "number",
+  "hint": "Udělej si tabulku: začátek 1, po 1. opakování 2, po 2. opakování…",
+  "sol": {
+   "a": 32,
+   "steps": [
+    "Začátek: 1 kláda. To není opakování.",
+    "1. opakování: 1 × 2 = 2.",
+    "2. opakování: 2 × 2 = 4.",
+    "3. opakování: 4 × 2 = 8.",
+    "4. opakování: 8 × 2 = 16.",
+    "5. opakování: 16 × 2 = 32."
+   ],
+   "mistake": "Nejčastější chyba ve třídě byla o jedno zdvojení méně. Děti počítaly začátek (1) jako první krok. Začátek je stav PŘED cyklem.",
+   "why": "Zdvojování roste hrozně rychle. Proto se v informatice tolik mluví o číslech 2, 4, 8, 16, 32, 64…",
+   "traps": {
+    "10": "„× 2“ znamená vynásobit dvěma, ne přičíst 2.",
+    "11": "„× 2“ znamená vynásobit dvěma, ne přičíst 2.",
+    "16": "Udělal(a) jsi jen 4 zdvojení. Začátek (1) ještě není opakování, zdvojit musíš 5×."
+   }
+  }
+ },
+ {
+  "id": "c4",
+  "topic": "cykly",
+  "level": 2,
+  "title": "Cyklus v cyklu",
+  "text": "<p>Bobři tančí podle programu:</p><div class=\"code\">opakuj 3×:\n    dupni\n    opakuj 2×:\n        tleskni</div>",
+  "question": "Kolik zvuků (dupnutí a tlesknutí dohromady) bobři udělají?",
+  "type": "number",
+  "hint": "Kolik zvuků je v jednom velkém kole? Pak to vynásob počtem velkých kol.",
+  "sol": {
+   "a": 9,
+   "steps": [
+    "Jedno velké kolo: 1 dupnutí a vnitřní cyklus 2 tlesknutí. To jsou 3 zvuky.",
+    "Velká kola jsou 3.",
+    "3 × 3 = 9 zvuků (3 dupnutí a 6 tlesknutí)."
+   ],
+   "mistake": "Vnitřní cyklus se provede znovu v každém velkém kole.",
+   "why": "Cyklus uvnitř cyklu se v programech používá třeba na kreslení mřížek: řádky × sloupce.",
+   "traps": {
+    "5": "3 + 2 nestačí. Vnitřní cyklus proběhne v každém ze 3 kol.",
+    "6": "Šest je jen počet tlesknutí. Připočti i 3 dupnutí.",
+    "7": "Dupnutí je v každém kole jedno, celkem 3. Tlesknutí 6."
+   }
+  }
+ },
+ {
+  "id": "c5",
+  "topic": "cykly",
+  "level": 2,
+  "title": "Krabičky a a b",
+  "text": "<p>V programu jsou dvě krabičky (proměnné) <b>a</b> a <b>b</b>. Řádky se provádějí shora dolů.</p><div class=\"code\">a = 2\nb = 5\na = a + b\nb = a + b\na = b − a</div>",
+  "question": "Co je na konci v krabičkách?",
+  "type": "choice",
+  "options": [
+   "a = 5, b = 12",
+   "a = 7, b = 12",
+   "a = 5, b = 7",
+   "a = 2, b = 5"
+  ],
+  "hint": "Po každém řádku si zapiš obě krabičky. Vždy použij číslo, které tam je TEĎ.",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "a = 2, b = 5.",
+    "a = a + b = 2 + 5 = 7. Teď a = 7, b = 5.",
+    "b = a + b = 7 + 5 = 12. Teď a = 7, b = 12.",
+    "a = b − a = 12 − 7 = 5. Konec: a = 5, b = 12."
+   ],
+   "mistake": "Když se krabička změní, staré číslo zmizí. Na dalším řádku už platí nové.",
+   "why": "Sledovat proměnné řádek po řádku je nejdůležitější dovednost při hledání chyb v programu.",
+   "traps": {
+    "B": "Zapomněl(a) jsi poslední řádek a = b − a.",
+    "C": "Ve 4. řádku už je a = 7, takže b = 7 + 5."
+   }
+  }
+ },
+ {
+  "id": "c6",
+  "topic": "cykly",
+  "level": 3,
+  "title": "Robot ve smyčce",
+  "text": "<p>Robot stojí na <b>S</b> a dívá se <b>nahoru</b>. „Krok“ = jedno políčko dopředu. „Vpravo“ = otočí se na místě doprava (nepohne se).</p><div class=\"code\">opakuj 3×:\n    krok\n    krok\n    vpravo</div>",
+  "visual": [
+   "grid",
+   [
+    [
+     "A",
+     2,
+     2
+    ],
+    [
+     "B",
+     4,
+     4
+    ],
+    [
+     "C",
+     2,
+     4
+    ],
+    [
+     "D",
+     0,
+     2
+    ]
+   ]
+  ],
+  "question": "Na kterém písmenu robot skončí?",
+  "type": "choice",
+  "options": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "hint": "Po každém otočení si poznamenej, kam se robot dívá: nahoru → doprava → dolů → doleva.",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "1. opakování: 2 kroky nahoru (stojí na D), otočí se doprava.",
+    "2. opakování: 2 kroky doprava (stojí na A), otočí se a dívá se dolů.",
+    "3. opakování: 2 kroky dolů (stojí na C), otočí se doleva.",
+    "Robot skončil na C."
+   ],
+   "mistake": "„Vpravo“ robota neposune. Jen změní směr dalších kroků.",
+   "why": "Robot si musí pamatovat nejen kde stojí, ale i kam se dívá. To je stav robota.",
+   "traps": {
+    "A": "Na A je robot po 2. opakování. Opakování jsou ale 3.",
+    "D": "Na D je robot po 1. opakování. Pokračuj dál."
+   }
+  }
+ },
+ {
+  "id": "c7",
+  "topic": "cykly",
+  "level": 4,
+  "title": "Návod sám na sebe",
+  "text": "<p>Bobr má návod <b>postav(n)</b>. Když je n = 0, nedělá nic. Jinak udělá tohle:</p><div class=\"code\">postav(n):\n    polož 1 kládu\n    postav(n − 1)\n    postav(n − 1)</div>",
+  "question": "Kolik klád položí příkaz postav(4)?",
+  "type": "number",
+  "hint": "Začni od malých čísel: postav(1) = 1 kláda. Kolik položí postav(2)? A postav(3)?",
+  "sol": {
+   "a": 15,
+   "steps": [
+    "postav(0) = 0 klád.",
+    "postav(1) = 1 + postav(0) + postav(0) = 1.",
+    "postav(2) = 1 + 1 + 1 = 3.",
+    "postav(3) = 1 + 3 + 3 = 7.",
+    "postav(4) = 1 + 7 + 7 = 15."
+   ],
+   "mistake": "Nesnaž se rozkreslit celý postup najednou. Spočítej malé případy a z nich ty větší.",
+   "why": "Návod, který používá sám sebe, se jmenuje rekurze. Počítač ji umí, jen musí mít konec (n = 0).",
+   "traps": {
+    "8": "Zapomněl(a) jsi, že každé postav položí i svou 1 kládu, ne jen ty vnitřní.",
+    "16": "Těsně vedle. postav(4) = 1 + 7 + 7."
+   }
+  }
+ },
+ {
+  "id": "d1",
+  "topic": "dvojkova",
+  "level": 1,
+  "title": "Hodnoty lamp",
+  "text": "<p>Bobři si posílají čísla čtyřmi lampami. Každá lampa má svou hodnotu (napsanou nad ní). Číslo zjistíš, když <b>sečteš hodnoty rozsvícených lamp</b>.</p>",
+  "visual": [
+   "lamps",
+   {
+    "values": [
+     8,
+     4,
+     2,
+     1
+    ],
+    "rows": [
+     [
+      0,
+      1,
+      0,
+      0
+     ]
+    ]
+   }
+  ],
+  "question": "Jaké číslo lampy ukazují?",
+  "type": "number",
+  "hint": "Svítí jen jedna lampa. Jakou má hodnotu?",
+  "sol": {
+   "a": 4,
+   "steps": [
+    "Svítí jen druhá lampa zleva.",
+    "Její hodnota je 4.",
+    "Ostatní nesvítí, nepřičítají nic. Číslo je 4."
+   ],
+   "mistake": "Neříkáš, kolik lamp svítí, ale jakou mají hodnotu.",
+   "why": "Tak si počítač ukládá čísla: každý „bit“ je jedna lampa, která buď svítí (1), nebo ne (0).",
+   "traps": {
+    "1": "Svítí jedna lampa, ale číslo je její hodnota, ne počet lamp."
+   }
+  }
+ },
+ {
+  "id": "d2",
+  "topic": "dvojkova",
+  "level": 1,
+  "title": "Dvě rozsvícené",
+  "text": "<p>Lampy mají hodnoty <b>8, 4, 2, 1</b> (zleva doprava). Sečti hodnoty rozsvícených lamp.</p>",
+  "visual": [
+   "lamps",
+   {
+    "values": [
+     8,
+     4,
+     2,
+     1
+    ],
+    "rows": [
+     [
+      1,
+      0,
+      1,
+      0
+     ]
+    ]
+   }
+  ],
+  "question": "Jaké číslo lampy ukazují?",
+  "type": "number",
+  "hint": "Které dvě lampy svítí? Sečti jejich hodnoty.",
+  "sol": {
+   "a": 10,
+   "steps": [
+    "Svítí lampa s hodnotou 8.",
+    "Svítí lampa s hodnotou 2.",
+    "8 + 2 = 10."
+   ],
+   "mistake": "Hodnoty patří k místu lampy. Lampa úplně vlevo je vždy 8.",
+   "why": "Zápis ● ○ ● ○ je vlastně dvojkové číslo 1010, tedy deset.",
+   "traps": {
+    "2": "Svítí dvě lampy, ale sčítají se jejich hodnoty (8 a 2)."
+   }
+  }
+ },
+ {
+  "id": "d3",
+  "topic": "dvojkova",
+  "level": 2,
+  "title": "Signální lampy",
+  "text": "<p>Lampy mají hodnoty <b>8, 4, 2, 1</b>. Tentokrát hodnoty napsané nejsou.</p>",
+  "visual": [
+   "lamps",
+   {
+    "rows": [
+     [
+      1,
+      1,
+      0,
+      1
+     ]
+    ]
+   }
+  ],
+  "question": "Jaké číslo lampy ukazují?",
+  "type": "number",
+  "hint": "Nad každou lampu si napiš hodnotu: 8, 4, 2, 1. Pak sečti ty, které svítí.",
+  "sol": {
+   "a": 13,
+   "steps": [
+    "Napíšu si hodnoty: 8, 4, 2, 1.",
+    "Svítí 1., 2. a 4. lampa: 8, 4 a 1.",
+    "8 + 4 + 1 = 13."
+   ],
+   "mistake": "Ve třídě děti zkoušely čísla po jednom (1, 2, 3, 4…). Tipováním se to nedá vyřešit rychle. Stačí si napsat hodnoty lamp a sečíst je.",
+   "why": "Dvojková soustava: každá další lampa vlevo má dvojnásobnou hodnotu.",
+   "traps": {
+    "3": "Svítí 3 lampy, ale nepočítáš lampy. Sečti jejich hodnoty 8, 4 a 1.",
+    "11": "Sečetl(a) jsi 8 + 2 + 1. Podívej se znovu, která lampa nesvítí."
+   }
+  }
+ },
+ {
+  "id": "d4",
+  "topic": "dvojkova",
+  "level": 2,
+  "title": "Zjisti hodnoty sám",
+  "text": "<p>Bobři ukázali dvě čísla. Z nich zjisti, jakou hodnotu má která lampa.</p>",
+  "visual": [
+   "lamps",
+   {
+    "rows": [
+     [
+      0,
+      0,
+      1,
+      1,
+      "= 3"
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      "= 8"
+     ],
+     [
+      0,
+      1,
+      1,
+      0,
+      "= ?"
+     ]
+    ]
+   }
+  ],
+  "question": "Jaké číslo ukazuje poslední řádek?",
+  "type": "number",
+  "hint": "Z druhého řádku víš hodnotu první lampy. Z prvního řádku poznáš, že dvě pravé lampy dají dohromady 3.",
+  "sol": {
+   "a": 6,
+   "steps": [
+    "Řádek 2: svítí jen 1. lampa a ukazuje 8. První lampa má hodnotu 8.",
+    "Řádek 1: svítí 3. a 4. lampa a ukazují 3. To je 2 + 1.",
+    "Hodnoty se zleva zdvojují: 8, 4, 2, 1.",
+    "Řádek 3: svítí 2. a 3. lampa, tedy 4 + 2 = 6."
+   ],
+   "mistake": "Neodhaduj. Hodnoty lamp jdou vyčíst z příkladů.",
+   "why": "Najít pravidlo z příkladů je stejné, jako když počítač „luští“ neznámý formát dat.",
+   "traps": {
+    "2": "Dvě svítící lampy ještě neznamenají číslo 2. Sečti jejich hodnoty."
+   }
+  }
+ },
+ {
+  "id": "d5",
+  "topic": "dvojkova",
+  "level": 3,
+  "title": "Zapiš jedenáctku",
+  "text": "<p>Lampy mají hodnoty <b>8, 4, 2, 1</b>. Bobr chce ukázat číslo <b>11</b>.</p>",
+  "question": "Které lampy musí rozsvítit? (● svítí, ○ nesvítí)",
+  "type": "choice",
+  "options": [
+   "● ○ ● ●",
+   "● ● ○ ●",
+   "○ ● ● ●",
+   "● ○ ○ ●"
+  ],
+  "hint": "Začni největší lampou. Vejde se 8 do 11? Kolik pak zbývá?",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Největší hodnota, která se vejde do 11, je 8. Rozsvítím ji. Zbývá 11 − 8 = 3.",
+    "4 se do 3 nevejde. Nechám zhasnutou.",
+    "2 se vejde. Rozsvítím. Zbývá 1.",
+    "1 se vejde. Rozsvítím. Zbývá 0.",
+    "Výsledek: ● ○ ● ●."
+   ],
+   "mistake": "Kontrola: sečti rozsvícené hodnoty. 8 + 2 + 1 = 11.",
+   "why": "Takhle počítač převádí každé číslo do dvojkové soustavy: bere od největší hodnoty.",
+   "traps": {
+    "B": "To je 8 + 4 + 1 = 13.",
+    "C": "To je 4 + 2 + 1 = 7.",
+    "D": "To je 8 + 1 = 9."
+   }
+  }
+ },
+ {
+  "id": "d6",
+  "topic": "dvojkova",
+  "level": 3,
+  "title": "Pět lamp",
+  "text": "<p>Bobři přidali pátou lampu. Hodnoty jsou zleva <b>16, 8, 4, 2, 1</b>.</p>",
+  "question": "Jak ukážou číslo 27?",
+  "type": "choice",
+  "options": [
+   "● ○ ● ● ●",
+   "● ● ○ ● ●",
+   "● ● ● ○ ●",
+   "○ ● ● ● ●"
+  ],
+  "hint": "27 − 16 = ? Pokračuj s dalšími lampami od největší.",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "16 se vejde do 27. Rozsvítím. Zbývá 11.",
+    "8 se vejde do 11. Rozsvítím. Zbývá 3.",
+    "4 se do 3 nevejde. Zhasnuto.",
+    "2 se vejde. Zbývá 1. Pak 1 se vejde. Zbývá 0.",
+    "Výsledek: ● ● ○ ● ●."
+   ],
+   "mistake": "Ve třídě to byla nejtěžší úloha Mistrovské výzvy. Postup je ale stejný jako u čtyř lamp, jen začínáš od 16.",
+   "why": "S každou další lampou se dá ukázat dvakrát víc čísel.",
+   "traps": {
+    "A": "To je 16 + 4 + 2 + 1 = 23.",
+    "C": "To je 16 + 8 + 4 + 1 = 29.",
+    "D": "To je 8 + 4 + 2 + 1 = 15."
+   }
+  }
+ },
+ {
+  "id": "d7",
+  "topic": "dvojkova",
+  "level": 3,
+  "title": "Největší číslo",
+  "text": "<p>Bobři mají pět lamp s hodnotami <b>16, 8, 4, 2, 1</b>.</p>",
+  "question": "Jaké největší číslo dokážou ukázat?",
+  "type": "number",
+  "hint": "Největší číslo dostaneš, když svítí všechno.",
+  "sol": {
+   "a": 31,
+   "steps": [
+    "Rozsvítím všech pět lamp.",
+    "16 + 8 + 4 + 2 + 1 = 31."
+   ],
+   "mistake": "32 už by potřebovalo šestou lampu s hodnotou 32.",
+   "why": "Proto se v počítačích objevují čísla jako 31, 63, 255: jsou to maxima pro určitý počet bitů.",
+   "traps": {
+    "5": "To je počet lamp. Sečti jejich hodnoty.",
+    "32": "32 by potřebovalo šestou lampu. Pět lamp dá nejvýš 16 + 8 + 4 + 2 + 1."
+   }
+  }
+ },
+ {
+  "id": "d8",
+  "topic": "dvojkova",
+  "level": 4,
+  "title": "Kolik čísel?",
+  "text": "<p>Bobři mají <b>šest lamp</b> (hodnoty 32, 16, 8, 4, 2, 1). Číslo 0 ukážou tak, že nesvítí nic.</p>",
+  "question": "Kolik různých čísel dokážou šesti lampami ukázat (včetně nuly)?",
+  "type": "number",
+  "hint": "Jedna lampa: 2 možnosti (svítí / nesvítí). Dvě lampy: 2 × 2. A šest?",
+  "sol": {
+   "a": 64,
+   "steps": [
+    "Každá lampa má 2 stavy: svítí nebo nesvítí.",
+    "Dvě lampy: 2 × 2 = 4 možnosti. Tři lampy: 2 × 2 × 2 = 8.",
+    "Šest lamp: 2 × 2 × 2 × 2 × 2 × 2 = 64.",
+    "Kontrola: největší číslo je 32 + 16 + 8 + 4 + 2 + 1 = 63 a k tomu nula. Čísla 0 až 63 jsou 64 čísla."
+   ],
+   "mistake": "63 je největší číslo, ale úloha se ptá, KOLIK čísel to je. Nula se počítá taky.",
+   "why": "6 bitů dá 64 možností. Proto má třeba šachovnice 64 políček a dá se popsat šesti bity.",
+   "traps": {
+    "12": "6 × 2 nestačí. Možnosti se násobí: 2 × 2 × 2 × 2 × 2 × 2.",
+    "36": "Možnosti se násobí: 2 × 2 × 2 × 2 × 2 × 2.",
+    "63": "63 je největší číslo. Čísel je ale o jedno víc, protože se počítá i 0."
+   }
+  }
+ },
+ {
+  "id": "s1",
+  "topic": "sifry",
+  "level": 1,
+  "title": "Posun o jedno",
+  "text": "<p>Bobr zašifroval slovo tak, že každé písmeno nahradil písmenem <b>hned za ním</b> v abecedě (A → B, B → C…).</p><p>Zašifrované slovo: <b class=\"big\">LPMP</b></p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jaké slovo bobr zašifroval?",
+  "type": "text",
+  "hint": "Při luštění posouvej každé písmeno o jedno místo ZPĚT.",
+  "sol": {
+   "a": [
+    "KOLO"
+   ],
+   "steps": [
+    "Šifrovalo se dopředu, takže luštím dozadu.",
+    "L → K, P → O, M → L, P → O.",
+    "Slovo je KOLO."
+   ],
+   "mistake": "Při luštění jdi opačným směrem než při šifrování.",
+   "why": "Takhle šifroval už Julius Caesar. Proto se tomu říká Caesarova šifra.",
+   "traps": {
+    "MQNQ": "Posunul(a) jsi písmena dopředu. Při luštění se posouvá zpátky."
+   }
+  }
+ },
+ {
+  "id": "s2",
+  "topic": "sifry",
+  "level": 1,
+  "title": "Zašifruj sám",
+  "text": "<p>Zašifruj slovo <b class=\"big\">VODA</b>. Každé písmeno posuň o jedno místo <b>dopředu</b> (A → B).</p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jak bude vypadat zašifrované slovo?",
+  "type": "text",
+  "hint": "Za V je W. Pokračuj s dalšími písmeny.",
+  "sol": {
+   "a": [
+    "WPEB"
+   ],
+   "steps": [
+    "V → W.",
+    "O → P.",
+    "D → E.",
+    "A → B.",
+    "Šifra: WPEB."
+   ],
+   "mistake": "Používáme abecedu bez háčků a čárek, i s písmeny Q, W, X.",
+   "why": "Šifrování je pravidlo. Kdo zná pravidlo (klíč), umí zprávu i rozluštit.",
+   "traps": {
+    "UNCZ": "Posunul(a) jsi písmena zpátky. Při šifrování se tady posouvá dopředu."
+   }
+  }
+ },
+ {
+  "id": "s3",
+  "topic": "sifry",
+  "level": 2,
+  "title": "Posun o tři",
+  "text": "<p>Tentokrát bobr posunul každé písmeno o <b>3 místa dopředu</b> (A → D).</p><p>Zašifrované slovo: <b class=\"big\">EREU</b></p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jaké slovo bobr zašifroval?",
+  "type": "text",
+  "hint": "Od každého písmena odpočítej 3 místa zpátky. E, D, C, B…",
+  "sol": {
+   "a": [
+    "BOBR"
+   ],
+   "steps": [
+    "E zpět o 3: D, C, B → B.",
+    "R zpět o 3: Q, P, O → O.",
+    "E → B, U → R.",
+    "Slovo je BOBR."
+   ],
+   "mistake": "Ve třídě děti posouvaly písmena dopředu místo zpátky. Šifrovalo se dopředu, luští se zpátky.",
+   "why": "Posun o 3 je původní Caesarova šifra.",
+   "traps": {
+    "HUHX": "Posunul(a) jsi písmena dopředu. Luští se opačným směrem, o 3 zpátky."
+   }
+  }
+ },
+ {
+  "id": "s4",
+  "topic": "sifry",
+  "level": 2,
+  "title": "Přes konec abecedy",
+  "text": "<p>Zašifruj slovo <b class=\"big\">ZUBY</b> posunem o <b>2 místa dopředu</b>. Když dojdeš na konec abecedy, pokračuješ znovu od A (… Y, Z, A, B …).</p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jak bude vypadat zašifrované slovo?",
+  "type": "text",
+  "hint": "Z o dvě dopředu: za Z je A, za A je B.",
+  "sol": {
+   "a": [
+    "BWDA"
+   ],
+   "steps": [
+    "Z → A → B. První písmeno je B.",
+    "U → V → W.",
+    "B → C → D.",
+    "Y → Z → A.",
+    "Šifra: BWDA."
+   ],
+   "mistake": "Abeceda se točí dokola jako ciferník hodin. Za Z přijde zase A.",
+   "why": "Počítání „dokola“ se v informatice jmenuje zbytek po dělení a používá se velmi často."
+  }
+ },
+ {
+  "id": "s5",
+  "topic": "sifry",
+  "level": 3,
+  "title": "Najdi klíč",
+  "text": "<p>Bobr zašifroval slovo <b>BOBR</b> a vyšlo mu <b class=\"big\">GTGW</b>. Všechna písmena posunul o stejný počet míst dopředu.</p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "O kolik míst písmena posunul?",
+  "type": "number",
+  "hint": "Počítej, kolik kroků je z B do G.",
+  "sol": {
+   "a": 5,
+   "steps": [
+    "B → C, D, E, F, G. To je 5 kroků.",
+    "Kontrola u dalšího písmene: O → P, Q, R, S, T. Také 5.",
+    "Klíč je posun o 5."
+   ],
+   "mistake": "Klíč si vždy ověř aspoň na dvou písmenech.",
+   "why": "Když útočník zná kousek původní zprávy, umí najít klíč. Proto je Caesarova šifra slabá.",
+   "traps": {
+    "4": "Spočítej kroky znovu: C, D, E, F, G je pět kroků."
+   }
+  }
+ },
+ {
+  "id": "s6",
+  "topic": "sifry",
+  "level": 3,
+  "title": "Šifra, která roste",
+  "text": "<p>Chytřejší bobr posunul <b>1. písmeno o 1</b>, 2. písmeno o 2, 3. o 3 a 4. o 4 místa dopředu.</p><p>Zašifrované slovo: <b class=\"big\">PUHP</b></p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jaké slovo bobr zašifroval?",
+  "type": "text",
+  "hint": "Každé písmeno posouvej zpátky o jiný počet: P o 1, U o 2, H o 3, P o 4.",
+  "sol": {
+   "a": [
+    "OSEL"
+   ],
+   "steps": [
+    "P zpět o 1 → O.",
+    "U zpět o 2 → T, S → S.",
+    "H zpět o 3 → G, F, E → E.",
+    "P zpět o 4 → O, N, M, L → L.",
+    "Slovo je OSEL."
+   ],
+   "mistake": "Každé písmeno má jiný posun. Napiš si posun nad každé písmeno, ať se nesplete.",
+   "why": "Když se posun mění, nejde šifra rozluštit tak snadno. Moderní šifry mají klíč dlouhý jako celá zpráva."
+  }
+ },
+ {
+  "id": "s7",
+  "topic": "sifry",
+  "level": 4,
+  "title": "Zrcadlová abeceda",
+  "text": "<p>Bobr používá zrcadlovou abecedu: <b>A ↔ Z, B ↔ Y, C ↔ X</b>… První písmeno abecedy se zamění s posledním, druhé s předposledním a tak dál.</p><p>Zašifrované slovo: <b class=\"big\">SIZA</b></p>",
+  "visual": [
+   "alphabet"
+  ],
+  "question": "Jaké slovo bobr zašifroval?",
+  "type": "text",
+  "hint": "Napiš si abecedu a pod ni stejnou abecedu pozpátku. Pak hledej písmena.",
+  "sol": {
+   "a": [
+    "HRAZ"
+   ],
+   "steps": [
+    "Pod ABCDEFGHIJKLM napíšu ZYXWVUTSRQPON.",
+    "S je 19. písmeno, k němu patří 8. písmeno H.",
+    "I ↔ R, Z ↔ A, A ↔ Z.",
+    "Slovo je HRAZ (hráz)."
+   ],
+   "mistake": "Tady se nic neposouvá. Každé písmeno má svou dvojici.",
+   "why": "Této šifře se říká Atbaš a je stará přes 2500 let. Šifruje i luští se úplně stejně."
+  }
+ },
+ {
+  "id": "h1",
+  "topic": "hromady",
+  "level": 1,
+  "title": "Hromada talířů",
+  "text": "<p>Bobr skládá talíře na sebe: nejdřív <b>A</b>, pak <b>B</b>, pak <b>C</b>. Talíř může vzít jen <b>shora</b>.</p>",
+  "visual": [
+   "stack",
+   [
+    "A",
+    "B",
+    "C"
+   ]
+  ],
+  "question": "Který talíř vezme jako první?",
+  "type": "choice",
+  "options": [
+   "A",
+   "B",
+   "C",
+   "kterýkoli"
+  ],
+  "hint": "Který talíř leží nahoře?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "A leží dole, na něm B, nahoře C.",
+    "Brát se dá jen shora.",
+    "První vezme C."
+   ],
+   "mistake": "Co přišlo POSLEDNÍ, odchází PRVNÍ.",
+   "why": "Takové hromadě se v informatice říká zásobník."
+  }
+ },
+ {
+  "id": "h2",
+  "topic": "hromady",
+  "level": 1,
+  "title": "Fronta k vodě",
+  "text": "<p>K napajedlu přišli do fronty bobři <b>A</b>, pak <b>B</b>, pak <b>C</b>. Napít se jde vždy ten, kdo je ve frontě <b>první</b>.</p>",
+  "question": "Kdo se napije první?",
+  "type": "choice",
+  "options": [
+   "A",
+   "B",
+   "C",
+   "kdokoli"
+  ],
+  "hint": "Jak to chodí ve frontě v obchodě?",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "A přišel první, stojí na začátku fronty.",
+    "Z fronty se odchází zepředu.",
+    "První se napije A."
+   ],
+   "mistake": "Fronta je opak hromady: co přišlo PRVNÍ, odchází PRVNÍ.",
+   "why": "Frontou počítač řídí třeba tisk: dokumenty se tisknou v pořadí, v jakém přišly."
+  }
+ },
+ {
+  "id": "h3",
+  "topic": "hromady",
+  "level": 2,
+  "title": "Hromada klád",
+  "text": "<p>Bobr skládá klády na hromadu a bere jen shora:</p><ol><li>položí 1, 2, 3</li><li>vezme kládu</li><li>položí 4</li><li>vezme kládu</li><li>vezme kládu</li></ol>",
+  "question": "V jakém pořadí klády odnesl?",
+  "type": "choice",
+  "options": [
+   "3 4 2",
+   "1 2 4",
+   "3 2 4",
+   "4 3 2"
+  ],
+  "hint": "Kresli si hromadu po každém kroku.",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Hromada zdola: 1, 2, 3. Vezme horní → odnáší 3. Zbývá 1, 2.",
+    "Položí 4. Hromada: 1, 2, 4.",
+    "Vezme horní → 4. Zbývá 1, 2.",
+    "Vezme horní → 2. Zbývá 1.",
+    "Pořadí: 3 4 2."
+   ],
+   "mistake": "Po každém kroku si hromadu nakresli znovu. Nahoře je vždy to, co tam přibylo naposledy.",
+   "why": "Zásobník používá počítač třeba při tlačítku Zpět.",
+   "traps": {
+    "B": "To by bylo jako ve frontě. Na hromadě se bere shora.",
+    "D": "Kládu 4 bobr položil až po prvním odnesení."
+   }
+  }
+ },
+ {
+  "id": "h4",
+  "topic": "hromady",
+  "level": 2,
+  "title": "Fronta, nebo hromada?",
+  "text": "<p>Do <b>fronty</b> přijdou postupně bobři A, B, C, D. Pak <b>dva bobři</b> odejdou.</p>",
+  "question": "Kdo zůstane?",
+  "type": "choice",
+  "options": [
+   "A a B",
+   "C a D",
+   "A a D",
+   "B a C"
+  ],
+  "hint": "Ve frontě se odchází zepředu.",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "Fronta zepředu: A, B, C, D.",
+    "Odejde první A, pak B.",
+    "Zůstanou C a D."
+   ],
+   "mistake": "Kdyby to byla hromada, odešli by D a C a zůstali by A a B. Vždy si přečti, jestli jde o frontu, nebo hromadu.",
+   "why": "Fronta a zásobník jsou dvě nejzákladnější datové struktury.",
+   "traps": {
+    "A": "To by platilo pro hromadu. Ve frontě odcházejí ti, co přišli první."
+   }
+  }
+ },
+ {
+  "id": "h5",
+  "topic": "hromady",
+  "level": 3,
+  "title": "Které pořadí nejde?",
+  "text": "<p>Ke hrázi připlouvají klády <b>1, 2, 3, 4</b> přesně v tomto pořadí. Bobr připlutou kládu položí na hromadu a kdykoli může odnést kládu z vrchu hromady na hráz.</p>",
+  "question": "Které pořadí klád na hrázi bobr vytvořit NEDOKÁŽE?",
+  "type": "choice",
+  "options": [
+   "2 1 3 4",
+   "1 4 3 2",
+   "4 1 2 3",
+   "3 2 1 4"
+  ],
+  "hint": "Aby jako první odnesl kládu 4, musí na hromadu položit všechny klády. Která je pak nahoře?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "Pro 4 1 2 3: aby jako první odnesl 4, musí položit 1, 2, 3, 4.",
+    "Hromada zdola: 1, 2, 3, 4. Odnese 4. Nahoře je teď 3.",
+    "Další má být 1, ale ta leží úplně dole. Nejde to.",
+    "Ostatní pořadí jdou, třeba 1 4 3 2: polož 1, odnes 1, polož 2, 3, 4, odnes 4, 3, 2."
+   ],
+   "mistake": "Ověřuj každou možnost postupně a kresli si hromadu.",
+   "why": "Zásobník mění pořadí věcí jen některými způsoby. Programátor musí vědět, které zvládne.",
+   "traps": {
+    "B": "Zkus to: polož 1, odnes 1, polož 2, 3, 4 a odnášej 4, 3, 2. Jde to."
+   }
+  }
+ },
+ {
+  "id": "h6",
+  "topic": "hromady",
+  "level": 3,
+  "title": "Zpět v prohlížeči",
+  "text": "<p>Bobr na internetu postupně otevřel stránky <b>A</b>, <b>B</b>, <b>C</b>. Pak:</p><ol><li>klikl na <b>Zpět</b></li><li>klikl na <b>Zpět</b></li><li>otevřel novou stránku <b>D</b></li><li>klikl na <b>Zpět</b></li></ol>",
+  "question": "Na které stránce teď je?",
+  "type": "choice",
+  "options": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ],
+  "hint": "Prohlížeč si pamatuje stránky jako hromadu. Co se stane s B a C, když otevře novou stránku?",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Historie: A, B, C. Zpět → B. Zpět → A.",
+    "Bobr otevře D. Prohlížeč zapomene B a C, historie je teď A, D.",
+    "Zpět z D → A."
+   ],
+   "mistake": "Když po kliknutí Zpět otevřeš novou stránku, cesta dopředu se zapomene.",
+   "why": "Historie prohlížeče funguje jako zásobník.",
+   "traps": {
+    "B": "Po otevření D prohlížeč zapomněl B a C. Zpět vede z D na A."
+   }
+  }
+ },
+ {
+  "id": "h7",
+  "topic": "hromady",
+  "level": 4,
+  "title": "Malá hromada",
+  "text": "<p>Klády <b>1, 2, 3, 4</b> připlouvají v tomto pořadí. Bobr je skládá na hromadu, ale hromada unese <b>nejvýš 2 klády</b>. Kdykoli může odnést kládu z vrchu.</p>",
+  "question": "Které pořadí na hrázi NEJDE?",
+  "type": "choice",
+  "options": [
+   "2 1 4 3",
+   "1 3 2 4",
+   "3 2 1 4",
+   "2 3 1 4"
+  ],
+  "hint": "Spočítej, kolik klád musí ležet na hromadě najednou, aby mohl jako první odnést kládu 3.",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "3 2 1 4: aby jako první odnesl 3, musí na hromadě ležet 1, 2 a 3. To jsou 3 klády a víc než 2 hromada neunese.",
+    "2 1 4 3: polož 1, 2, odnes 2, 1, polož 3, 4, odnes 4, 3. Nikdy víc než 2.",
+    "1 3 2 4 a 2 3 1 4 také jdou s nejvýš 2 kládami.",
+    "Nejde jen 3 2 1 4."
+   ],
+   "mistake": "Hlídej si nejen pořadí, ale i kolik klád leží na hromadě najednou.",
+   "why": "Paměť počítače má omezenou velikost. Programátoři počítají, kolik místa algoritmus potřebuje."
+  }
+ },
+ {
+  "id": "l1",
+  "topic": "logika",
+  "level": 1,
+  "title": "Korálky",
+  "text": "<p>Bobřice navléká korálky pořád podle stejného pravidla.</p>",
+  "visual": [
+   "beads",
+   [
+    "r",
+    "b",
+    "b",
+    "g",
+    "r",
+    "b",
+    "b",
+    "g"
+   ]
+  ],
+  "question": "Jakou barvu bude mít 13. korálek?",
+  "type": "choice",
+  "options": [
+   "červenou",
+   "modrou",
+   "zelenou",
+   "žlutou"
+  ],
+  "hint": "Kolik korálků je v jedné opakující se skupině?",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Opakuje se skupina 4 korálků: červená, modrá, modrá, zelená.",
+    "Korálky 1, 5, 9, 13 jsou vždy první ve skupině.",
+    "13. korálek je červený."
+   ],
+   "mistake": "Nepočítej korálky po jednom až do 13. Najdi délku skupiny a skákej po ní.",
+   "why": "Hledání opakujícího se vzoru pomáhá třeba při kompresi dat.",
+   "traps": {
+    "B": "Zkontroluj délku skupiny: jsou v ní 4 korálky, ne 3."
+   }
+  }
+ },
+ {
+  "id": "l2",
+  "topic": "logika",
+  "level": 1,
+  "title": "Na lavičce",
+  "text": "<p>Ali, Bára a Cyril sedí vedle sebe na lavičce.</p><ul><li>Bára nesedí na kraji.</li><li>Cyril sedí vpravo od Báry.</li></ul>",
+  "question": "Kdo sedí úplně vlevo?",
+  "type": "choice",
+  "options": [
+   "Ali",
+   "Bára",
+   "Cyril",
+   "nedá se zjistit"
+  ],
+  "hint": "Kde sedí Bára, když nesedí na kraji?",
+  "sol": {
+   "a": "A",
+   "steps": [
+    "Bára nesedí na kraji, takže sedí uprostřed.",
+    "Cyril sedí vpravo od Báry, tedy úplně vpravo.",
+    "Na levé místo zbývá Ali."
+   ],
+   "mistake": "Začni podmínkou, která nejvíc omezuje. Tady je to Bára.",
+   "why": "Postupné vylučování možností je základ logického uvažování i programování."
+  }
+ },
+ {
+  "id": "l3",
+  "topic": "logika",
+  "level": 2,
+  "title": "Co přijde dál?",
+  "text": "<p>Bobr píše čísla podle pravidla: <b class=\"big\">2, 5, 11, 23, ?</b></p>",
+  "question": "Jaké číslo přijde dál?",
+  "type": "number",
+  "hint": "Zkus, co se stane s číslem, když ho vynásobíš dvěma.",
+  "sol": {
+   "a": 47,
+   "steps": [
+    "2 × 2 = 4, + 1 = 5.",
+    "5 × 2 = 10, + 1 = 11.",
+    "11 × 2 = 22, + 1 = 23.",
+    "Pravidlo: číslo × 2 + 1.",
+    "23 × 2 + 1 = 47."
+   ],
+   "mistake": "Rozdíly 3, 6, 12 se zdvojují. I tak dojdeš k výsledku: 23 + 24 = 47.",
+   "why": "Najít pravidlo z několika příkladů je přesně to, co dělá strojové učení.",
+   "traps": {
+    "35": "Rozdíly nejsou pořád stejné: 3, 6, 12… další je 24.",
+    "46": "Jen × 2 nestačí, zkontroluj to na prvních číslech."
+   }
+  }
+ },
+ {
+  "id": "l4",
+  "topic": "logika",
+  "level": 2,
+  "title": "Kdo snědl mrkev?",
+  "text": "<p>Jeden ze tří bobrů snědl mrkev.</p><p><b>Ali:</b> „Byla to Bára.“<br><b>Bára:</b> „Já to nebyla.“<br><b>Cyril:</b> „Já to nebyl.“</p><p><b>Pravdu mluví jen jeden</b> z nich.</p>",
+  "question": "Kdo snědl mrkev?",
+  "type": "choice",
+  "options": [
+   "Ali",
+   "Bára",
+   "Cyril",
+   "nedá se zjistit"
+  ],
+  "hint": "Zkus postupně: když to byl Ali, kolik bobrů mluví pravdu? A když Bára? A když Cyril?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "Snědl to Ali? Pak Ali lže, Bára i Cyril mluví pravdu. Dva pravdomluvní, nesedí.",
+    "Snědla to Bára? Pak Ali i Cyril mluví pravdu. Zase dva, nesedí.",
+    "Snědl to Cyril? Ali lže, Bára mluví pravdu, Cyril lže. Jen jeden mluví pravdu. Sedí!",
+    "Mrkev snědl Cyril."
+   ],
+   "mistake": "Ve třídě děti často tipovaly. Spolehlivější je vyzkoušet všechny možnosti jednu po druhé.",
+   "why": "Vyzkoušet všechny možnosti je strategie, kterou počítač používá, když neví, jak to udělat chytřeji.",
+   "traps": {
+    "B": "Když to byla Bára, mluví pravdu Ali i Cyril. To jsou dva, ale má to být jen jeden."
+   }
+  }
+ },
+ {
+  "id": "l5",
+  "topic": "logika",
+  "level": 3,
+  "title": "Kdo mluví pravdu?",
+  "text": "<p>Každý bobr buď vždy mluví pravdu, nebo vždy lže.</p><p><b>Ali:</b> „Bára lže.“<br><b>Bára:</b> „Cyril lže.“<br><b>Cyril:</b> „Ali i Bára lžou.“</p>",
+  "question": "Kdo mluví pravdu?",
+  "type": "choice",
+  "options": [
+   "jen Ali",
+   "jen Bára",
+   "jen Cyril",
+   "Ali a Cyril"
+  ],
+  "hint": "Začni Cyrilem. Co by platilo, kdyby mluvil pravdu?",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "Kdyby Cyril mluvil pravdu, Ali i Bára lžou.",
+    "Ali by lhal, takže by platilo opak jeho věty: Bára mluví pravdu. To je spor. Cyril tedy lže.",
+    "Bára říká „Cyril lže“, a to je pravda. Bára mluví pravdu.",
+    "Ali říká „Bára lže“, a to není pravda. Ali lže.",
+    "Pravdu mluví jen Bára."
+   ],
+   "mistake": "Když předpoklad vede ke sporu, je špatně. To je taky užitečná informace.",
+   "why": "Logické výroky („pravda“, „nepravda“) jsou základem všech počítačů.",
+   "traps": {
+    "C": "Kdyby Cyril mluvil pravdu, Ali by lhal, a pak by Bára mluvila pravdu. To odporuje Cyrilově větě."
+   }
+  }
+ },
+ {
+  "id": "l6",
+  "topic": "logika",
+  "level": 3,
+  "title": "Tři hráze",
+  "text": "<p>Ema, Filip a Gita bydlí ve třech hrázích vedle sebe (vlevo, uprostřed, vpravo). Hráze jsou modrá, zelená a žlutá.</p><ul><li>Ema bydlí úplně vlevo.</li><li>Žlutá hráz je úplně vpravo.</li><li>Gita nebydlí v modré hrázi.</li><li>Filip nebydlí vedle Emy.</li></ul>",
+  "question": "Kdo bydlí v zelené hrázi?",
+  "type": "choice",
+  "options": [
+   "Ema",
+   "Filip",
+   "Gita",
+   "nedá se zjistit"
+  ],
+  "hint": "Kde bydlí Filip, když nebydlí vedle Emy?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "Ema je vlevo. Vedle ní je prostřední místo, tam Filip nebydlí. Filip je vpravo.",
+    "Gitě zbývá prostředek.",
+    "Vpravo je žlutá hráz (Filip). Ema a Gita mají modrou a zelenou.",
+    "Gita nebydlí v modré, takže bydlí v zelené. Ema má modrou."
+   ],
+   "mistake": "Podmínky nečti jen jednou. Vracej se k nim, když něco zjistíš.",
+   "why": "Takové úlohy počítač řeší tak, že zkouší možnosti a škrtá ty, které porušují podmínky."
+  }
+ },
+ {
+  "id": "p1",
+  "topic": "cesty",
+  "level": 1,
+  "title": "Kudy k hrázi?",
+  "text": "<p>Čísla u cest ukazují, kolik minut cesta trvá.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "A": [
+      50,
+      150
+     ],
+     "B": [
+      200,
+      40
+     ],
+     "C": [
+      350,
+      150
+     ]
+    },
+    "E": [
+     [
+      "A",
+      "B",
+      2
+     ],
+     [
+      "B",
+      "C",
+      3
+     ],
+     [
+      "A",
+      "C",
+      6
+     ]
+    ],
+    "start": "A",
+    "w": 400
+   }
+  ],
+  "question": "Kolik minut trvá nejrychlejší cesta z A do C?",
+  "type": "number",
+  "hint": "Porovnej přímou cestu a cestu přes B.",
+  "sol": {
+   "a": 5,
+   "steps": [
+    "Přímo z A do C: 6 minut.",
+    "Přes B: 2 + 3 = 5 minut.",
+    "Nejrychlejší je 5 minut."
+   ],
+   "mistake": "Přímá cesta nemusí být nejrychlejší.",
+   "why": "Navigace v mobilu porovnává cesty přesně takhle.",
+   "traps": {
+    "6": "To je přímá cesta. Zkus cestu přes B."
+   }
+  }
+ },
+ {
+  "id": "p2",
+  "topic": "cesty",
+  "level": 1,
+  "title": "Zpráva po řetězu",
+  "text": "<p>Bobři stojí v řadě a každý se může bavit jen se sousedem. Každou minutu řekne každý bobr, který novinu zná, ji svým sousedům.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "A": [
+      40,
+      60
+     ],
+     "B": [
+      150,
+      60
+     ],
+     "C": [
+      260,
+      60
+     ],
+     "D": [
+      370,
+      60
+     ]
+    },
+    "E": [
+     [
+      "A",
+      "B"
+     ],
+     [
+      "B",
+      "C"
+     ],
+     [
+      "C",
+      "D"
+     ]
+    ],
+    "start": "A",
+    "w": 410
+   }
+  ],
+  "question": "Bobr A zná novinu. Za kolik minut ji bude znát D?",
+  "type": "number",
+  "hint": "Minuta 1: B. Minuta 2: …",
+  "sol": {
+   "a": 3,
+   "steps": [
+    "Minuta 0: zná A.",
+    "Minuta 1: zná i B.",
+    "Minuta 2: zná i C.",
+    "Minuta 3: zná i D."
+   ],
+   "mistake": "Počítej čáry mezi A a D, ne bobry.",
+   "why": "V počítačové síti putuje zpráva od počítače k počítači a každý skok trvá chvíli.",
+   "traps": {
+    "4": "Počítáš bobry. Počítej čáry (skoky) mezi A a D."
+   }
+  }
+ },
+ {
+  "id": "p3",
+  "topic": "cesty",
+  "level": 2,
+  "title": "Zrádná oklika",
+  "text": "<p>Bobr plave z rybníka <b>A</b> do rybníka <b>E</b>. Čísla jsou minuty.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "A": [
+      40,
+      130
+     ],
+     "B": [
+      180,
+      40
+     ],
+     "C": [
+      180,
+      220
+     ],
+     "D": [
+      320,
+      40
+     ],
+     "E": [
+      440,
+      130
+     ]
+    },
+    "E": [
+     [
+      "A",
+      "B",
+      4
+     ],
+     [
+      "A",
+      "C",
+      1
+     ],
+     [
+      "C",
+      "B",
+      2
+     ],
+     [
+      "B",
+      "D",
+      1
+     ],
+     [
+      "C",
+      "D",
+      6
+     ],
+     [
+      "D",
+      "E",
+      2
+     ],
+     [
+      "C",
+      "E",
+      9
+     ]
+    ],
+    "start": "A",
+    "w": 480
+   }
+  ],
+  "question": "Kolik minut trvá nejrychlejší cesta z A do E?",
+  "type": "number",
+  "hint": "Ke každému rybníku si napiš, za kolik nejméně minut se tam dá doplavat. Do B je to rychleji oklikou.",
+  "sol": {
+   "a": 6,
+   "steps": [
+    "Do C: 1 minuta.",
+    "Do B: přímo 4, ale přes C jen 1 + 2 = 3.",
+    "Do D: přes B 3 + 1 = 4 (přes C by to bylo 1 + 6 = 7).",
+    "Do E: přes D 4 + 2 = 6 (přímo z C 1 + 9 = 10).",
+    "Nejrychleji: A → C → B → D → E, 6 minut."
+   ],
+   "mistake": "Ve třídě děti přehlédly oklikou přes C. Zapisuj si k rybníkům nejlepší čas a vylepšuj ho.",
+   "why": "Tento postup se jmenuje Dijkstrův algoritmus a používají ho všechny navigace.",
+   "traps": {
+    "7": "A → B → D → E trvá 7. Do B se ale dá doplavat rychleji přes C.",
+    "10": "A → C → E trvá 10. Zkus delší, ale rychlejší cestu."
+   }
+  }
+ },
+ {
+  "id": "p4",
+  "topic": "cesty",
+  "level": 2,
+  "title": "Kdo má začít?",
+  "text": "<p>Bobři si předávají novinu po čarách, každou minutu o jeden skok dál. Novinu má začít šířit jeden bobr tak, aby ji <b>všichni znali co nejdřív</b>.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "A": [
+      40,
+      110
+     ],
+     "B": [
+      150,
+      110
+     ],
+     "C": [
+      260,
+      110
+     ],
+     "D": [
+      370,
+      110
+     ],
+     "E": [
+      480,
+      110
+     ],
+     "F": [
+      260,
+      220
+     ]
+    },
+    "E": [
+     [
+      "A",
+      "B"
+     ],
+     [
+      "B",
+      "C"
+     ],
+     [
+      "C",
+      "D"
+     ],
+     [
+      "D",
+      "E"
+     ],
+     [
+      "C",
+      "F"
+     ]
+    ],
+    "w": 520
+   }
+  ],
+  "question": "Který bobr by měl začít?",
+  "type": "choice",
+  "options": [
+   "bobr B",
+   "bobr C",
+   "bobr D",
+   "bobr F"
+  ],
+  "hint": "U každé možnosti spočítej, kolik minut trvá cesta k nejvzdálenějšímu bobrovi.",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "Začne B: nejdál je E (B → C → D → E), 3 minuty.",
+    "Začne C: A i E jsou 2 skoky daleko, F 1 skok. Hotovo za 2 minuty.",
+    "Začne D: nejdál je A, 3 minuty. Začne F: nejdál jsou A a E, 3 minuty.",
+    "Nejlepší je C, všichni vědí za 2 minuty."
+   ],
+   "mistake": "Nehledej bobra s nejvíc sousedy. Hledej toho, od kterého je to k nejvzdálenějšímu nejblíž.",
+   "why": "Tak se hledá nejlepší místo pro server nebo hasičskou zbrojnici: aby to všude bylo co nejblíž.",
+   "traps": {
+    "A": "Od B trvá cesta k E 3 minuty. Zkus C.",
+    "C": "Od D trvá cesta k A 3 minuty.",
+    "D": "Od F trvá cesta k A i E 3 minuty."
+   }
+  }
+ },
+ {
+  "id": "p5",
+  "topic": "cesty",
+  "level": 3,
+  "title": "Propoj rybníky",
+  "text": "<p>Bobři chtějí propojit všech pět rybníků kanály tak, aby se dalo doplavat odkudkoli kamkoli (klidně oklikou). Čísla říkají, kolik práce stojí vykopat kanál. Nemusí kopat všechny.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "A": [
+      40,
+      120
+     ],
+     "B": [
+      170,
+      40
+     ],
+     "C": [
+      170,
+      200
+     ],
+     "D": [
+      320,
+      40
+     ],
+     "E": [
+      320,
+      200
+     ]
+    },
+    "E": [
+     [
+      "A",
+      "B",
+      2
+     ],
+     [
+      "A",
+      "C",
+      3
+     ],
+     [
+      "B",
+      "C",
+      1
+     ],
+     [
+      "B",
+      "D",
+      4
+     ],
+     [
+      "C",
+      "D",
+      5
+     ],
+     [
+      "C",
+      "E",
+      6
+     ],
+     [
+      "D",
+      "E",
+      2
+     ]
+    ],
+    "w": 380
+   }
+  ],
+  "question": "Kolik práce nejméně stačí?",
+  "type": "number",
+  "hint": "Vybírej kanály od nejlevnějšího. Přeskoč kanál, který spojuje už propojené rybníky.",
+  "sol": {
+   "a": 9,
+   "steps": [
+    "Nejlevnější B–C (1). Propojeno: B, C.",
+    "A–B (2). Propojeno: A, B, C.",
+    "D–E (2). Vznikla druhá skupina D, E.",
+    "A–C (3) přeskočím, A a C už jsou propojené.",
+    "B–D (4) spojí obě skupiny. Teď je propojeno všech pět.",
+    "Celkem 1 + 2 + 2 + 4 = 9."
+   ],
+   "mistake": "Ve třídě děti buď sečetly všechny kanály, nebo vybraly jen pár levných a některý rybník zůstal odpojený.",
+   "why": "Tak se plánují elektrické a internetové sítě, aby byly co nejlevnější.",
+   "traps": {
+    "5": "Nějaký rybník zůstal nepropojený. Zkontroluj, že vede cesta do všech pěti.",
+    "23": "To je součet všech kanálů. Stačí jich méně, odkudkoli se dá jet oklikou."
+   }
+  }
+ },
+ {
+  "id": "p6",
+  "topic": "cesty",
+  "level": 3,
+  "title": "Kolik je cest?",
+  "text": "<p>Bobr jde z levého horního políčka (S) do pravého dolního (H). Smí chodit jen <b>doprava</b> a <b>dolů</b>.</p>",
+  "visual": [
+   "paths",
+   {
+    "rows": 3,
+    "cols": 4
+   }
+  ],
+  "question": "Kolik různých cest existuje?",
+  "type": "number",
+  "hint": "Do každého políčka napiš, kolika cestami se do něj dá dojít: součet cest zleva a shora.",
+  "sol": {
+   "a": 10,
+   "steps": [
+    "Do políček horního řádku a levého sloupce vede jen 1 cesta.",
+    "Druhý řádek: 1, 2, 3, 4 (každé = levé + horní).",
+    "Třetí řádek: 1, 3, 6, 10.",
+    "Do H vede 10 cest."
+   ],
+   "mistake": "Kreslit všechny cesty je zdlouhavé a snadno nějakou vynecháš. Sčítání po políčkách je spolehlivé.",
+   "why": "Skládání velkého výsledku z menších se jmenuje dynamické programování."
+  }
+ },
+ {
+  "id": "p7",
+  "topic": "cesty",
+  "level": 4,
+  "title": "Cesta přes bažinu",
+  "text": "<p>Bobr chce co nejrychleji ze startu <b>S</b> do cíle <b>T</b>. Čísla jsou minuty.</p>",
+  "visual": [
+   "graph",
+   {
+    "P": {
+     "S": [
+      40,
+      130
+     ],
+     "A": [
+      180,
+      40
+     ],
+     "B": [
+      180,
+      220
+     ],
+     "C": [
+      320,
+      40
+     ],
+     "D": [
+      320,
+      220
+     ],
+     "T": [
+      450,
+      130
+     ]
+    },
+    "E": [
+     [
+      "S",
+      "A",
+      3
+     ],
+     [
+      "S",
+      "B",
+      1
+     ],
+     [
+      "B",
+      "A",
+      1
+     ],
+     [
+      "A",
+      "C",
+      4
+     ],
+     [
+      "A",
+      "D",
+      6
+     ],
+     [
+      "B",
+      "D",
+      7
+     ],
+     [
+      "C",
+      "D",
+      1
+     ],
+     [
+      "C",
+      "T",
+      6
+     ],
+     [
+      "D",
+      "T",
+      2
+     ]
+    ],
+    "start": "S",
+    "w": 490
+   }
+  ],
+  "question": "Kolik minut trvá nejrychlejší cesta?",
+  "type": "number",
+  "hint": "Ke každému místu zapisuj nejlepší čas. Do A je to rychleji přes B.",
+  "sol": {
+   "a": 9,
+   "steps": [
+    "Do B: 1. Do A: přes B 1 + 1 = 2 (přímo 3).",
+    "Do C: z A 2 + 4 = 6.",
+    "Do D: z C 6 + 1 = 7 (z A 2 + 6 = 8, z B 1 + 7 = 8).",
+    "Do T: z D 7 + 2 = 9 (z C 6 + 6 = 12).",
+    "Nejrychleji S → B → A → C → D → T, 9 minut."
+   ],
+   "mistake": "Cesta s nejméně úseky není nejrychlejší. Rozhodují minuty.",
+   "why": "Dijkstrův algoritmus: vždy vylepšuj nejlepší známý čas do každého místa.",
+   "traps": {
+    "10": "S → B → D → T nebo S → B → A → D → T trvá 10. Existuje cesta o minutu rychlejší."
+   }
+  }
+ },
+ {
+  "id": "f1",
+  "topic": "hledani",
+  "level": 1,
+  "title": "Hádej od 1 do 8",
+  "text": "<p>Bobřice si myslí číslo od 1 do 8. Bobr se ptá na čísla a ona odpovídá „víc“, „míň“, nebo „uhodl jsi“. Bobr se ptá chytře: vždy na číslo zhruba uprostřed.</p>",
+  "question": "Kolik otázek mu vždycky stačí, aby číslo určitě poznal?",
+  "type": "number",
+  "hint": "Každá odpověď vyřadí asi polovinu čísel. 8 → 4 → …",
+  "sol": {
+   "a": 3,
+   "steps": [
+    "Na začátku je 8 možností.",
+    "Po 1. otázce zbudou nejvýš 4.",
+    "Po 2. otázce nejvýš 2.",
+    "Po 3. otázce zbude 1 číslo. Stačí 3 otázky."
+   ],
+   "mistake": "Ptát se 1, 2, 3, 4… je pomalé: v nejhorším případě 8 otázek.",
+   "why": "Půlení intervalu (binární vyhledávání) je jeden z nejdůležitějších algoritmů.",
+   "traps": {
+    "8": "Tolik otázek potřebuješ, když hádáš po jednom. Ptej se na prostřední číslo."
+   }
+  }
+ },
+ {
+  "id": "f2",
+  "topic": "hledani",
+  "level": 2,
+  "title": "Na co se zeptat?",
+  "text": "<p>Bobřice si myslí číslo od 1 do 16. Bobr se zeptal „Je to 8?“ a ona řekla „<b>víc</b>“.</p>",
+  "question": "Na které číslo se má bobr zeptat teď, aby postupoval nejchytřeji?",
+  "type": "choice",
+  "options": [
+   "9",
+   "12",
+   "16",
+   "4"
+  ],
+  "hint": "Která čísla ještě připadají v úvahu? Které je mezi nimi uprostřed?",
+  "sol": {
+   "a": "B",
+   "steps": [
+    "„Víc než 8“: v úvahu jsou čísla 9 až 16.",
+    "To je 8 čísel. Prostřední je 12 (nebo 13).",
+    "Otázka na 12 vyřadí polovinu: buď 9–11, nebo 13–16."
+   ],
+   "mistake": "Otázka na 9 vyřadí jen jedno číslo. Vždy se ptej uprostřed zbývajících čísel.",
+   "why": "Stejně hledá počítač slovo v seřazeném slovníku.",
+   "traps": {
+    "D": "4 je menší než 8, to už bobr ví, že není.",
+    "A": "9 vyřadí jen jedno číslo. Lepší je zeptat se uprostřed čísel 9 až 16."
+   }
+  }
+ },
+ {
+  "id": "f3",
+  "topic": "hledani",
+  "level": 2,
+  "title": "Od 1 do 100",
+  "text": "<p>Bobřice si myslí číslo od 1 do 100 a odpovídá „víc“, „míň“ nebo „uhodl jsi“.</p>",
+  "question": "Kolik otázek bobrovi vždycky stačí, když se ptá co nejchytřeji?",
+  "type": "number",
+  "hint": "Kolikrát musíš 100 půlit, než zbude jedno číslo?",
+  "sol": {
+   "a": 7,
+   "steps": [
+    "100 → 50 → 25 → 13 → 7 → 4 → 2 → 1.",
+    "To je 7 půlení, tedy 7 otázek."
+   ],
+   "mistake": "Neber každé číslo zvlášť. Počítej, kolikrát půlíš.",
+   "why": "I milion čísel by stačilo prohledat asi na 20 otázek.",
+   "traps": {
+    "50": "Polovina čísel nestačí. Půlí se opakovaně: 100 → 50 → 25 → …"
+   }
+  }
+ },
+ {
+  "id": "f4",
+  "topic": "hledani",
+  "level": 3,
+  "title": "Od 1 do 1000",
+  "text": "<p>Bobřice si myslí číslo od <b>1 do 1000</b>.</p>",
+  "question": "Kolik otázek bobrovi vždycky stačí, když se ptá co nejchytřeji?",
+  "type": "number",
+  "hint": "1000 → 500 → 250 → … Počítej šipky.",
+  "sol": {
+   "a": 10,
+   "steps": [
+    "1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1.",
+    "To je 10 půlení, tedy 10 otázek."
+   ],
+   "mistake": "Ve třídě děti často zkoušely 5, 6, 7, 8, 9… Tipování nepomůže. Napiš si půlení a spočítej šipky.",
+   "why": "2 × 2 × … (10×) = 1024. Proto 10 otázek stačí i na 1000 čísel.",
+   "traps": {
+    "9": "Spočítej šipky znovu: 1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1.",
+    "500": "500 je první otázka, ne počet otázek."
+   }
+  }
+ },
+ {
+  "id": "f5",
+  "topic": "hledani",
+  "level": 3,
+  "title": "Seřazený seznam",
+  "text": "<p>Bobr má seřazený seznam <b>31 jmen</b>. Hledá jedno jméno: otevře vždy prostřední jméno a podle abecedy pozná, jestli hledat v horní, nebo dolní půlce.</p>",
+  "question": "Kolikrát nejvýš musí jméno otevřít?",
+  "type": "number",
+  "hint": "Po otevření prostředního jména zbude v každé půlce 15 jmen. Pak 7, …",
+  "sol": {
+   "a": 5,
+   "steps": [
+    "31 jmen: otevře 16. jméno, zbude 15 na jedné straně.",
+    "15 → otevře prostřední, zbude 7.",
+    "7 → zbude 3.",
+    "3 → zbude 1.",
+    "1 → otevře ho. Celkem 5 otevření."
+   ],
+   "mistake": "Půlení funguje jen v SEŘAZENÉM seznamu. V neseřazeném bys musel(a) projít všechna jména.",
+   "why": "Proto počítače data řadí: v seřazených datech se hledá mnohem rychleji."
+  }
+ },
+ {
+  "id": "f6",
+  "topic": "hledani",
+  "level": 3,
+  "title": "Těžší kláda z devíti",
+  "text": "<p>Bobr má 9 stejně vypadajících klád, jedna je o trochu těžší. Má rovnoramenné váhy bez závaží: na každou misku dá libovolně klád a váhy ukážou, která strana je těžší.</p>",
+  "question": "Kolik vážení mu jistě stačí?",
+  "type": "number",
+  "hint": "Nevažuj po jedné ani na půlky. Co když klády rozdělíš na tři hromádky po třech?",
+  "sol": {
+   "a": 2,
+   "steps": [
+    "Rozdělím klády na 3 trojice. Dvě trojice dám na váhy.",
+    "Když se jedna miska skloní, těžší kláda je v ní. Když jsou v rovnováze, je ve třetí trojici.",
+    "Z vybrané trojice dám po jedné kládě na každou misku. Těžší je ta skloněná, při rovnováze ta třetí.",
+    "Stačí 2 vážení."
+   ],
+   "mistake": "Váhy mají 3 výsledky (vlevo, vpravo, rovnováha). Proto se vyplatí dělit na třetiny, ne na půlky.",
+   "why": "Dobrý algoritmus využije každou informaci, kterou krok přinese.",
+   "traps": {
+    "3": "Na půlky by to byla 3 vážení. Rozděl klády na třetiny.",
+    "4": "Rozděl klády na tři hromádky po třech."
+   }
+  }
+ },
+ {
+  "id": "f7",
+  "topic": "hledani",
+  "level": 4,
+  "title": "Těžší kláda z 27",
+  "text": "<p>Teď má bobr <b>27 klád</b> a jedna je těžší. Váhy jsou stejné jako v minulé úloze.</p>",
+  "question": "Kolik vážení mu jistě stačí?",
+  "type": "number",
+  "hint": "Každé vážení zmenší počet podezřelých klád na třetinu.",
+  "sol": {
+   "a": 3,
+   "steps": [
+    "27 klád rozdělím na 3 hromádky po 9. Jedno vážení → zbude 9 podezřelých.",
+    "9 rozdělím na 3 × 3. Druhé vážení → zbudou 3.",
+    "3 rozdělím na 1 + 1 + 1. Třetí vážení → zbude 1.",
+    "Stačí 3 vážení."
+   ],
+   "mistake": "27 = 3 × 3 × 3. Kolikrát dělíš třemi, tolik vážení potřebuješ.",
+   "why": "Stejný princip jako půlení, jen dělíš na třetiny, protože váhy dávají tři odpovědi.",
+   "traps": {
+    "5": "Na půlky by to bylo 5 vážení. Váhy ale umí rozdělit na třetiny."
+   }
+  }
+ },
+ {
+  "id": "k1",
+  "topic": "pocitac",
+  "level": 1,
+  "title": "Výstupní zařízení",
+  "text": "<p>Vstupní zařízení posílá informace <b>do</b> počítače. Výstupní je <b>z</b> počítače ukazuje nebo přehrává.</p>",
+  "question": "Které zařízení je výstupní?",
+  "type": "choice",
+  "options": [
+   "klávesnice",
+   "mikrofon",
+   "tiskárna",
+   "myš"
+  ],
+  "hint": "Které zařízení ti něco ukáže nebo vytiskne?",
+  "sol": {
+   "a": "C",
+   "steps": [
+    "Klávesnice, mikrofon a myš posílají počítači to, co děláš.",
+    "Tiskárna dostane od počítače dokument a vytiskne ho.",
+    "Výstupní je tiskárna."
+   ],
+   "mistake": "Ptej se: posílám tím něco počítači, nebo mi počítač něco dává?",
+   "why": "Každý počítač má vstupy (čidla, klávesnice) a výstupy (obrazovka, motory)."
+  }
+ },
+ {
+  "id": "k2",
+  "topic": "pocitac",
+  "level": 1,
+  "title": "Co je v souboru?",
+  "text": "<p>Bobr má ve složce čtyři soubory. Konec názvu za tečkou (přípona) prozrazuje, co v souboru je.</p>",
+  "question": "Ve kterém souboru je nejspíš hudba?",
+  "type": "choice",
+  "options": [
+   "foto.jpg",
+   "pisen.mp3",
+   "ukol.docx",
+   "hra.exe"
+  ],
+  "hint": "Která přípona patří zvuku?",
+  "sol": {
+   "a": "B",
+   "steps": [
+    ".jpg je obrázek nebo fotka.",
+    ".mp3 je zvuk, hudba.",
+    ".docx je textový dokument, .exe je program.",
+    "Hudba je v pisen.mp3."
+   ],
+   "mistake": "Soubory .exe od neznámých lidí neotvírej. Jsou to programy a mohou obsahovat virus.",
+   "why": "Podle přípony počítač pozná, kterým programem soubor otevřít."
+  }
+ },
+ {
+  "id": "k3",
+  "topic": "pocitac",
+  "level": 2,
+  "title": "Vstupní zařízení",
+  "text": "<p><b>klávesnice, monitor, skener, sluchátka, myš, projektor, webkamera</b></p>",
+  "question": "Kolik z těchto zařízení je vstupních?",
+  "type": "number",
+  "hint": "U každého se zeptej: posílám tím něco do počítače?",
+  "sol": {
+   "a": 4,
+   "steps": [
+    "Vstupní: klávesnice (píšu), skener (načte papír), myš (klikám), webkamera (natáčí mě).",
+    "Výstupní: monitor, sluchátka, projektor.",
+    "Vstupních je 4."
+   ],
+   "mistake": "Skener vypadá jako tiskárna, ale papír do počítače NAČÍTÁ. Je vstupní.",
+   "why": "Rozdělit zařízení podle směru informací pomáhá pochopit, jak počítač funguje.",
+   "traps": {
+    "3": "Zapomněl(a) jsi na skener? Ten papír do počítače načítá, je vstupní.",
+    "5": "Sluchátka a projektor jsou výstupní, jen ukazují nebo přehrávají."
+   }
+  }
+ },
+ {
+  "id": "k4",
+  "topic": "pocitac",
+  "level": 2,
+  "title": "Kopírovat a vložit",
+  "text": "<p>V editoru je napsáno <b class=\"big\">LES</b>. Bobr označí <b>LE</b>, dá <b>Kopírovat</b> (Ctrl+C), klikne na konec textu a dá <b>Vložit</b> (Ctrl+V).</p>",
+  "question": "Co je teď v editoru?",
+  "type": "text",
+  "hint": "Kopírovat původní text nechá na místě. Vložit přidá kopii.",
+  "sol": {
+   "a": [
+    "LESLE"
+   ],
+   "steps": [
+    "Kopírovat si LE zapamatuje a text se nezmění: LES.",
+    "Vložit na konec přidá LE.",
+    "Výsledek: LESLE."
+   ],
+   "mistake": "Kopírovat nic nemaže. Maže jen Vyjmout.",
+   "why": "Paměti pro kopírovaný text se říká schránka."
+  }
+ },
+ {
+  "id": "k5",
+  "topic": "pocitac",
+  "level": 3,
+  "title": "Vyjmout a vložit",
+  "text": "<p>V editoru je napsáno <b class=\"big\">KOLO</b>. Bobr:</p><ol><li>označí <b>KO</b> na začátku a dá <b>Vyjmout</b> (Ctrl+X)</li><li>klikne na konec textu a dá <b>Vložit</b> (Ctrl+V)</li><li>dá ještě jednou <b>Vložit</b></li></ol>",
+  "question": "Co je teď v editoru?",
+  "type": "text",
+  "hint": "Vyjmout text smaže a uloží do schránky. Co zbude po kroku 1?",
+  "sol": {
+   "a": [
+    "LOKOKO"
+   ],
+   "steps": [
+    "Vyjmout smaže KO a uloží ho do schránky. V editoru zbude LO.",
+    "Vložit na konec: LOKO.",
+    "Ve schránce je pořád KO. Další Vložit: LOKOKO."
+   ],
+   "mistake": "Vyjmout = smazat + zapamatovat. Vložit schránku nevyprázdní, jde vložit vícekrát.",
+   "why": "Schránka si pamatuje vždy to poslední, co jsi zkopíroval(a) nebo vyjmul(a).",
+   "traps": {
+    "KOLOKOKO": "Vyjmout text na původním místě smaže.",
+    "LOKO": "Vložit se dalo dvakrát, schránka se po vložení nevyprázdní."
+   }
+  }
+ },
+ {
+  "id": "k6",
+  "topic": "pocitac",
+  "level": 3,
+  "title": "Zpět a znovu",
+  "text": "<p>V prázdném editoru bobr napíše <b>A</b>, <b>B</b>, <b>C</b> (každé písmeno je jeden krok). Pak:</p><ol><li><b>Zpět</b> (Ctrl+Z)</li><li><b>Zpět</b></li><li><b>Znovu</b> (Ctrl+Y)</li></ol>",
+  "question": "Co je v editoru?",
+  "type": "text",
+  "hint": "Zpět vrátí poslední krok. Znovu zopakuje krok, který jsi naposledy vrátil(a).",
+  "sol": {
+   "a": [
+    "AB"
+   ],
+   "steps": [
+    "Po psaní: ABC.",
+    "Zpět vrátí C: AB.",
+    "Zpět vrátí B: A.",
+    "Znovu zopakuje poslední vrácený krok, tedy B: AB."
+   ],
+   "mistake": "Znovu vrací zpátky jen to, co jsi vrátil(a) tlačítkem Zpět, a to od posledního.",
+   "why": "Editor si vrácené kroky skládá na hromadu. Znovu bere shora.",
+   "traps": {
+    "ABC": "Znovu vrátí jen jeden krok, ten naposledy vrácený (B).",
+    "AC": "Naposledy jsi vrátil(a) B, takže Znovu vrátí B, ne C."
+   }
+  }
+ },
+ {
+  "id": "k7",
+  "topic": "pocitac",
+  "level": 4,
+  "title": "Zpět po novém psaní",
+  "text": "<p>V prázdném editoru bobr napíše <b>K</b>, <b>O</b>, <b>L</b>. Pak:</p><ol><li><b>Zpět</b></li><li><b>Zpět</b></li><li>napíše <b>A</b></li><li><b>Znovu</b></li><li><b>Zpět</b></li></ol>",
+  "question": "Co je v editoru?",
+  "type": "text",
+  "hint": "Pozor na krok 3: když po vracení napíšeš něco nového, editor zapomene, co šlo vrátit Znovu.",
+  "sol": {
+   "a": [
+    "K"
+   ],
+   "steps": [
+    "Po psaní: KOL. Zpět → KO. Zpět → K.",
+    "Napíše A: KA. Editor zapomene vrácené O a L.",
+    "Znovu nemá co zopakovat, nic se nestane.",
+    "Zpět vrátí poslední skutečnou změnu, napsané A: K."
+   ],
+   "mistake": "Nejčastější chyba ve třídě byla odpověď s A na konci. Zpět nevrací Znovu, které nic neudělalo. Vrací poslední skutečnou změnu.",
+   "why": "Seznam kroků pro Znovu se po nové změně maže. Jinak by editor nevěděl, co vrátit.",
+   "traps": {
+    "KA": "Znovu nic neudělalo, takže ho Zpět nevrací. Zpět vrátí poslední skutečnou změnu, napsané A.",
+    "KOA": "Po napsání A editor zapomněl vrácené O. Znovu ho už nevrátí.",
+    "KO": "Po napsání A editor zapomněl vrácené O a L."
+   }
+  }
+ }
+]

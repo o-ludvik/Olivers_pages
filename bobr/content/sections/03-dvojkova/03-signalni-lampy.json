@@ -1,0 +1,39 @@
+{
+  "title": "Signální lampy",
+  "level": 2,
+  "text": [
+    "Lampy mají hodnoty <b>8, 4, 2, 1</b>. Tentokrát hodnoty napsané nejsou."
+  ],
+  "visual": {
+    "type": "lamps",
+    "data": {
+      "rows": [
+        [
+          1,
+          1,
+          0,
+          1
+        ]
+      ]
+    }
+  },
+  "question": "Jaké číslo lampy ukazují?",
+  "answer": {
+    "type": "number",
+    "correct": 13
+  },
+  "hint": "Nad každou lampu si napiš hodnotu: 8, 4, 2, 1. Pak sečti ty, které svítí.",
+  "solution": {
+    "steps": [
+      "Napíšu si hodnoty: 8, 4, 2, 1.",
+      "Svítí 1., 2. a 4. lampa: 8, 4 a 1.",
+      "8 + 4 + 1 = 13."
+    ],
+    "mistake": "Zkoušet čísla po jednom (1, 2, 3, 4…) je zbytečně pomalé. Stačí si napsat hodnoty lamp a sečíst je.",
+    "why": "Dvojková soustava: každá další lampa vlevo má dvojnásobnou hodnotu.",
+    "traps": {
+      "3": "Svítí 3 lampy, ale nepočítáš lampy. Sečti jejich hodnoty 8, 4 a 1.",
+      "11": "Sečetl(a) jsi 8 + 2 + 1. Podívej se znovu, která lampa nesvítí."
+    }
+  }
+}

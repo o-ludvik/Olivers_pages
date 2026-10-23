@@ -1,0 +1,30 @@
+{
+  "title": "Cyklus v cyklu",
+  "level": 2,
+  "text": [
+    "Bobři tančí podle programu:",
+    {
+      "code": "opakuj 3×:\n    dupni\n    opakuj 2×:\n        tleskni"
+    }
+  ],
+  "question": "Kolik zvuků (dupnutí a tlesknutí dohromady) bobři udělají?",
+  "answer": {
+    "type": "number",
+    "correct": 9
+  },
+  "hint": "Kolik zvuků je v jednom velkém kole? Pak to vynásob počtem velkých kol.",
+  "solution": {
+    "steps": [
+      "Jedno velké kolo: 1 dupnutí a vnitřní cyklus 2 tlesknutí. To jsou 3 zvuky.",
+      "Velká kola jsou 3.",
+      "3 × 3 = 9 zvuků (3 dupnutí a 6 tlesknutí)."
+    ],
+    "mistake": "Vnitřní cyklus se provede znovu v každém velkém kole.",
+    "why": "Cyklus uvnitř cyklu se v programech používá třeba na kreslení mřížek: řádky × sloupce.",
+    "traps": {
+      "5": "3 + 2 nestačí. Vnitřní cyklus proběhne v každém ze 3 kol.",
+      "6": "Šest je jen počet tlesknutí. Připočti i 3 dupnutí.",
+      "7": "Dupnutí je v každém kole jedno, celkem 3. Tlesknutí 6."
+    }
+  }
+}

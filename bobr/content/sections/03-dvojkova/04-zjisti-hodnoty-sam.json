@@ -1,0 +1,54 @@
+{
+  "title": "Zjisti hodnoty sám",
+  "level": 2,
+  "text": [
+    "Bobři ukázali dvě čísla. Z nich zjisti, jakou hodnotu má která lampa."
+  ],
+  "visual": {
+    "type": "lamps",
+    "data": {
+      "rows": [
+        [
+          0,
+          0,
+          1,
+          1,
+          "= 3"
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          "= 8"
+        ],
+        [
+          0,
+          1,
+          1,
+          0,
+          "= ?"
+        ]
+      ]
+    }
+  },
+  "question": "Jaké číslo ukazuje poslední řádek?",
+  "answer": {
+    "type": "number",
+    "correct": 6
+  },
+  "hint": "Z druhého řádku víš hodnotu první lampy. Z prvního řádku poznáš, že dvě pravé lampy dají dohromady 3.",
+  "solution": {
+    "steps": [
+      "Řádek 2: svítí jen 1. lampa a ukazuje 8. První lampa má hodnotu 8.",
+      "Řádek 1: svítí 3. a 4. lampa a ukazují 3. To je 2 + 1.",
+      "Hodnoty se zleva zdvojují: 8, 4, 2, 1.",
+      "Řádek 3: svítí 2. a 3. lampa, tedy 4 + 2 = 6."
+    ],
+    "mistake": "Neodhaduj. Hodnoty lamp jdou vyčíst z příkladů.",
+    "why": "Najít pravidlo z příkladů je stejné, jako když počítač „luští“ neznámý formát dat.",
+    "traps": {
+      "2": "Dvě svítící lampy ještě neznamenají číslo 2. Sečti jejich hodnoty."
+    }
+  }
+}

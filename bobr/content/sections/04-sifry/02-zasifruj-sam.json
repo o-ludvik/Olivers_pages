@@ -1,0 +1,32 @@
+{
+  "title": "Zašifruj sám",
+  "level": 1,
+  "text": [
+    "Zašifruj slovo <b class=\"big\">VODA</b>. Každé písmeno posuň o jedno místo <b>dopředu</b> (A → B)."
+  ],
+  "visual": {
+    "type": "alphabet"
+  },
+  "question": "Jak bude vypadat zašifrované slovo?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "WPEB"
+    ]
+  },
+  "hint": "Za V je W. Pokračuj s dalšími písmeny.",
+  "solution": {
+    "steps": [
+      "V → W.",
+      "O → P.",
+      "D → E.",
+      "A → B.",
+      "Šifra: WPEB."
+    ],
+    "mistake": "Používáme abecedu bez háčků a čárek, i s písmeny Q, W, X.",
+    "why": "Šifrování je pravidlo. Kdo zná pravidlo (klíč), umí zprávu i rozluštit.",
+    "traps": {
+      "UNCZ": "Posunul(a) jsi písmena zpátky. Při šifrování se tady posouvá dopředu."
+    }
+  }
+}

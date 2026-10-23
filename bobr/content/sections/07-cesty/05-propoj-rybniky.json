@@ -1,0 +1,94 @@
+{
+  "title": "Propoj rybníky",
+  "level": 3,
+  "text": [
+    "Bobři chtějí propojit všech pět rybníků kanály tak, aby se dalo doplavat odkudkoli kamkoli (klidně oklikou). Čísla říkají, kolik práce stojí vykopat kanál. Nemusí kopat všechny."
+  ],
+  "visual": {
+    "type": "graph",
+    "data": {
+      "P": {
+        "A": [
+          40,
+          120
+        ],
+        "B": [
+          170,
+          40
+        ],
+        "C": [
+          170,
+          200
+        ],
+        "D": [
+          320,
+          40
+        ],
+        "E": [
+          320,
+          200
+        ]
+      },
+      "E": [
+        [
+          "A",
+          "B",
+          2
+        ],
+        [
+          "A",
+          "C",
+          3
+        ],
+        [
+          "B",
+          "C",
+          1
+        ],
+        [
+          "B",
+          "D",
+          4
+        ],
+        [
+          "C",
+          "D",
+          5
+        ],
+        [
+          "C",
+          "E",
+          6
+        ],
+        [
+          "D",
+          "E",
+          2
+        ]
+      ],
+      "w": 380
+    }
+  },
+  "question": "Kolik práce nejméně stačí?",
+  "answer": {
+    "type": "number",
+    "correct": 9
+  },
+  "hint": "Vybírej kanály od nejlevnějšího. Přeskoč kanál, který spojuje už propojené rybníky.",
+  "solution": {
+    "steps": [
+      "Nejlevnější B–C (1). Propojeno: B, C.",
+      "A–B (2). Propojeno: A, B, C.",
+      "D–E (2). Vznikla druhá skupina D, E.",
+      "A–C (3) přeskočím, A a C už jsou propojené.",
+      "B–D (4) spojí obě skupiny. Teď je propojeno všech pět.",
+      "Celkem 1 + 2 + 2 + 4 = 9."
+    ],
+    "mistake": "Častá chyba: sečíst všechny kanály, nebo vybrat jen pár levných, takže některý rybník zůstane odpojený.",
+    "why": "Tak se plánují elektrické a internetové sítě, aby byly co nejlevnější.",
+    "traps": {
+      "5": "Nějaký rybník zůstal nepropojený. Zkontroluj, že vede cesta do všech pěti.",
+      "23": "To je součet všech kanálů. Stačí jich méně, odkudkoli se dá jet oklikou."
+    }
+  }
+}

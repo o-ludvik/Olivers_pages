@@ -1,0 +1,44 @@
+{
+  "title": "Dvě rozsvícené",
+  "level": 1,
+  "text": [
+    "Lampy mají hodnoty <b>8, 4, 2, 1</b> (zleva doprava). Sečti hodnoty rozsvícených lamp."
+  ],
+  "visual": {
+    "type": "lamps",
+    "data": {
+      "values": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "rows": [
+        [
+          1,
+          0,
+          1,
+          0
+        ]
+      ]
+    }
+  },
+  "question": "Jaké číslo lampy ukazují?",
+  "answer": {
+    "type": "number",
+    "correct": 10
+  },
+  "hint": "Které dvě lampy svítí? Sečti jejich hodnoty.",
+  "solution": {
+    "steps": [
+      "Svítí lampa s hodnotou 8.",
+      "Svítí lampa s hodnotou 2.",
+      "8 + 2 = 10."
+    ],
+    "mistake": "Hodnoty patří k místu lampy. Lampa úplně vlevo je vždy 8.",
+    "why": "Zápis ● ○ ● ○ je vlastně dvojkové číslo 1010, tedy deset.",
+    "traps": {
+      "2": "Svítí dvě lampy, ale sčítají se jejich hodnoty (8 a 2)."
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "title": "Kdo mluví pravdu?",
+  "level": 3,
+  "text": [
+    "Každý bobr buď vždy mluví pravdu, nebo vždy lže.",
+    "<b>Ali:</b> „Bára lže.“<br><b>Bára:</b> „Cyril lže.“<br><b>Cyril:</b> „Ali i Bára lžou.“"
+  ],
+  "question": "Kdo mluví pravdu?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "jen Ali",
+      "jen Bára",
+      "jen Cyril",
+      "Ali a Cyril"
+    ],
+    "correct": "B"
+  },
+  "hint": "Začni Cyrilem. Co by platilo, kdyby mluvil pravdu?",
+  "solution": {
+    "steps": [
+      "Kdyby Cyril mluvil pravdu, Ali i Bára lžou.",
+      "Ali by lhal, takže by platilo opak jeho věty: Bára mluví pravdu. To je spor. Cyril tedy lže.",
+      "Bára říká „Cyril lže“, a to je pravda. Bára mluví pravdu.",
+      "Ali říká „Bára lže“, a to není pravda. Ali lže.",
+      "Pravdu mluví jen Bára."
+    ],
+    "mistake": "Když předpoklad vede ke sporu, je špatně. To je taky užitečná informace.",
+    "why": "Logické výroky („pravda“, „nepravda“) jsou základem všech počítačů.",
+    "traps": {
+      "C": "Kdyby Cyril mluvil pravdu, Ali by lhal, a pak by Bára mluvila pravdu. To odporuje Cyrilově větě."
+    }
+  }
+}

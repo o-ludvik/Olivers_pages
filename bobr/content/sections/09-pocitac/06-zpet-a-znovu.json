@@ -1,0 +1,37 @@
+{
+  "title": "Zpět a znovu",
+  "level": 3,
+  "text": [
+    "V prázdném editoru bobr napíše <b>A</b>, <b>B</b>, <b>C</b> (každé písmeno je jeden krok). Pak:",
+    {
+      "list": [
+        "<b>Zpět</b> (Ctrl+Z)",
+        "<b>Zpět</b>",
+        "<b>Znovu</b> (Ctrl+Y)"
+      ],
+      "ordered": true
+    }
+  ],
+  "question": "Co je v editoru?",
+  "answer": {
+    "type": "text",
+    "correct": [
+      "AB"
+    ]
+  },
+  "hint": "Zpět vrátí poslední krok. Znovu zopakuje krok, který jsi naposledy vrátil(a).",
+  "solution": {
+    "steps": [
+      "Po psaní: ABC.",
+      "Zpět vrátí C: AB.",
+      "Zpět vrátí B: A.",
+      "Znovu zopakuje poslední vrácený krok, tedy B: AB."
+    ],
+    "mistake": "Znovu vrací zpátky jen to, co jsi vrátil(a) tlačítkem Zpět, a to od posledního.",
+    "why": "Editor si vrácené kroky skládá na hromadu. Znovu bere shora.",
+    "traps": {
+      "ABC": "Znovu vrátí jen jeden krok, ten naposledy vrácený (B).",
+      "AC": "Naposledy jsi vrátil(a) B, takže Znovu vrátí B, ne C."
+    }
+  }
+}

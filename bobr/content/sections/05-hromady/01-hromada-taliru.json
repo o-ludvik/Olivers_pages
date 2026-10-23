@@ -1,0 +1,36 @@
+{
+  "title": "Hromada talířů",
+  "level": 1,
+  "text": [
+    "Bobr skládá talíře na sebe: nejdřív <b>A</b>, pak <b>B</b>, pak <b>C</b>. Talíř může vzít jen <b>shora</b>."
+  ],
+  "visual": {
+    "type": "stack",
+    "data": [
+      "A",
+      "B",
+      "C"
+    ]
+  },
+  "question": "Který talíř vezme jako první?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "kterýkoli"
+    ],
+    "correct": "C"
+  },
+  "hint": "Který talíř leží nahoře?",
+  "solution": {
+    "steps": [
+      "A leží dole, na něm B, nahoře C.",
+      "Brát se dá jen shora.",
+      "První vezme C."
+    ],
+    "mistake": "Co přišlo POSLEDNÍ, odchází PRVNÍ.",
+    "why": "Takové hromadě se v informatice říká zásobník."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "title": "Pět lamp",
+  "level": 3,
+  "text": [
+    "Bobři přidali pátou lampu. Hodnoty jsou zleva <b>16, 8, 4, 2, 1</b>."
+  ],
+  "question": "Jak ukážou číslo 27?",
+  "answer": {
+    "type": "choice",
+    "options": [
+      "● ○ ● ● ●",
+      "● ● ○ ● ●",
+      "● ● ● ○ ●",
+      "○ ● ● ● ●"
+    ],
+    "correct": "B"
+  },
+  "hint": "27 − 16 = ? Pokračuj s dalšími lampami od největší.",
+  "solution": {
+    "steps": [
+      "16 se vejde do 27. Rozsvítím. Zbývá 11.",
+      "8 se vejde do 11. Rozsvítím. Zbývá 3.",
+      "4 se do 3 nevejde. Zhasnuto.",
+      "2 se vejde. Zbývá 1. Pak 1 se vejde. Zbývá 0.",
+      "Výsledek: ● ● ○ ● ●."
+    ],
+    "mistake": "Vypadá to těžce, ale postup je stejný jako u čtyř lamp, jen začínáš od 16.",
+    "why": "S každou další lampou se dá ukázat dvakrát víc čísel.",
+    "traps": {
+      "A": "To je 16 + 4 + 2 + 1 = 23.",
+      "C": "To je 16 + 8 + 4 + 1 = 29.",
+      "D": "To je 8 + 4 + 2 + 1 = 15."
+    }
+  }
+}

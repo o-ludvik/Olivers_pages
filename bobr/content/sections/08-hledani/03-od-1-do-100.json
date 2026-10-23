@@ -1,0 +1,24 @@
+{
+  "title": "Od 1 do 100",
+  "level": 2,
+  "text": [
+    "Bobřice si myslí číslo od 1 do 100 a odpovídá „víc“, „míň“ nebo „uhodl jsi“."
+  ],
+  "question": "Kolik otázek bobrovi vždycky stačí, když se ptá co nejchytřeji?",
+  "answer": {
+    "type": "number",
+    "correct": 7
+  },
+  "hint": "Kolikrát musíš 100 půlit, než zbude jedno číslo?",
+  "solution": {
+    "steps": [
+      "100 → 50 → 25 → 13 → 7 → 4 → 2 → 1.",
+      "To je 7 půlení, tedy 7 otázek."
+    ],
+    "mistake": "Neber každé číslo zvlášť. Počítej, kolikrát půlíš.",
+    "why": "I milion čísel by stačilo prohledat asi na 20 otázek.",
+    "traps": {
+      "50": "Polovina čísel nestačí. Půlí se opakovaně: 100 → 50 → 25 → …"
+    }
+  }
+}
