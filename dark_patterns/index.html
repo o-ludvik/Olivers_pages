@@ -524,8 +524,9 @@ function render(){
   if(S.overlay==="upgrade") html+=`<div class="ov"><div class="sheet"><h3>Premium Family</h3><p>Až 6 účtů za 289 Kč/měs. Pozvi rodinu a ušetři! Tarif změníme hned po potvrzení.</p><button class="btn" data-act="upgradeyes">Potvrdit změnu</button><button class="btn ghost" data-act="close">Teď ne</button></div></div>`;
   if(S.toast) html+=`<div class="toast">${S.toast}</div>`;
   if(S.screen==="win") html=winView();
-  phone.innerHTML=html;
-  const sc=phone.querySelector(".screen"); if(sc) sc.scrollTop=0;
+  const same=phone.dataset.scr===S.screen, keep=phone.querySelector(".screen")?.scrollTop||0;
+  phone.innerHTML=html; phone.dataset.scr=S.screen;
+  const sc=phone.querySelector(".screen"); if(sc){sc.scrollTop=same?keep:0; if(same) sc.style.animation="none"}
   if(S.screen==="nag2"){let left=299;const el=document.getElementById("cd");cdTimer=setInterval(()=>{left=left>0?left-1:299;el.textContent=fmt(left*1000)},1000)}
   if(S.overlay==="ad"){let n=5;const x=document.getElementById("adx");clearInterval(adTimer);adTimer=setInterval(()=>{n--;if(n<=0){clearInterval(adTimer);x.disabled=false;x.textContent="✕ Zavřít";x.dataset.act="adclose"}else x.textContent="Zavřít za "+n},1000)}
 }
@@ -592,7 +593,7 @@ const Z={};
 function zFresh(keepClock){
   const keep=keepClock?{clicks:Z.clicks,start:Z.start,caught:Z.caught}:{clicks:0,start:null,caught:0};
   Object.assign(Z,{screen:"home",sort:"rec",cart:[],socksOffered:false,ship:"express",ins:true,war:true,pay:"coins",coins:0,packs:0,
-    detail:null,organic:true,size:"M",overlay:null,toast:null,end:null,lastSpent:0},keep);
+    detail:null,organic:true,size:"M",overlay:null,toast:null,end:null,lastSpent:0,scrollTop:true},keep);
 }
 zFresh();
 const shop=document.getElementById("shop");
@@ -700,8 +701,9 @@ function zRender(){
     ${PACKS.map(([c,p,tag],i)=>`<button class="z-pack ${tag?"best":""}" data-z="buy" data-i="${i}"><span><b>${c.toLocaleString("cs-CZ")} 🪙</b>${tag?`<br><small style="color:#b7791f">${tag}</small>`:""}</span><span>${kc(p)}</span></button>`).join("")}
     <button class="z-btn" style="background:none;color:var(--z-mute);font-weight:500;font-size:13px" data-z="closeov">Zaplatit raději jinak</button></div></div>`}
   if(Z.toast) html+=`<div class="z-toast">${Z.toast}</div>`;
+  const keep=shop.querySelector(".screen")?.scrollTop||0;
   shop.innerHTML=html;
-  const sc=shop.querySelector(".screen"); if(sc&&Z.scrollTop) sc.scrollTop=0;
+  const sc=shop.querySelector(".screen"); if(sc){sc.scrollTop=Z.scrollTop?0:keep; if(!Z.scrollTop) sc.style.animation="none"} Z.scrollTop=false;
   const s=document.getElementById("zsale"); if(s){let l=119;zSaleT=setInterval(()=>{l=l>0?l-1:119;s.textContent=fmt(l*1000)},1000)}
   const c=document.getElementById("zcd"); if(c){let l=299;zCdT=setInterval(()=>{l=l>0?l-1:299;c.textContent=fmt(l*1000)},1000)}
 }
@@ -754,7 +756,7 @@ zRender();
 const R={};
 function rFresh(keepClock){
   const keep=keepClock?{clicks:R.clicks,start:R.start,caught:R.caught}:{clicks:0,start:null,caught:0};
-  Object.assign(R,{screen:"cookies",overlay:null,toast:null,end:null,
+  Object.assign(R,{screen:"cookies",overlay:null,toast:null,end:null,scrollTop:true,
     t:{cookies:false,social:false,news:false,partners:false,location:false,pro:false,contacts:false},
     ck:{analytics:true,ads:true,partners:true},
     f:{news:true,partners:true,noloc:false,terms:false,email:"",pass:"",phone:""}},keep);
@@ -850,8 +852,9 @@ function rRender(){
     <button class="r-btn pop" data-r="proyes">Ano, chci lepší známky!</button>
     <button class="r-btn faint" data-r="prono">Ne, radši budu mít horší známky</button></div></div>`;
   if(R.toast) html+=`<div class="r-toast">${R.toast}</div>`;
+  const keep=reg.querySelector(".screen")?.scrollTop||0;
   reg.innerHTML=html;
-  const sc=reg.querySelector(".screen"); if(sc&&R.scrollTop) sc.scrollTop=0;
+  const sc=reg.querySelector(".screen"); if(sc){sc.scrollTop=R.scrollTop?0:keep; if(!R.scrollTop) sc.style.animation="none"} R.scrollTop=false;
 }
 function rToast(m){R.toast=m;setTimeout(()=>{if(R.toast===m){R.toast=null;if(R.screen!=="win")rRender()}},2600)}
 function rGo(s){R.screen=s;R.overlay=null;R.scrollTop=true}
@@ -1053,7 +1056,7 @@ function showView(){
   if(v==="hub")renderHub();
   window.scrollTo(0,0);
 }
-function startTonik(){clearInterval(adTimer);fresh();render();hud();location.hash="#tonik";showView()}
+function startTonik(){clearInterval(adTimer);fresh();delete phone.dataset.scr;render();hud();location.hash="#tonik";showView()}
 function startReg(){rFresh();rRender();rHud();location.hash="#reg";showView()}
 function regWon(){H.done[3]=true;H.stats[3]={time:fmt(R.end-R.start),clicks:R.clicks,caught:R.caught};hSave()}
 function startShop(){zFresh();zRender();zHud();location.hash="#shop";showView()}
