@@ -1,0 +1,1070 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stanoviště A (verze 2)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Rubik:ital,wght@0,400;0,500;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+html,body{margin:0}
+
+/* Layout: workshop HUD bar on top, a phone-sized fictional music app below; single deliberate look (app is always light, stage is dark slate). */
+:root{
+  --stage:#1d2230; --stage-ink:#e9ecf4; --stage-mute:#9aa3b8;
+  --app:#ffffff; --ink:#15161c; --mute:#6c7080; --faint:#b9bcc6; --line:#ececf1; --soft:#f5f5f8;
+  --brand:#e3346f; --brand-ink:#ffffff; --gold:#f4b73f; --ok:#1f9d6a; --bad:#d23c3c;
+  --f-app:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--stage);color:var(--stage-ink);font-family:var(--f-app);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:center}
+*{box-sizing:border-box}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible,[data-go]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.hud{width:100%;max-width:400px;display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12px;color:var(--stage-mute)}
+.hud b{color:var(--stage-ink);font-weight:700}
+.hud .task{flex:1;min-width:0}
+.hud .task span{display:block;color:var(--gold);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.hud .stats{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hud .reset{background:none;border:1px solid #3a4154;color:var(--stage-mute);border-radius:6px;padding:4px 7px;font-family:var(--f-mono);font-size:11px}
+
+.phone{width:100%;max-width:400px;flex:1;min-height:0;max-height:820px;background:var(--app);color:var(--ink);border-radius:28px;overflow:hidden;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 8px}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.03em;display:flex;align-items:center;gap:6px}
+.logo i{width:22px;height:22px;border-radius:50%;background:conic-gradient(from 200deg,var(--brand),#ff8a5b,var(--brand));display:inline-block}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6b7cff,#b56bff);color:#fff;border:0;font-weight:700;font-size:14px}
+.pad{padding:6px 18px 24px}
+h1{font-size:24px;letter-spacing:-.02em;margin:6px 0 14px;text-wrap:balance}
+h2{font-size:17px;margin:18px 0 10px}
+p{line-height:1.5;margin:0 0 12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chip{border:0;background:var(--soft);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;white-space:nowrap;color:var(--ink)}
+.chip.on{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:8px;overflow:hidden;font-size:13px;font-weight:700;min-height:52px;border:0;text-align:left;color:var(--ink);padding:0}
+.tile .cv{width:52px;height:52px;flex:none}
+.covers{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+.album{flex:none;width:130px;font-size:12px;color:var(--mute);border:0;background:none;text-align:left;padding:0}
+.album .cv{width:130px;height:130px;border-radius:8px;margin-bottom:6px;display:flex;align-items:flex-end;padding:8px;color:#fff;font-weight:800;font-size:15px;line-height:1.1}
+.album b{display:block;color:var(--ink);font-size:13px}
+.c1{background:linear-gradient(135deg,#ff7a59,#e3346f)}.c2{background:linear-gradient(135deg,#2b5876,#4e4376)}.c3{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.c4{background:linear-gradient(135deg,#f7971e,#ffd200)}.c5{background:linear-gradient(135deg,#8e2de2,#4a00e0)}.c6{background:linear-gradient(135deg,#373b44,#4286f4)}
+
+/* disguised ad: looks like a native settings row */
+.native{display:flex;align-items:center;gap:12px;width:100%;background:var(--soft);border:0;border-radius:12px;padding:14px;text-align:left;color:var(--ink);margin:16px 0 4px}
+.native .ic{width:38px;height:38px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800}
+.native b{display:block;font-size:14px}
+.native small{color:var(--mute);font-size:12px}
+.native .chev{margin-left:auto;color:var(--mute);font-size:20px}
+.spon{font-size:9px;color:#d3d5dc;text-align:right;margin:0 0 6px}
+
+.nav{display:flex;border-top:1px solid var(--line);background:#fff}
+.nav button{flex:1;border:0;background:none;padding:10px 0 12px;font-size:11px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button.on{color:var(--ink);font-weight:700}
+.nav .ico{width:20px;height:20px;border-radius:5px;border:2px solid currentColor}
+.nav .ico.s{border-radius:50%}
+.player{display:flex;align-items:center;gap:10px;margin:0 8px 6px;background:#3a2734;color:#fff;border-radius:10px;padding:8px;font-size:12px}
+.player .cv{width:36px;height:36px;border-radius:6px}
+.player b{display:block;font-size:13px}
+
+.back{border:0;background:none;font-size:15px;font-weight:700;padding:16px 18px 6px;color:var(--ink);display:flex;align-items:center;gap:6px}
+.list{border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:15px 2px;font-size:15px;text-align:left;color:var(--ink)}
+.row small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+.row .chev{margin-left:auto;color:var(--faint);font-size:18px}
+.profile-head{display:flex;align-items:center;gap:14px;margin:6px 0 18px}
+.profile-head .avatar{width:64px;height:64px;font-size:24px}
+.stat{color:var(--mute);font-size:13px}
+
+.plan{border-radius:16px;padding:18px;color:#fff;background:linear-gradient(140deg,#e3346f,#7a2bd8);margin-bottom:16px}
+.plan small{opacity:.85;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.plan h3{margin:4px 0 2px;font-size:22px}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:15px;font-weight:800;font-size:15px;background:var(--brand);color:var(--brand-ink);text-align:center}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ghost{background:none;color:var(--mute);font-weight:500;font-size:13px;padding:10px}
+.btn.faint{background:#fafafb;color:#c9cbd2;border:1px solid #f0f0f3;font-weight:500}
+.btn + .btn{margin-top:8px}
+.perks{list-style:none;padding:0;margin:0 0 18px}
+.perks li{padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;gap:10px}
+.perks li::before{content:"✓";color:var(--brand);font-weight:800}
+.tiny{font-size:11px;color:#c3c5cd;text-align:center;margin-top:26px}
+.tiny button{border:0;background:none;color:#c3c5cd;font-size:11px;text-decoration:none;padding:4px}
+.fine{font-size:11px;color:var(--faint);line-height:1.45}
+
+.hero-ill{height:150px;border-radius:16px;margin:4px 0 16px;display:grid;place-items:center;font-size:54px;color:#fff;font-weight:800}
+input[type=tel],input[type=email]{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:14px;font:inherit;font-size:16px;margin:4px 0 12px;color:var(--ink);background:#fff}
+label.lb{font-size:13px;font-weight:700}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--mute);margin:4px 0 16px}
+.check input{margin-top:2px;accent-color:var(--brand)}
+.timer{font-family:var(--f-mono);font-weight:700;background:#fff1f5;color:var(--brand);border-radius:8px;padding:8px 10px;text-align:center;margin-bottom:14px;font-variant-numeric:tabular-nums}
+.loss{list-style:none;padding:0;margin:0 0 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loss li{background:var(--soft);border-radius:12px;padding:12px;font-size:12px;color:var(--mute)}
+.loss li b{display:block;font-size:20px;color:var(--ink)}
+.q{font-size:19px;font-weight:800;line-height:1.35;margin:8px 0 22px;text-wrap:balance}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.split .btn + .btn{margin-top:0}
+
+/* overlays */
+.ov{position:absolute;inset:0;background:rgba(15,16,22,.55);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:22px 20px 22px}
+.sheet h3{margin:0 0 8px;font-size:20px}
+.adfull{position:absolute;inset:0;z-index:6;background:linear-gradient(160deg,#0f3d3e,#0b1f33);color:#fff;display:flex;flex-direction:column;padding:22px}
+.adfull .x{align-self:flex-end;border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-family:var(--f-mono)}
+.adfull .x[disabled]{opacity:.6;cursor:default}
+.adfull .big{margin:auto 0;font-size:34px;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.adfull .big em{font-style:normal;color:#5ef2c2}
+.toast{position:absolute;left:14px;right:14px;bottom:76px;background:var(--ink);color:#fff;border-radius:12px;padding:12px 14px;font-size:13px;z-index:7;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+/* win */
+.win{position:absolute;inset:0;z-index:9;background:var(--stage);color:var(--stage-ink);overflow-y:auto;padding:26px 22px}
+.win .tag{font-family:var(--f-mono);color:var(--gold);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.win h1{font-size:34px;margin:6px 0 6px;color:#fff}
+.win .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.win .nums div{background:#272d3d;border-radius:12px;padding:12px 10px;font-size:11px;color:var(--stage-mute)}
+.win .nums b{display:block;font-family:var(--f-mono);font-size:20px;color:#fff;font-variant-numeric:tabular-nums}
+.win .code{border:2px dashed var(--gold);border-radius:14px;padding:14px;text-align:center;margin:8px 0 18px}
+.win .code b{font-family:var(--f-mono);font-size:28px;letter-spacing:.2em;color:var(--gold)}
+.win .reveal{width:100%;border:1px solid #3a4154;background:#272d3d;color:#fff;border-radius:12px;padding:13px;font-weight:700}
+.win ol{padding-left:20px;margin:14px 0 0}
+.win li{margin-bottom:12px;line-height:1.45;font-size:14px;color:var(--stage-mute)}
+.win li b{color:#fff}
+.win .caught{font-size:13px;color:var(--stage-mute)}
+@media (prefers-reduced-motion:no-preference){.screen,.sheet,.win{animation:in .22s ease-out}@keyframes in{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}}
+[hidden]{display:none!important}
+/* ---- Station hub ---- */
+#v-hub{width:100%;max-width:760px;padding-block:20px 48px;display:flex;flex-direction:column;gap:28px}
+#v-tonik{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.h-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.h-eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.h-title{font-size:clamp(30px,6vw,44px);font-weight:800;letter-spacing:-.03em;margin:4px 0 6px;color:#fff;text-wrap:balance;line-height:1.05}
+.h-lead{color:var(--stage-mute);max-width:60ch;line-height:1.55;margin:0}
+.h-reset{background:none;border:1px solid #3a4154;color:var(--stage-mute);border-radius:8px;padding:7px 11px;font-family:var(--f-mono);font-size:12px}
+.tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.tcard{background:#272d3d;border:1px solid #333a4d;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tcard .lab{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stage-mute);display:flex;justify-content:space-between;gap:8px}
+.tcard h3{margin:0;font-size:20px;color:#fff}
+.tcard p{margin:0;color:#c3c9d8;font-size:14px;line-height:1.5;flex:1}
+.tcard .go{border:0;border-radius:999px;padding:12px;font-weight:800;background:var(--brand);color:#fff}
+.tcard.done{border-color:#2f7d5d}
+.tcard.done .lab b{color:#5fd3a0}
+.tcard.off{opacity:.5;border-style:dashed}
+.tcard.off .go{background:#333a4d;color:var(--stage-mute);cursor:not-allowed}
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{background:#232938;border-radius:16px;padding:20px;border:1px solid #2e3446}
+.step.locked{opacity:.55}
+.step-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.step-n{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-weight:700;background:#333a4d;color:#fff;font-size:13px}
+.step.ok .step-n{background:#2f7d5d}
+.step h2{margin:0;font-size:19px;color:#fff}
+.step p,.step li{color:#c3c9d8;line-height:1.55;font-size:15px}
+.lockmsg{font-family:var(--f-mono);font-size:12px;color:var(--stage-mute);margin:0}
+.read h3{color:#fff;font-size:16px;margin:20px 0 8px}
+.read details{margin-top:12px;background:#2a3142;border-radius:12px}
+.read summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;color:#fff;font-weight:700;font-size:16px}
+.read summary::-webkit-details-marker{display:none}
+.read summary::after{content:"▾";color:var(--gold);font-size:18px;transition:transform .2s}
+.read details[open] summary::after{transform:rotate(180deg)}
+.read details > div{padding:0 16px 16px}
+.read details .pats li{background:#323a4e}
+.tbl{overflow-x:auto;margin:6px 0 4px}
+.tbl table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+.tbl th{text-align:left;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);padding:8px 10px;border-bottom:1px solid #3a4154}
+.tbl td{padding:10px;border-bottom:1px solid #2e3446;color:#c3c9d8;vertical-align:top;line-height:1.45}
+.tbl td:first-child{color:#fff;font-weight:700;white-space:nowrap}
+.pats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:0;list-style:none;margin:0}
+.pats li{background:#2a3142;border-radius:12px;padding:12px 14px;font-size:14px;margin:0}
+.pats b{color:#fff;display:block}
+.pats i{font-style:normal;font-family:var(--f-mono);font-size:11px;color:var(--stage-mute)}
+.hbtn{border:0;border-radius:999px;padding:12px 18px;font-weight:800;background:var(--gold);color:#1d2230;margin-top:14px}
+.hbtn[disabled]{opacity:.4;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.field label{font-weight:700;color:#fff;font-size:14px}
+.field textarea{width:100%;min-height:120px;resize:vertical;border-radius:12px;border:1px solid #3a4154;background:#1a1f2b;color:#fff;padding:12px;font:inherit;font-size:15px;line-height:1.5}
+.answer{background:#1a1f2b;border-radius:12px;padding:14px 16px;margin-top:12px}
+.answer h3{margin:0 0 6px;color:#fff;font-size:16px}
+.answer ol{padding-left:20px;margin:6px 0 0}
+.answer li{margin-bottom:8px;font-size:14px}
+.answer li b{color:#fff}
+.muted{color:var(--stage-mute);font-size:13px}
+/* ---- Úkol 2: e-shop Trendo (its own look: warm white, cobalt + sale red, Rubik) ---- */
+#v-shop{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+#shop{--z-ink:#14171f;--z-mute:#6b7280;--z-line:#e7e5e0;--z-bg:#faf8f4;--z-card:#ffffff;--z-blue:#1d4ed8;--z-red:#e11d2e;--z-yel:#ffd43b;
+  background:var(--z-bg);font-family:"Rubik",var(--f-app);color:var(--z-ink)}
+#shop button{font-family:inherit}
+.z-head{background:var(--z-blue);color:#fff;padding:14px 14px 12px;display:flex;flex-direction:column;gap:10px}
+.z-row{display:flex;align-items:center;gap:10px}
+.z-logo{font-weight:800;font-size:22px;letter-spacing:-.02em;font-style:italic}
+.z-wallet{margin-left:auto;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:6px 10px;font-size:13px;font-weight:600}
+.z-cartbtn{border:0;background:#fff;color:var(--z-blue);border-radius:999px;padding:6px 11px;font-size:13px;font-weight:700}
+.z-search{background:#fff;color:var(--z-mute);border-radius:10px;padding:10px 12px;font-size:14px}
+.z-sale{background:var(--z-red);color:#fff;text-align:center;font-weight:700;font-size:13px;padding:8px 10px;letter-spacing:.02em}
+.z-sale b{font-variant-numeric:tabular-nums;background:rgba(0,0,0,.2);border-radius:5px;padding:1px 6px;margin-left:4px}
+.z-pad{padding:14px}
+.z-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.z-bar h2{margin:0;font-size:18px}
+.z-sort{border:1px solid var(--z-line);background:#fff;border-radius:8px;padding:7px 8px;font:inherit;font-size:13px;color:var(--z-ink)}
+.z-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.z-card{background:var(--z-card);border:0;border-radius:12px;padding:0 0 10px;text-align:left;overflow:hidden;color:var(--z-ink);display:flex;flex-direction:column;gap:4px;position:relative}
+.z-img{aspect-ratio:1/1;max-width:100%;display:grid;place-items:center;background:#efece6}
+.z-img svg{width:70%;height:70%}
+.z-card .nm{font-size:13px;padding:0 10px;line-height:1.3;min-height:34px}
+.z-card .pr{padding:0 10px;font-weight:800;font-size:17px;color:var(--z-red)}
+.z-card .pr s{color:var(--z-mute);font-weight:400;font-size:12px;margin-left:4px}
+.z-card .pr.coin{color:#b7791f}
+.z-card .sub{padding:0 10px;font-size:11px;color:var(--z-mute)}
+.z-badge{position:absolute;top:8px;left:8px;background:var(--z-red);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:3px 6px}
+.z-hot{color:var(--z-red);font-size:11px;font-weight:700;padding:0 10px}
+.z-back{border:0;background:none;font-weight:700;font-size:15px;padding:14px 14px 4px;color:var(--z-ink)}
+.z-big{aspect-ratio:1/1;max-width:100%;background:#efece6;display:grid;place-items:center}
+.z-big svg{width:62%;height:62%}
+.z-det{padding:14px;display:flex;flex-direction:column;gap:10px}
+.z-det h1{font-size:20px;margin:0}
+.z-price{font-size:26px;font-weight:800;color:var(--z-red)}
+.z-price s{font-size:14px;color:var(--z-mute);font-weight:400;margin-left:6px}
+.z-alert{background:#fff1f2;color:var(--z-red);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600}
+.z-alert b{font-variant-numeric:tabular-nums}
+.z-peek{font-size:12px;color:var(--z-mute)}
+.z-lab{font-size:13px;font-weight:700;margin-top:4px}
+.z-opts{display:flex;flex-wrap:wrap;gap:8px}
+.z-opt{border:1.5px solid var(--z-line);background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;color:var(--z-ink);text-align:left}
+.z-opt.on{border-color:var(--z-blue);background:#eef2ff;font-weight:700}
+.z-opt small{display:block;font-weight:400;color:var(--z-mute);font-size:11px}
+.z-btn{border:0;border-radius:12px;padding:15px;font-weight:800;font-size:15px;background:var(--z-blue);color:#fff;width:100%}
+.z-btn.y{background:var(--z-yel);color:var(--z-ink)}
+.z-btn[disabled]{opacity:.4}
+.z-item{display:flex;gap:10px;align-items:center;background:#fff;border-radius:12px;padding:10px;margin-bottom:8px}
+.z-item .z-img{width:58px;flex:none;border-radius:8px}
+.z-item .t{flex:1;min-width:0;font-size:13px}
+.z-item .t b{display:block;font-size:14px}
+.z-item .t small{color:var(--z-mute)}
+.z-item .p{font-weight:800;white-space:nowrap}
+.z-x{border:0;background:none;color:var(--z-mute);font-size:18px;padding:4px 6px}
+.z-rec{font-size:10px;color:#16a34a;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.z-sum{background:#fff;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+.z-sum div{display:flex;justify-content:space-between;padding:4px 0;font-variant-numeric:tabular-nums}
+.z-sum .tot{border-top:1px solid var(--z-line);margin-top:6px;padding-top:10px;font-weight:800;font-size:17px}
+.z-sec{background:#fff;border-radius:12px;padding:6px 12px;margin-bottom:10px}
+.z-sec h3{font-size:14px;margin:8px 0 4px}
+.z-ch{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f1efea;font-size:14px;cursor:pointer}
+.z-ch:first-of-type{border-top:0}
+.z-ch input{accent-color:var(--z-blue);width:18px;height:18px;flex:none}
+.z-ch span{flex:1}
+.z-ch small{display:block;color:var(--z-mute);font-size:11px}
+.z-ch em{font-style:normal;font-weight:700;white-space:nowrap}
+.z-tag{background:#dcfce7;color:#166534;font-size:10px;font-weight:700;border-radius:4px;padding:2px 5px;margin-left:4px;vertical-align:middle}
+.z-fine{font-size:11px;color:var(--z-mute);line-height:1.45}
+.z-ov{position:absolute;inset:0;background:rgba(15,16,22,.55);display:flex;align-items:flex-end;z-index:5}
+.z-sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:20px 16px}
+.z-sheet h3{margin:0 0 4px;font-size:19px}
+.z-pack{display:flex;align-items:center;justify-content:space-between;width:100%;border:1.5px solid var(--z-line);background:#fff;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:15px;color:var(--z-ink)}
+.z-pack b{font-size:17px}
+.z-pack.best{border-color:#b7791f;background:#fffbeb}
+.z-toast{position:absolute;left:12px;right:12px;bottom:14px;background:var(--z-ink);color:#fff;border-radius:12px;padding:12px 14px;font-size:13px;z-index:7}
+/* ---- Úkol 3: Sešitko (own look: mint + emerald, Nunito) ---- */
+#v-reg{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+#reg{--r-ink:#10231c;--r-mute:#5f7169;--r-line:#d9e6df;--r-bg:#f1f8f4;--r-g:#0f9d76;--r-g2:#0b7a5c;--r-pop:#ff6b4a;
+  background:var(--r-bg);font-family:"Nunito",var(--f-app);color:var(--r-ink)}
+#reg button{font-family:inherit}
+.r-wrap{padding:22px 20px 28px;display:flex;flex-direction:column;gap:12px;min-height:100%}
+.r-logo{display:flex;align-items:center;gap:8px;font-weight:900;font-size:22px;color:var(--r-g2)}
+.r-logo i{width:28px;height:28px;border-radius:8px;background:var(--r-g);display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.r-hero{border-radius:20px;background:linear-gradient(150deg,#0f9d76,#3cc79b);color:#fff;padding:22px 18px;display:flex;flex-direction:column;gap:6px}
+.r-hero b{font-size:24px;line-height:1.15;font-weight:900}
+.r-hero span{opacity:.9;font-size:14px;line-height:1.45}
+.r-h{font-size:22px;font-weight:900;margin:2px 0 0;line-height:1.2}
+.r-p{font-size:14px;line-height:1.5;color:var(--r-mute);margin:0}
+.r-btn{border:0;border-radius:14px;padding:15px;font-weight:800;font-size:15px;background:var(--r-g);color:#fff;width:100%}
+.r-btn.pop{background:var(--r-pop)}
+.r-btn.ig{background:linear-gradient(90deg,#f58529,#dd2a7b,#8134af);}
+.r-btn.out{background:#fff;color:var(--r-ink);border:1.5px solid var(--r-line)}
+.r-btn.faint{background:transparent;color:#b5c4bd;font-weight:600;font-size:13px;padding:8px}
+.r-link{border:0;background:none;color:#a9b8b1;font-size:12px;text-decoration:underline;padding:4px;align-self:center}
+.r-field{display:flex;flex-direction:column;gap:5px}
+.r-field label{font-size:13px;font-weight:800}
+.r-field input{border:1.5px solid var(--r-line);border-radius:12px;padding:12px;font:inherit;font-size:15px;background:#fff;color:var(--r-ink)}
+.r-hint{font-size:11px;color:var(--r-mute)}
+.r-check{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--r-ink);background:#fff;border-radius:12px;padding:11px 12px;cursor:pointer}
+.r-check input{accent-color:var(--r-g);width:18px;height:18px;flex:none;margin-top:1px}
+.r-check small{color:var(--r-mute)}
+.r-tg{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px;font-size:14px}
+.r-tg span{flex:1}
+.r-tg small{display:block;color:var(--r-mute);font-size:11px}
+.r-sw{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:#cfdcd5;position:relative;cursor:pointer;flex:none;transition:background .15s}
+.r-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.r-sw:checked{background:var(--r-g)}
+.r-sw:checked::after{left:21px}
+.r-sw:disabled{opacity:.6}
+.r-ov{position:absolute;inset:0;background:rgba(10,30,22,.5);display:flex;align-items:flex-end;z-index:5}
+.r-sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:20px 18px;display:flex;flex-direction:column;gap:10px}
+.r-perm{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.r-perm li::before{content:"• ";color:var(--r-pop);font-weight:900}
+.r-toast{position:absolute;left:12px;right:12px;bottom:14px;background:var(--r-ink);color:#fff;border-radius:12px;padding:12px 14px;font-size:13px;z-index:7}
+.r-big{font-size:56px;text-align:center;padding:10px 0}
+.guide{background:rgba(127,127,127,.12);border-radius:12px;font-size:14px;line-height:1.5}
+.guide summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:800;display:flex;justify-content:space-between;gap:10px}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary::after{content:"▾";transition:transform .2s}
+.guide[open] summary::after{transform:rotate(180deg)}
+.guide ol{margin:0;padding:0 14px 14px 34px}
+.guide li{margin-bottom:8px}
+#reg .guide{background:#fff;color:var(--r-ink)}
+#reg .guide summary{color:var(--r-g2)}
+#reg .win .guide{background:#272d3d;color:#c3c9d8}
+#reg .win .guide summary{color:#fff}
+#reg .win .guide b{color:#fff}
+#reg .win .guide li{color:#c3c9d8;font-size:14px}
+</style>
+</head>
+<body>
+
+<section id="v-hub">
+  <div class="h-top">
+    <div>
+      <div class="h-eyebrow">Debunker · Stanoviště A</div>
+      <h1 class="h-title">Dark patterns</h1>
+      <p class="h-lead">Aplikace vám nechtějí vždycky pomoct. Splňte úkoly v aplikacích a sledujte, co vám v tom bránilo.</p>
+    </div>
+    <button class="h-reset" id="hubReset" type="button">Nová hra</button>
+  </div>
+  <div id="step1" class="steps" style="margin-bottom:-14px"></div>
+  <div class="tasks" id="tasks"></div>
+  <div class="steps" id="steps"></div>
+</section>
+
+<section id="v-tonik" hidden>
+<div class="hud" aria-live="polite">
+  <button class="reset" type="button" onclick="location.hash='#hub'" title="Zpět na stanoviště">‹</button>
+  <div class="task"><span>Úkol 1</span><b>Zruš předplatné Tonik Premium</b></div>
+  <div class="stats"><div id="tm">00:00</div><div id="cl">0 kliků</div></div>
+  <button class="reset" id="reset" type="button" title="Začít novou hru">Nová hra</button>
+</div>
+<div class="phone" id="phone"></div>
+</section>
+<section id="v-shop" hidden>
+<div class="hud" aria-live="polite">
+  <button class="reset" type="button" onclick="location.hash='#hub'" title="Zpět na stanoviště">‹</button>
+  <div class="task"><span>Úkol 2</span><b>Kup tričko za nejnižší cenu</b></div>
+  <div class="stats"><div id="tm2">00:00</div><div id="cl2">0 kliků</div></div>
+  <button class="reset" id="reset2" type="button" title="Začít novou hru">Nová hra</button>
+</div>
+<div class="phone" id="shop"></div>
+</section>
+<section id="v-reg" hidden>
+<div class="hud" aria-live="polite">
+  <button class="reset" type="button" onclick="location.hash='#hub'" title="Zpět na stanoviště">‹</button>
+  <div class="task"><span>Úkol 3</span><b>Registruj se bez marketingových souhlasů</b></div>
+  <div class="stats"><div id="tm3">00:00</div><div id="cl3">0 kliků</div></div>
+  <button class="reset" id="reset3" type="button" title="Začít novou hru">Nová hra</button>
+</div>
+<div class="phone" id="reg"></div>
+</section>
+
+
+
+<script>
+const S = {};
+function fresh(){
+  Object.assign(S,{screen:"home",clicks:0,start:null,end:null,
+    trap:{ad:0,upgrade:0,newsletter:0,phone:0,discount:0,wrong:0},
+    newsletter:false,discount:false,phoneGiven:false,adShown:false,revealed:false});
+}
+fresh();
+const phone=document.getElementById("phone");
+const toastMsg={t:null};
+
+const covers=[["c1","Chill cestou do školy"],["c2","Lo-fi na učení"],["c3","Gym Mix"],["c4","Česká scéna"],["c5","Throwback 2016"],["c6","Tvůj Mix 3"]];
+
+function nav(active){
+  const it=[["home","Domů",""],["search","Hledat","s"],["lib","Knihovna",""]];
+  return `<div class="player"><div class="cv c5"></div><div><b>Noční tramvaj</b>Lunaparkk</div><div style="margin-left:auto;font-size:18px">❚❚</div></div>
+  <div class="nav">${it.map(([k,l,c])=>`<button data-go="${k==="home"?"home":"nope"}" class="${k===active?"on":""}"><span class="ico ${c}"></span>${l}</button>`).join("")}</div>`;
+}
+
+const V={
+home:()=>`<div class="screen">
+  <div class="top"><div class="logo"><i></i>Tonik</div><button class="avatar" data-go="profile" aria-label="Profil">K</button></div>
+  <div class="pad">
+    <div class="chips"><button class="chip on">Vše</button><button class="chip" data-go="nope">Hudba</button><button class="chip" data-go="nope">Podcasty</button><button class="chip" data-go="nope">Audioknihy</button></div>
+    <h1>Dobré odpoledne</h1>
+    <div class="grid">${covers.slice(0,4).map(([c,t])=>`<button class="tile" data-go="nope"><div class="cv ${c}"></div>${t}</button>`).join("")}</div>
+    <button class="native" data-act="ad"><span class="ic">★</span><span><b>Spravovat předplatné</b><small>Tarif, platby a zrušení</small></span><span class="chev">›</span></button>
+    <p class="spon">Sponzorováno</p>
+    <h2>Vytvořeno pro tebe</h2>
+    <div class="covers">${covers.map(([c,t],i)=>`<button class="album" data-go="nope"><div class="cv ${c}">${t}</div><b>Denní mix ${i+1}</b>Lunaparkk, Mira, Bonjour…</button>`).join("")}</div>
+    <h2>Naposledy přehráno</h2>
+    <div class="grid">${covers.slice(2).map(([c,t])=>`<button class="tile" data-go="nope"><div class="cv ${c}"></div>${t}</button>`).join("")}</div>
+  </div></div>${nav("home")}`,
+
+profile:()=>`<div class="screen"><button class="back" data-go="home">‹ Zpět</button><div class="pad">
+  <div class="profile-head"><div class="avatar" style="display:grid;place-items:center">K</div><div><b style="font-size:20px">Kuba</b><div class="stat">37 playlistů · 112 sledujících</div></div></div>
+  <div class="list">
+    ${["Upravit profil","Oznámení","Soukromí a sdílení","Kvalita zvuku","Propojená zařízení"].map(t=>`<button class="row" data-go="nope">${t}<span class="chev">›</span></button>`).join("")}
+    <button class="row" data-go="account">Účet<small>E-mail, heslo, platby</small><span class="chev">›</span></button>
+    ${["Nápověda","O aplikaci"].map(t=>`<button class="row" data-go="nope">${t}<span class="chev">›</span></button>`).join("")}
+  </div></div></div>${nav("")}`,
+
+account:()=>`<div class="screen"><button class="back" data-go="profile">‹ Účet</button><div class="pad">
+  <div class="list">
+    <button class="row" data-go="nope">E-mail<small>kuba.n@posta.cz</small><span class="chev">›</span></button>
+    <button class="row" data-go="nope">Změnit heslo<span class="chev">›</span></button>
+    <button class="row" data-go="nope">Platební metody<small>Karta •••• 4471</small><span class="chev">›</span></button>
+    <button class="row" data-go="plan">Tvůj tarif<small>${S.newsletter?"Premium Plus · 239 Kč/měs":(S.discount?"Premium Individual · 49 Kč/měs":"Premium Individual · 189 Kč/měs")}</small><span class="chev">›</span></button>
+    <button class="row" data-go="nope">Historie objednávek<span class="chev">›</span></button>
+    <button class="row" data-go="nope">Odhlásit se<span class="chev">›</span></button>
+  </div></div></div>${nav("")}`,
+
+plan:()=>`<div class="screen"><button class="back" data-go="account">‹ Tvůj tarif</button><div class="pad">
+  <div class="plan"><small>Aktuální tarif</small><h3>${S.newsletter?"Premium Plus":"Premium Individual"}</h3>${S.newsletter?"239 Kč/měs":(S.discount?"49 Kč/měs po dobu 3 měsíců":"189 Kč/měs")} · další platba 1. 12.</div>
+  <button class="btn" data-act="upgrade">Přejít na Premium Family a ušetřit</button>
+  <h2>Co máš v Premium</h2>
+  <ul class="perks"><li>Hudba bez reklam</li><li>Stahování pro poslech offline</li><li>Přeskakování bez omezení</li><li>Bezeztrátová kvalita zvuku</li><li>Texty písní v reálném čase</li><li>Tvůj roční přehled Tonik Rewind</li><li>Poslech na až 3 zařízeních</li></ul>
+  <p class="fine">Ceny zahrnují DPH. Předplatné se automaticky obnovuje, dokud ho nezrušíš. Více v podmínkách služby.</p>
+  <p class="tiny">Potřebuješ změnu? <button data-go="nag1">Ukončit Premium</button></p>
+  </div></div>`,
+
+nag1:()=>`<div class="screen"><div class="pad" style="padding-top:22px">
+  <div class="hero-ill c1">Plus</div>
+  <h1>Počkej! Nerušit, ale vylepšit?</h1>
+  <p>Místo zrušení přejdi na <b>Tonik Premium Plus</b>: prostorový zvuk, předprodeje koncertů dřív než ostatní, AI DJ a 15 hodin audioknih měsíčně. Jen o 50 Kč víc.</p>
+  <button class="btn" data-act="newsletter">Ano, chci Premium Plus</button>
+  <button class="btn ghost" data-go="verify">Ne, díky. Nová hudba mě nebaví.</button>
+  </div></div>`,
+
+verify:()=>`<div class="screen"><button class="back" data-go="plan">‹ Zpět</button><div class="pad">
+  <h1>Ověř, že jsi to ty</h1>
+  <p>Z bezpečnostních důvodů potřebujeme před změnou tarifu ověřit tvou identitu. Pošleme ti SMS s kódem.</p>
+  <label class="lb" for="tel">Telefonní číslo</label>
+  <input id="tel" type="tel" inputmode="tel" placeholder="+420 ___ ___ ___" autocomplete="off">
+  <label class="check"><input type="checkbox" id="mk" checked> Souhlasím se zasíláním novinek a nabídek partnerů Toniku formou SMS.</label>
+  <button class="btn" data-act="phone">Poslat ověřovací kód</button>
+  <p class="tiny" style="margin-top:40px">Nemáš u sebe telefon? <button data-act="skipphone">Ověřit jinak</button></p>
+  </div></div>`,
+
+sms:()=>`<div class="screen"><div class="pad" style="padding-top:26px">
+  <h1>Zadej kód z SMS</h1>
+  <p>Kód jsme poslali na ${S.phoneGiven?"tvoje číslo":"e-mail kuba.n@posta.cz"}. Pro účely úkolu ho vyplníme za tebe.</p>
+  <input type="tel" id="code" value="4 8 1 2 0 6" readonly aria-label="Ověřovací kód">
+  <button class="btn" data-go="nag2">Ověřit</button>
+  </div></div>`,
+
+nag2:()=>`<div class="screen"><div class="pad" style="padding-top:22px">
+  <div class="hero-ill c5">−74 %</div>
+  <h1>Nabídka jen pro tebe</h1>
+  <p>Jsi s námi už 2 roky, a tak ti nabízíme Premium na 3 měsíce za <b>49 Kč měsíčně</b> místo 189 Kč.</p>
+  <div class="timer">Nabídka vyprší za <span id="cd">04:59</span></div>
+  <button class="btn" data-act="discount">Vzít slevu a zůstat</button>
+  <button class="btn ghost" data-go="shame">Pokračovat ve zrušení</button>
+  </div></div>`,
+
+shame:()=>`<div class="screen"><div class="pad" style="padding-top:22px">
+  <h1>Opravdu chceš o všechno přijít?</h1>
+  <p>Po zrušení Premium ztratíš:</p>
+  <ul class="loss"><li><b>1 248</b>stažených skladeb</li><li><b>37</b>playlistů offline</li><li><b>2 roky</b>historie pro Rewind</li><li><b>∞</b>přeskakování</li></ul>
+  <button class="btn" data-go="home" data-act="stay">Zůstat v Premium</button>
+  <button class="btn ghost" data-go="final">Ano, chci přijít o všechno, co jsem si vybudoval</button>
+  </div></div>`,
+
+final:()=>`<div class="screen"><div class="pad" style="padding-top:26px">
+  <p class="stat" style="text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:11px">Poslední krok</p>
+  <p class="q">Nepřejete si, aby vaše předplatné Premium nebylo ukončeno a nedošlo k jeho nepokračování?</p>
+  <div class="split"><button class="btn faint" data-act="yes">Ano</button><button class="btn" data-act="no">Ne</button></div>
+  <p class="fine" style="margin-top:18px">Odpovědí „Ne“ potvrzujete, že si nepřejete nezachovat současný tarif. Změna se projeví k nejbližšímu fakturačnímu období.</p>
+  </div></div>`,
+
+kept:()=>`<div class="screen"><div class="pad" style="padding-top:30px">
+  <div class="hero-ill c3">✓</div>
+  <h1>Skvělá volba! Premium ti zůstává.</h1>
+  <p>Tvoje předplatné pokračuje beze změny. Další platba ${S.newsletter?"239":(S.discount?"49":"189")} Kč proběhne 1. 12.</p>
+  <button class="btn dark" data-go="home">Zpět k hudbě</button>
+  </div></div>`,
+
+done:()=>`<div class="screen"><div class="pad" style="padding-top:30px">
+  <h1>Je nám líto, že odcházíš</h1>
+  <p>Premium bude ukončeno k 1. 12. Do té doby můžeš poslouchat bez omezení.</p>
+  <button class="btn dark" data-act="win">Hotovo</button>
+  </div></div>`,
+};
+
+function fmt(ms){const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+
+function winView(){
+  const t=S.trap, caught=t.ad+t.upgrade+t.newsletter+t.phone+t.discount+t.wrong;
+  const items=[
+   ["Disguised ads (skrytá reklama)",`Řádek „Spravovat předplatné“ na hlavní obrazovce vypadal jako součást aplikace, ale byla to reklama. Kliknuli jste na ni ${t.ad}×.`],
+   ["Visual interference (vizuální rušení)",`Velké barevné tlačítko vedlo k dražšímu tarifu, odkaz „Ukončit Premium“ byl malý a šedý až dole. V posledním kroku bylo správné tlačítko „Ano“ téměř neviditelné.`],
+   ["Roach motel (past na myš)","Předplatné se zakládá jedním klikem, ke zrušení vedlo přes 8 obrazovek: profil, účet, tarif, nabídky, ověření."],
+   ["Nagging (otravování)",`Aplikace vám místo zrušení opakovaně nabízela něco jiného: dražší Premium Plus a pak slevu s odpočtem.`],
+   ["Forced action (vynucená akce)",`Před zrušením chtěla telefonní číslo, i když ho nepotřebovala. Šlo to obejít přes „Ověřit jinak“. ${S.phoneGiven?"Číslo jste zadali, a s ním i souhlas s reklamními SMS.":"Číslo jste nezadali."}`],
+   ["Confirmshaming (zahanbování)","„Ne, díky. Nová hudba mě nebaví.“ a „Ano, chci přijít o všechno, co jsem si vybudoval.“ Odmítnutí bylo napsané tak, abyste se cítili hloupě."],
+   ["Trick wording (matoucí formulace)","„Nepřejete si, aby vaše předplatné nebylo ukončeno a nedošlo k jeho nepokračování?“ Trojitý zápor. Správně bylo „Ano“."],
+  ];
+  return `<div class="win">
+   <div class="tag">Úkol 1 splněn</div>
+   <h1>Předplatné zrušeno!</h1>
+   <p class="caught">Prošli jste všemi pastmi aplikace Tonik.</p>
+   <div class="nums"><div><b>${fmt(S.end-S.start)}</b>čas</div><div><b>${S.clicks}</b>kliků</div><div><b>${caught}</b>×&nbsp;nachytáni</div></div>
+   <p class="caught">${[t.ad&&`reklama ${t.ad}×`,t.upgrade&&`dražší tarif ${t.upgrade}×`,t.newsletter&&`Premium Plus ${t.newsletter}×`,t.phone&&`dali telefon`,t.discount&&`vzali slevu ${t.discount}×`,t.wrong&&`špatná odpověď ${t.wrong}×`].filter(Boolean).join(" · ")||"Ani jednou jste se nenechali nachytat."}</p>
+   <button class="reveal" data-act="hub" style="margin-top:18px;background:var(--gold);color:#1d2230;border:0">Zpět na stanoviště</button>
+   <p class="caught" style="margin-top:14px">Co všechno vám v aplikaci bránilo? Zapamatujte si to, budete to hledat v dalším kroku.</p>
+  </div>`;
+}
+
+let cdTimer=null, adTimer=null;
+function render(){
+  clearInterval(cdTimer);
+  let html=S.screen==="win"?"":V[S.screen]();
+  if(S.overlay==="ad") html+=`<div class="adfull" role="dialog" aria-label="Reklama"><button class="x" id="adx" disabled>Zavřít za 5</button>
+    <div class="big">Surfuj bezpečně.<br><em>Shieldo VPN</em><br>−70 % jen dnes.</div><button class="btn" style="background:#5ef2c2;color:#0b1f33" data-act="adclick">Získat slevu</button><p class="fine" style="color:#7fa3a3;margin-top:10px">Reklama</p></div>`;
+  if(S.overlay==="upgrade") html+=`<div class="ov"><div class="sheet"><h3>Premium Family</h3><p>Až 6 účtů za 289 Kč/měs. Pozvi rodinu a ušetři! Tarif změníme hned po potvrzení.</p><button class="btn" data-act="upgradeyes">Potvrdit změnu</button><button class="btn ghost" data-act="close">Teď ne</button></div></div>`;
+  if(S.toast) html+=`<div class="toast">${S.toast}</div>`;
+  if(S.screen==="win") html=winView();
+  phone.innerHTML=html;
+  const sc=phone.querySelector(".screen"); if(sc) sc.scrollTop=0;
+  if(S.screen==="nag2"){let left=299;const el=document.getElementById("cd");cdTimer=setInterval(()=>{left=left>0?left-1:299;el.textContent=fmt(left*1000)},1000)}
+  if(S.overlay==="ad"){let n=5;const x=document.getElementById("adx");clearInterval(adTimer);adTimer=setInterval(()=>{n--;if(n<=0){clearInterval(adTimer);x.disabled=false;x.textContent="✕ Zavřít";x.dataset.act="adclose"}else x.textContent="Zavřít za "+n},1000)}
+}
+function toast(m){S.toast=m;setTimeout(()=>{if(S.toast===m){S.toast=null;if(S.screen!=="win")render()}},2600)}
+function go(s){S.screen=s;S.overlay=null}
+
+phone.addEventListener("click",e=>{
+  const b=e.target.closest("[data-go],[data-act]");
+  if(S.screen!=="win"){ if(!S.start) S.start=Date.now(); S.clicks++; }
+  if(!b) return;
+  const act=b.dataset.act, to=b.dataset.go;
+  if(act){
+    switch(act){
+      case "ad": S.trap.ad++; S.overlay="ad"; break;
+      case "adclick": S.trap.ad++; toast("Otevírám obchod Shieldo VPN…"); break;
+      case "adclose": S.overlay=null; break;
+      case "upgrade": S.overlay="upgrade"; break;
+      case "upgradeyes": S.trap.upgrade++; S.overlay=null; toast("Hotovo! Tarif změněn na Premium Family (289 Kč/měs)."); break;
+      case "close": S.overlay=null; break;
+      case "newsletter": S.trap.newsletter++; S.newsletter=true; go("plan"); toast("Premium Plus aktivován (239 Kč/měs). Díky, že zůstáváš!"); break;
+      case "phone": {
+        const v=(document.getElementById("tel").value||"").replace(/\D/g,"");
+        if(v.length<9){toast("Zadej platné telefonní číslo.");break}
+        S.trap.phone=1; S.phoneGiven=true; go("sms"); break;}
+      case "skipphone": go("sms"); toast("Kód jsme poslali na tvůj e-mail."); break;
+      case "discount": S.trap.discount++; S.discount=true; go("home"); toast("Sleva aktivována! Premium za 49 Kč/měs na 3 měsíce."); break;
+      case "stay": go("home"); toast("Super! Premium ti zůstává."); break;
+      case "no": S.trap.wrong++; go("kept"); break;
+      case "yes": go("done"); break;
+      case "win": S.end=Date.now(); S.screen="win"; tonikWon(); break;
+      case "hub": location.hash="#hub"; return;
+      case "reveal": S.revealed=true; break;
+    }
+    if(act==="stay"){render();return}
+  } else if(to){
+    if(to==="nope"){toast("Tohle k úkolu nepotřebuješ.");}
+    else go(to);
+  }
+  render(); hud();
+});
+
+const tm=document.getElementById("tm"), cl=document.getElementById("cl");
+function hud(){
+  const end=S.end||Date.now();
+  tm.textContent=S.start?fmt(end-S.start):"00:00";
+  cl.textContent=S.clicks+(S.clicks===1?" klik":(S.clicks>=2&&S.clicks<=4?" kliky":" kliků"));
+}
+setInterval(hud,500);
+document.getElementById("reset").addEventListener("click",()=>{clearInterval(adTimer);fresh();render();hud()});
+render();
+/* ---- Úkol 2: e-shop Trendo ---- */
+const Z_MIN=277; // 199 Kč Basic standard + 49 Kč výdejní místo + 29 Kč servisní poplatek
+const ZP={
+ premium:{name:"Oversize tričko Premium",price:349,old:579,color:"#1f2937",badge:"−40 %",hot:"🔥 Poslední 2 kusy!",sub:"Prodáno 10 000+ · ★ 4,9"},
+ retro:{name:"Tričko Retro Sunset",price:279,color:"#f59e0b",sub:"★ 4,6 · 312 hodnocení",coinFirst:true},
+ dry:{name:"Sportovní tričko DryFit",price:299,old:349,color:"#2563eb",badge:"−15 %",sub:"★ 4,7 · 1 204 hodnocení"},
+ polo:{name:"Polo tričko Classic",price:329,color:"#15803d",sub:"★ 4,4 · 88 hodnocení"},
+ basic:{name:"Basic tričko",price:199,color:"#e5e7eb",organic:80,sub:"★ 4,5 · 2 031 hodnocení",coinFirst:true},
+};
+const REC=["premium","dry","retro","polo","basic"];
+const coinsOf=k=>Math.round(k*3.97/10)*10;
+const PACKS=[[500,149],[1000,279,"Nejvýhodnější · +25 % mincí navíc"],[2500,599]];
+const Z={};
+function zFresh(keepClock){
+  const keep=keepClock?{clicks:Z.clicks,start:Z.start,caught:Z.caught}:{clicks:0,start:null,caught:0};
+  Object.assign(Z,{screen:"home",sort:"rec",cart:[],socksOffered:false,ship:"express",ins:true,war:true,pay:"coins",coins:0,packs:0,
+    detail:null,organic:true,size:"M",overlay:null,toast:null,end:null,lastSpent:0},keep);
+}
+zFresh();
+const shop=document.getElementById("shop");
+const tee=c=>`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M34 14 L20 20 L6 34 L16 46 L26 40 L26 88 L74 88 L74 40 L84 46 L94 34 L80 20 L66 14 C62 22 38 22 34 14Z" fill="${c}" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/></svg>`;
+const kc=n=>n.toLocaleString("cs-CZ")+" Kč";
+function zTotals(){
+  const goods=Z.cart.reduce((a,i)=>a+i.price,0);
+  const ship=Z.cart.length?(Z.ship==="express"?129:49):0;
+  const extras=Z.cart.length?(Z.ins?39:0)+(Z.war?29:0):0;
+  const fee=Z.cart.length?29:0;
+  const coinsNeed=Z.pay==="coins"?coinsOf(goods):0;
+  const card=(Z.pay==="coins"?0:goods)+ship+extras+fee;
+  return {goods,ship,extras,fee,coinsNeed,card};
+}
+const ZV={
+home:()=>{
+  const ids=Z.sort==="cheap"?[...REC].sort((a,b)=>ZP[a].price-ZP[b].price):REC;
+  return `<div class="screen" style="background:var(--z-bg)">
+  <div class="z-head"><div class="z-row"><span class="z-logo">trendo</span><button class="z-wallet" data-z="wallet">🪙 ${Z.coins.toLocaleString("cs-CZ")}</button><button class="z-cartbtn" data-z="cart">Košík ${Z.cart.length}</button></div>
+  <div class="z-search">Hledej mezi 2 miliony produktů…</div></div>
+  <div class="z-sale">BLACK WEEK až −70 % · končí za <b id="zsale">01:59</b></div>
+  <div class="z-pad">
+    <div class="z-bar"><h2>Trička</h2><label class="z-peek">Řadit: <select class="z-sort" id="zsort"><option value="rec" ${Z.sort==="rec"?"selected":""}>Doporučené</option><option value="cheap" ${Z.sort==="cheap"?"selected":""}>Od nejlevnějšího</option></select></label></div>
+    <div class="z-grid">${ids.map(id=>{const p=ZP[id];return `<button class="z-card" data-z="open" data-id="${id}">
+      ${p.badge?`<span class="z-badge">${p.badge}</span>`:""}<div class="z-img">${tee(p.color)}</div>
+      <div class="nm">${p.name}</div>
+      ${p.coinFirst?`<div class="pr coin">${coinsOf(p.price)} 🪙</div><div class="sub">nebo ${kc(p.price)} · ${p.sub}</div>`:`<div class="pr">${kc(p.price)}${p.old?`<s>${kc(p.old)}</s>`:""}</div><div class="sub">${p.sub}</div>`}
+      ${p.hot?`<div class="z-hot">${p.hot}</div>`:""}</button>`}).join("")}</div>
+    <p class="z-fine" style="margin-top:14px">Zobrazeno 5 z 5 produktů v kategorii Trička.</p>
+  </div></div>`},
+detail:()=>{
+  const p=ZP[Z.detail], price=p.price+(p.organic&&Z.organic?p.organic:0);
+  return `<div class="screen" style="background:var(--z-bg)"><button class="z-back" data-z="home">‹ Trička</button>
+  <div class="z-big">${tee(p.color)}</div>
+  <div class="z-det">
+    <h1>${p.name}</h1>
+    <div class="z-price">${kc(price)}${p.old?`<s>${kc(p.old)}</s>`:""}</div>
+    <div class="z-peek">👁 ${Z.detail==="premium"?23:14} lidí si právě prohlíží tento produkt · ${p.sub}</div>
+    <div class="z-alert">⏱ Akční cena platí ještě <b id="zcd">04:59</b>${p.hot?" · "+p.hot:""}</div>
+    ${p.organic?`<div class="z-lab">Materiál</div><div class="z-opts">
+      <button class="z-opt ${Z.organic?"on":""}" data-z="mat" data-v="1">Organic bavlna<small>Nejoblíbenější · +${p.organic} Kč</small></button>
+      <button class="z-opt ${Z.organic?"":"on"}" data-z="mat" data-v="0">Standard<small>100% bavlna</small></button></div>`:""}
+    <div class="z-lab">Velikost</div><div class="z-opts">${["S","M","L","XL"].map(s=>`<button class="z-opt ${Z.size===s?"on":""}" data-z="size" data-v="${s}">${s}</button>`).join("")}</div>
+    <button class="z-btn" data-z="add" style="margin-top:6px">Přidat do košíku</button>
+  </div></div>`},
+cart:()=>{
+  const t=zTotals();
+  return `<div class="screen" style="background:var(--z-bg)"><button class="z-back" data-z="home">‹ Pokračovat v nákupu</button><div class="z-pad">
+  <h2 style="margin:0 0 12px;font-size:20px">Košík</h2>
+  ${Z.cart.length?Z.cart.map((i,ix)=>`<div class="z-item"><div class="z-img">${tee(i.color)}</div><div class="t">${i.rec?`<span class="z-rec">Doporučeno k nákupu</span>`:""}<b>${i.name}</b><small>${i.desc}</small></div><div class="p">${kc(i.price)}</div><button class="z-x" data-z="rm" data-i="${ix}" aria-label="Odebrat">×</button></div>`).join(""):`<p class="z-fine" style="font-size:14px">Košík je prázdný.</p>`}
+  <div class="z-sum"><div><span>Zboží</span><span>${kc(t.goods)}</span></div><div><span>Doprava</span><span>od 49 Kč</span></div></div>
+  <button class="z-btn" data-z="checkout" ${Z.cart.length?"":"disabled"}>Pokračovat k pokladně</button></div></div>`},
+checkout:()=>{
+  const t=zTotals();
+  const ch=(id,on,label,sub,price)=>`<label class="z-ch"><input type="checkbox" data-zc="${id}" ${on?"checked":""}><span>${label}${sub?`<small>${sub}</small>`:""}</span><em>${price}</em></label>`;
+  const rd=(name,val,cur,label,sub,price,tag)=>`<label class="z-ch"><input type="radio" name="${name}" data-zr="${name}" value="${val}" ${cur===val?"checked":""}><span>${label}${tag?`<span class="z-tag">${tag}</span>`:""}${sub?`<small>${sub}</small>`:""}</span><em>${price}</em></label>`;
+  return `<div class="screen" style="background:var(--z-bg)"><button class="z-back" data-z="cart">‹ Košík</button><div class="z-pad">
+  <h2 style="margin:0 0 12px;font-size:20px">Pokladna</h2>
+  <div class="z-sec"><h3>Doprava</h3>
+    ${rd("ship","express",Z.ship,"Expres kurýr","Doručení zítra do 12:00","129 Kč","Nejrychlejší")}
+    ${rd("ship","box",Z.ship,"Výdejní místo Trendo Box","Doručení za 3–4 dny","49 Kč")}</div>
+  <div class="z-sec"><h3>Doplňkové služby</h3>
+    ${ch("ins",Z.ins,"Pojištění zásilky","Pro jistotu, kdyby se něco stalo","39 Kč")}
+    ${ch("war",Z.war,"Prodloužená záruka +2 roky","Doporučujeme","29 Kč")}</div>
+  <div class="z-sec"><h3>Platba</h3>
+    ${rd("pay","coins",Z.pay,"Zaplatit mincemi Trendo","Zboží za "+coinsOf(t.goods).toLocaleString("cs-CZ")+" 🪙 · máš "+Z.coins.toLocaleString("cs-CZ")+" 🪙","🪙","Výhodné")}
+    ${rd("pay","card",Z.pay,"Platební karta","Visa, Mastercard","")}</div>
+  <div class="z-sum"><div><span>Zboží</span><span>${Z.pay==="coins"?coinsOf(t.goods).toLocaleString("cs-CZ")+" 🪙":kc(t.goods)}</span></div><div><span>Doprava</span><span>${kc(t.ship)}</span></div><div><span>Doplňky</span><span>${kc(t.extras)}</span></div></div>
+  <button class="z-btn" data-z="review">Pokračovat ke shrnutí</button></div></div>`},
+review:()=>{
+  const t=zTotals();
+  return `<div class="screen" style="background:var(--z-bg)"><button class="z-back" data-z="checkout">‹ Pokladna</button><div class="z-pad">
+  <h2 style="margin:0 0 12px;font-size:20px">Shrnutí objednávky</h2>
+  ${Z.cart.map(i=>`<div class="z-item"><div class="z-img">${tee(i.color)}</div><div class="t"><b>${i.name}</b><small>${i.desc}</small></div></div>`).join("")}
+  <div class="z-sum">
+    <div><span>Zboží</span><span>${Z.pay==="coins"?coinsOf(t.goods).toLocaleString("cs-CZ")+" 🪙":kc(t.goods)}</span></div>
+    <div><span>Doprava</span><span>${kc(t.ship)}</span></div>
+    <div><span>Doplňky</span><span>${kc(t.extras)}</span></div>
+    <div><span>Servisní poplatek</span><span>${kc(t.fee)}</span></div>
+    <div class="tot"><span>K úhradě kartou</span><span>${kc(t.card)}</span></div>
+  </div>
+  ${Z.pay==="coins"?`<p class="z-fine">Zboží uhradíš ${coinsOf(t.goods).toLocaleString("cs-CZ")} 🪙 z peněženky (máš ${Z.coins.toLocaleString("cs-CZ")} 🪙).</p>`:""}
+  <p class="z-fine">Servisní poplatek pokrývá zpracování objednávky a zákaznickou podporu.</p>
+  <button class="z-btn y" data-z="order">Objednat a zaplatit</button></div></div>`},
+fail:()=>`<div class="screen" style="background:var(--z-bg)"><div class="z-pad" style="padding-top:30px">
+  <div class="z-big" style="border-radius:16px;background:#fde68a;font-size:54px;font-weight:800;aspect-ratio:auto;height:140px">📦</div>
+  <h2 style="font-size:22px;margin:18px 0 8px">Objednávka č. 48 213 přijata</h2>
+  <p style="line-height:1.5">Celkem jste zaplatili <b>${kc(Z.lastSpent)}</b>${Z.packs?` (z toho ${kc(Z.packs)} za mince)`:""}.</p>
+  <p style="line-height:1.5">Úkol zněl: koupit tričko za nejnižší možnou cenu. Tohle šlo levněji. Zkuste to znovu.</p>
+  <button class="z-btn" data-z="retry">Zkusit znovu</button></div></div>`,
+};
+function zWinView(){
+  return `<div class="win"><div class="tag">Úkol 2 splněn</div><h1>Tričko koupeno za ${kc(Z_MIN)}!</h1>
+   <p class="caught">Našli jste nejlevnější cestu e-shopem Trendo.</p>
+   <div class="nums"><div><b>${fmt(Z.end-Z.start)}</b>čas</div><div><b>${Z.clicks}</b>kliků</div><div><b>${Z.caught}</b>×&nbsp;přeplaceno</div></div>
+   <button class="reveal" data-z="hub" style="margin-top:18px;background:var(--gold);color:#1d2230;border:0">Zpět na stanoviště</button>
+   <p class="caught" style="margin-top:14px">Co všechno vás tlačilo zaplatit víc? Zapamatujte si to, budete to hledat v dalším kroku.</p></div>`;
+}
+let zSaleT=null,zCdT=null;
+function zRender(){
+  clearInterval(zSaleT);clearInterval(zCdT);
+  let html=Z.screen==="win"?zWinView():ZV[Z.screen]();
+  if(Z.overlay==="coins"){const t=zTotals();html+=`<div class="z-ov"><div class="z-sheet"><h3>Dobij si mince Trendo</h3>
+    <p class="z-fine" style="font-size:13px">Potřebuješ ${t.coinsNeed.toLocaleString("cs-CZ")} 🪙, máš ${Z.coins.toLocaleString("cs-CZ")} 🪙.</p>
+    ${PACKS.map(([c,p,tag],i)=>`<button class="z-pack ${tag?"best":""}" data-z="buy" data-i="${i}"><span><b>${c.toLocaleString("cs-CZ")} 🪙</b>${tag?`<br><small style="color:#b7791f">${tag}</small>`:""}</span><span>${kc(p)}</span></button>`).join("")}
+    <button class="z-btn" style="background:none;color:var(--z-mute);font-weight:500;font-size:13px" data-z="closeov">Zaplatit raději jinak</button></div></div>`}
+  if(Z.toast) html+=`<div class="z-toast">${Z.toast}</div>`;
+  shop.innerHTML=html;
+  const sc=shop.querySelector(".screen"); if(sc&&Z.scrollTop) sc.scrollTop=0;
+  const s=document.getElementById("zsale"); if(s){let l=119;zSaleT=setInterval(()=>{l=l>0?l-1:119;s.textContent=fmt(l*1000)},1000)}
+  const c=document.getElementById("zcd"); if(c){let l=299;zCdT=setInterval(()=>{l=l>0?l-1:299;c.textContent=fmt(l*1000)},1000)}
+}
+function zToast(m){Z.toast=m;setTimeout(()=>{if(Z.toast===m){Z.toast=null;if(Z.screen!=="win")zRender()}},2600)}
+function zGo(s){Z.screen=s;Z.overlay=null;Z.scrollTop=true}
+shop.addEventListener("click",e=>{
+  if(Z.screen!=="win"){if(!Z.start)Z.start=Date.now();Z.clicks++}
+  const b=e.target.closest("[data-z]"); if(!b){zHud();return}
+  Z.scrollTop=false;
+  const a=b.dataset.z;
+  switch(a){
+    case "home": zGo("home");break;
+    case "cart": zGo("cart");break;
+    case "wallet": Z.overlay="coins";break;
+    case "open": Z.detail=b.dataset.id;Z.organic=true;zGo("detail");break;
+    case "mat": Z.organic=b.dataset.v==="1";break;
+    case "size": Z.size=b.dataset.v;break;
+    case "add":{const p=ZP[Z.detail];const org=p.organic&&Z.organic;
+      Z.cart.push({id:Z.detail,name:p.name,color:p.color,price:p.price+(org?p.organic:0),desc:`Velikost ${Z.size}${p.organic?(org?" · Organic bavlna":" · Standard"):""}`});
+      if(!Z.socksOffered){Z.socksOffered=true;Z.cart.push({id:"socks",name:"Ponožky Basic, 3 páry",color:"#9ca3af",price:59,desc:"Hodí se k tvému nákupu",rec:true})}
+      zGo("cart");zToast("Přidáno do košíku");break;}
+    case "rm": Z.cart.splice(+b.dataset.i,1);break;
+    case "checkout": zGo("checkout");break;
+    case "review":{const t=zTotals();if(Z.pay==="coins"&&Z.coins<t.coinsNeed){Z.overlay="coins";break}zGo("review");break;}
+    case "buy":{const [c,p]=PACKS[+b.dataset.i];Z.coins+=c;Z.packs+=p;Z.overlay=null;zToast(`Dobito ${c.toLocaleString("cs-CZ")} 🪙 za ${kc(p)}`);break;}
+    case "closeov": Z.overlay=null;break;
+    case "order":{const t=zTotals();if(Z.pay==="coins"&&Z.coins<t.coinsNeed){Z.overlay="coins";break}
+      Z.coins-=t.coinsNeed;Z.lastSpent=Z.packs+t.card;
+      const ok=Z.lastSpent===Z_MIN&&Z.cart.some(i=>i.id==="basic");
+      if(ok){Z.end=Date.now();Z.screen="win";shopWon()}else{Z.caught++;zGo("fail")}break;}
+    case "retry": zFresh(true);break;
+    case "hub": location.hash="#hub";return;
+  }
+  zRender();zHud();
+});
+shop.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.id==="zsort"){Z.sort=el.value;zRender();return}
+  if(el.dataset.zc){Z[el.dataset.zc]=el.checked;zRender();return}
+  if(el.dataset.zr){Z[el.dataset.zr]=el.value;zRender();return}
+});
+const tm2=document.getElementById("tm2"), cl2=document.getElementById("cl2");
+function zHud(){tm2.textContent=Z.start?fmt((Z.end||Date.now())-Z.start):"00:00";
+  cl2.textContent=Z.clicks+(Z.clicks===1?" klik":(Z.clicks>=2&&Z.clicks<=4?" kliky":" kliků"))}
+setInterval(zHud,500);
+document.getElementById("reset2").addEventListener("click",()=>{zFresh();zRender();zHud()});
+zRender();
+
+/* ---- Úkol 3: Sešitko ---- */
+const R={};
+function rFresh(keepClock){
+  const keep=keepClock?{clicks:R.clicks,start:R.start,caught:R.caught}:{clicks:0,start:null,caught:0};
+  Object.assign(R,{screen:"cookies",overlay:null,toast:null,end:null,
+    t:{cookies:false,social:false,news:false,partners:false,location:false,pro:false,contacts:false},
+    ck:{analytics:true,ads:true,partners:true},
+    f:{news:true,partners:true,noloc:false,terms:false,email:"",pass:"",phone:""}},keep);
+}
+rFresh();
+const reg=document.getElementById("reg");
+const logo=`<div class="r-logo"><i>✎</i>Sešitko</div>`;
+const RV={
+cookies:()=>`<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">${logo}
+  <div class="r-hero"><b>Zápisky ze všech předmětů na jednom místě</b><span>Sdílej poznámky se spolužáky, opakuj na testy a nikdy nezmeškej látku.</span></div>
+  <div style="flex:1"></div>
+  <div style="background:#fff;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -6px 30px rgba(0,0,0,.08)">
+    <b style="font-size:16px">Záleží nám na tvém soukromí 🍪</b>
+    <p class="r-p">Používáme cookies a podobné technologie, abychom ti mohli nabízet lepší obsah. Kliknutím na „Přijmout vše“ souhlasíš s jejich použitím a se sdílením údajů s našimi 847 partnery.</p>
+    <button class="r-btn" data-r="ckall">Přijmout vše</button>
+    <button class="r-link" data-r="ckset">Nastavení</button>
+  </div></div></div>`,
+ckset:()=>`<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">
+  <div class="r-h">Nastavení soukromí</div>
+  <p class="r-p">Abychom ti mohli nabídnout to nejlepší, doporučujeme ponechat vše zapnuté.</p>
+  <label class="r-tg"><span>Nezbytné cookies<small>Bez nich aplikace nefunguje</small></span><input type="checkbox" class="r-sw" checked disabled></label>
+  <label class="r-tg"><span>Analytika a zlepšování služby<small>Pomáhá nám pochopit, jak aplikaci používáš</small></span><input type="checkbox" class="r-sw" data-rk="analytics" ${R.ck.analytics?"checked":""}></label>
+  <label class="r-tg"><span>Personalizovaná reklama<small>Reklama podle tvých zájmů a předmětů</small></span><input type="checkbox" class="r-sw" data-rk="ads" ${R.ck.ads?"checked":""}></label>
+  <label class="r-tg"><span>Sdílení s partnery (847)<small>Oprávněný zájem našich partnerů</small></span><input type="checkbox" class="r-sw" data-rk="partners" ${R.ck.partners?"checked":""}></label>
+  <div style="flex:1"></div>
+  <button class="r-btn" data-r="ckall">Povolit vše a pokračovat</button>
+  <button class="r-btn faint" data-r="cksave">Potvrdit mé volby</button>
+  </div></div>`,
+welcome:()=>`<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">${logo}
+  <div class="r-big">📚</div>
+  <div class="r-h">Vytvoř si účet zdarma</div>
+  <p class="r-p">Přidej se k 120 000 studentům, kteří se se Sešitkem učí chytřeji.</p>
+  <div style="flex:1"></div>
+  <button class="r-btn ig" data-r="social">Pokračovat přes Instagram</button>
+  <button class="r-btn out" data-r="social">Pokračovat přes TikTok</button>
+  <button class="r-link" data-r="email">Registrovat se e-mailem</button>
+  </div></div>`,
+form:()=>`<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">
+  <div class="r-h">Registrace</div>
+  <div class="r-field"><label for="r-email">E-mail</label><input id="r-email" type="email" placeholder="jmeno@email.cz" value="${esc(R.f.email)}" data-rf="email" autocomplete="off"></div>
+  <div class="r-field"><label for="r-pass">Heslo</label><input id="r-pass" type="password" placeholder="Alespoň 8 znaků" value="${esc(R.f.pass)}" data-rf="pass" autocomplete="new-password"></div>
+  <div class="r-field"><label for="r-phone">Telefon *</label><input id="r-phone" type="tel" placeholder="+420" value="${esc(R.f.phone)}" data-rf="phone" autocomplete="off"><span class="r-hint">Pro obnovení účtu a důležitá upozornění.</span></div>
+  <label class="r-check"><input type="checkbox" data-rc="terms" ${R.f.terms?"checked":""}><span>Souhlasím s <u>obchodními podmínkami</u> a beru na vědomí <u>zásady zpracování osobních údajů</u>.</span></label>
+  <label class="r-check"><input type="checkbox" data-rc="news" ${R.f.news?"checked":""}><span>Chci dostávat studijní tipy, novinky a speciální nabídky Sešitka e-mailem.</span></label>
+  <label class="r-check"><input type="checkbox" data-rc="partners" ${R.f.partners?"checked":""}><span>Nepřeji si, aby mi nebyly zasílány personalizované nabídky od partnerů Sešitka.</span></label>
+  <label class="r-check"><input type="checkbox" data-rc="noloc" ${R.f.noloc?"checked":""}><span>Zaškrtněte, pokud si <b>nepřejete</b>, aby vaše poloha byla sdílena se spolužáky a partnery. <small>Ponecháním nezaškrtnutého pole sdílení polohy povolujete.</small></span></label>
+  <p class="r-hint">* Pole označená hvězdičkou doporučujeme vyplnit.</p>
+  <button class="r-btn" data-r="create">Vytvořit účet</button>
+  </div></div>`,
+contacts:()=>`<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">
+  <div class="r-big">👥</div>
+  <div class="r-h">Najdi své spolužáky</div>
+  <p class="r-p">Nahraj své kontakty a my ti ukážeme, kdo ze třídy už Sešitko používá. Učení ve skupině je 3× efektivnější!</p>
+  <div style="flex:1"></div>
+  <button class="r-btn" data-r="upload">Nahrát kontakty</button>
+  <button class="r-btn faint" data-r="skipc">Teď ne</button>
+  </div></div>`,
+fail:()=>{const n=Object.values(R.t).filter(Boolean).length;return `<div class="screen" style="background:var(--r-bg)"><div class="r-wrap">
+  <div class="r-big">📬</div>
+  <div class="r-h">Účet vytvořen!</div>
+  <p class="r-p" style="color:var(--r-ink);font-size:15px">Jenže cestou jste aplikaci dali <b>${n} ${n===1?"souhlas nebo údaj":n<5?"souhlasy nebo údaje":"souhlasů nebo údajů"}</b> navíc. Úkol zněl: registrovat se bez marketingových souhlasů.</p>
+  <p class="r-p">Zkuste to znovu a čtěte pozorně každé políčko.</p>
+  ${R_GUIDE}
+  <div style="flex:1"></div>
+  <button class="r-btn" data-r="retry">Zkusit znovu</button></div></div>`},
+};
+const R_GUIDE=`<details class="guide"><summary>Ukázat správný postup s vysvětlením</summary><ol>
+  <li><b>Cookie lišta:</b> neklikat na velké „Přijmout vše“, ale na malé „Nastavení“. Velké barevné tlačítko je vizuální rušení (visual interference).</li>
+  <li><b>Nastavení soukromí:</b> vypnout analytiku, reklamu i sdílení s 847 partnery. Byly předem zapnuté (preselection) a text radil „ponechat vše zapnuté“. Pak kliknout na nenápadné „Potvrdit mé volby“, ne na „Povolit vše a pokračovat“.</li>
+  <li><b>Úvodní obrazovka:</b> nepokračovat přes Instagram ani TikTok. Aplikace by získala přístup k fotkám, sledovaným lidem a posílání zpráv (privacy zuckering). Správně je malý odkaz „Registrovat se e-mailem“.</li>
+  <li><b>Telefon:</b> nevyplňovat. Hvězdička vypadá jako „povinné“, ale dole stojí, že jde jen o doporučení.</li>
+  <li><b>Novinky e-mailem:</b> odškrtnout. Byly předzaškrtnuté.</li>
+  <li><b>Nabídky partnerů:</b> odškrtnout. „Nepřeji si, aby mi nebyly zasílány…“ je dvojitý zápor (trick wording), zaškrtnuto znamená souhlas.</li>
+  <li><b>Poloha:</b> zaškrtnout. Tady je to naopak: nezaškrtnuté políčko sdílení povoluje.</li>
+  <li><b>Obchodní podmínky:</b> zaškrtnout. To je jediný opravdu povinný souhlas a není marketingový.</li>
+  <li><b>Sešitko Pro:</b> odmítnout „Ne, radši budu mít horší známky“. Odmítnutí je napsané tak, abyste se styděli (confirmshaming).</li>
+  <li><b>Najdi spolužáky:</b> „Teď ne“. Nahrání kontaktů by aplikaci dalo údaje vašich kamarádů, kteří s tím nesouhlasili.</li>
+</ol></details>`;
+function rWinView(){
+  return `<div class="win"><div class="tag">Úkol 3 splněn</div><h1>Registrace bez jediného souhlasu navíc!</h1>
+   <p class="caught">Prošli jste Sešitkem a nic jste mu nedali.</p>
+   <div class="nums"><div><b>${fmt(R.end-R.start)}</b>čas</div><div><b>${R.clicks}</b>kliků</div><div><b>${R.caught}</b>×&nbsp;nachytáni</div></div>
+   <button class="reveal" data-r="hub" style="margin-top:18px;background:var(--gold);color:#1d2230;border:0">Zpět na stanoviště</button>
+   <div style="margin-top:16px">${R_GUIDE}</div></div>`;
+}
+function rRender(){
+  let html=R.screen==="win"?rWinView():RV[R.screen]();
+  if(R.overlay==="social") html+=`<div class="r-ov"><div class="r-sheet"><b style="font-size:17px">Sešitko chce přístup k tvému účtu</b>
+    <ul class="r-perm"><li>Jméno, profilová fotka a datum narození</li><li>Seznam lidí, které sleduješ</li><li>Tvoje fotky a příspěvky</li><li>Zasílání zpráv tvým jménem</li></ul>
+    <button class="r-btn ig" data-r="socialyes">Povolit a pokračovat</button><button class="r-btn faint" data-r="close">Zrušit</button></div></div>`;
+  if(R.overlay==="pro") html+=`<div class="r-ov"><div class="r-sheet"><div class="r-big" style="padding:0">🎓</div><b style="font-size:19px;text-align:center">Chceš o 20 % lepší známky?</b>
+    <p class="r-p" style="text-align:center">Získej slevu 20 % na Sešitko Pro a každý týden tipy na testy do e-mailu.</p>
+    <button class="r-btn pop" data-r="proyes">Ano, chci lepší známky!</button>
+    <button class="r-btn faint" data-r="prono">Ne, radši budu mít horší známky</button></div></div>`;
+  if(R.toast) html+=`<div class="r-toast">${R.toast}</div>`;
+  reg.innerHTML=html;
+  const sc=reg.querySelector(".screen"); if(sc&&R.scrollTop) sc.scrollTop=0;
+}
+function rToast(m){R.toast=m;setTimeout(()=>{if(R.toast===m){R.toast=null;if(R.screen!=="win")rRender()}},2600)}
+function rGo(s){R.screen=s;R.overlay=null;R.scrollTop=true}
+function rFinish(){
+  const any=Object.values(R.t).some(Boolean);
+  if(!any){R.end=Date.now();R.screen="win";regWon()}else{R.caught++;rGo("fail")}
+}
+reg.addEventListener("click",e=>{
+  if(R.screen!=="win"){if(!R.start)R.start=Date.now();R.clicks++}
+  const b=e.target.closest("[data-r]"); if(!b){rHud();return}
+  R.scrollTop=false;
+  switch(b.dataset.r){
+    case "ckall": R.t.cookies=true; rGo("welcome"); break;
+    case "ckset": rGo("ckset"); break;
+    case "cksave": R.t.cookies=Object.values(R.ck).some(Boolean); rGo("welcome"); break;
+    case "social": R.overlay="social"; break;
+    case "socialyes": R.t.social=true; R.f.email="kuba.n@posta.cz"; rGo("form"); rToast("Údaje z Instagramu načteny"); break;
+    case "close": R.overlay=null; break;
+    case "email": rGo("form"); break;
+    case "create":{
+      if(!/^\S+@\S+\.\S+$/.test(R.f.email)){rToast("Zadej platný e-mail.");break}
+      if(R.f.pass.length<8){rToast("Heslo musí mít alespoň 8 znaků.");break}
+      if(!R.f.terms){rToast("Pro registraci je potřeba souhlasit s obchodními podmínkami.");break}
+      R.t.news=R.f.news; R.t.partners=R.f.partners; R.t.location=!R.f.noloc; R.t.phone=R.f.phone.replace(/\D/g,"").length>0;
+      R.overlay="pro"; break;}
+    case "proyes": R.t.pro=true; rGo("contacts"); break;
+    case "prono": rGo("contacts"); break;
+    case "upload": R.t.contacts=true; rFinish(); break;
+    case "skipc": rFinish(); break;
+    case "retry": rFresh(true); break;
+    case "hub": location.hash="#hub"; return;
+  }
+  rRender(); rHud();
+});
+reg.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.dataset.rk){R.ck[el.dataset.rk]=el.checked}
+  if(el.dataset.rc){R.f[el.dataset.rc]=el.checked}
+});
+reg.addEventListener("input",e=>{const el=e.target;if(el.dataset.rf)R.f[el.dataset.rf]=el.value});
+const tm3=document.getElementById("tm3"), cl3=document.getElementById("cl3");
+function rHud(){tm3.textContent=R.start?fmt((R.end||Date.now())-R.start):"00:00";
+  cl3.textContent=R.clicks+(R.clicks===1?" klik":(R.clicks>=2&&R.clicks<=4?" kliky":" kliků"))}
+setInterval(rHud,500);
+document.getElementById("reset3").addEventListener("click",()=>{rFresh();rRender();rHud()});
+rRender();
+
+/* ---- Station hub ---- */
+const ACTIVE_TASKS=[1,2,3];
+const REQUIRED=[1,2]; // úkol 3 se odemkne až s bonusem
+const H_KEY="stanoviste-a-v2";
+const H={};
+function hFresh(){Object.assign(H,{done:{},stats:{},read:false,notes:"",checked:false,missed:"",submitted:false,bonus:""})}
+hFresh();
+try{const s=JSON.parse(localStorage.getItem(H_KEY)||"null");if(s)Object.assign(H,s)}catch(e){}
+function hSave(){try{localStorage.setItem(H_KEY,JSON.stringify(H))}catch(e){}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const TASKS=[
+ {n:1,app:"Tonik",title:"Zruš předplatné",text:"Platíte 189 Kč měsíčně za hudební aplikaci Tonik a už ji nechcete. Zrušte předplatné Premium. Nic dalšího si neobjednávejte a nedávejte aplikaci víc údajů, než musíte."},
+ {n:2,app:"Trendo",title:"Kup tričko za nejnižší cenu",text:"Potřebujete obyčejné tričko a v e-shopu Trendo za něj chcete zaplatit co nejméně, i s dopravou. Na velikosti ani barvě nezáleží."},
+ {n:3,app:"Sešitko",title:"Registruj se bez marketingových souhlasů",text:"Chcete si založit účet v aplikaci na sdílení zápisků Sešitko. Registrujte se tak, abyste aplikaci nedali žádný marketingový souhlas ani údaje navíc."},
+];
+const LEVERS=[
+ ["Proměnlivá odměna","Nepředvídatelná výhra vytváří nejsilnější návyk","Lootbox / pack v EA FC, pull-to-refresh na Instagramu"],
+ ["FOMO, strach z promeškání","Pocit, že ostatní zažívají něco beze mě","Skin jen dnes ve Fortnite Item Shopu, notifikace „kamarád přidal příběh“"],
+ ["Averze ke ztrátě","Ztráta bolí víc, než těší stejně velký zisk","Snapchat streak, Duolingo série"],
+ ["Síla výchozí volby","Necháme věci, jak jsou nastavené","Autoplay dalšího dílu na Netflixu, předzaškrtnuté pojištění zásilky"],
+ ["Časový tlak","Rychlé rozhodování místo rozvážného","Odpočet „Blesková akce končí za 02:14:59“ na Temu"],
+ ["Sociální důkaz","Kopírujeme, co dělají ostatní","„10 000+ prodáno“, recenze 4,9 hvězdičky"],
+ ["Utopené náklady a kotva","Když už jsem investoval, dokončím; první cena určí měřítko","Battle pass, servisní poplatek u vstupenek až v posledním kroku"],
+ ["Zakrytá cena","Abstraktní měna nebo týdenní cena nepůsobí jako peníze","V‑Bucks, Robuxy v Robloxu, „jen 29 Kč týdně“ po free trialu"],
+];
+const PATTERNS=[
+ ["Nekonečný feed","Infinite scroll","TikTok, Reels, Shorts nemají konec, kde by ses zastavil."],
+ ["Streaky","Streaks","Snapchat nebo Duolingo série, kterou nechceš ztratit."],
+ ["Lootboxy","Loot boxes","Platíš za šanci, ne za věc. Packy v EA FC, gacha hry."],
+ ["Falešná naléhavost","Fake urgency","Odpočet slevy, který se po vypršení spustí znovu."],
+ ["Skryté náklady","Hidden costs","Poplatek za „servis“ se objeví až v posledním kroku."],
+ ["Past na myš","Roach motel","Přihlásit se jde jedním klikem, zrušit je bludiště."],
+ ["Zahanbování","Confirmshaming","„Ne, díky, nechci ušetřit.“"],
+ ["Skrytá reklama","Disguised ads","Reklama, která vypadá jako tlačítko nebo běžný příspěvek."],
+ ["Vynucená akce","Forced action","Chceš jedno, musíš ale udělat i něco, co nechceš (dát telefon)."],
+ ["Matoucí formulace","Trick wording","Dvojité zápory: „Nechcete nedostávat novinky?“"],
+ ["Vizuální rušení","Visual interference","Důležitá volba je malá a šedá, ta výhodná pro firmu velká a barevná."],
+ ["Otravování","Nagging","Pořád dokola „nechceš radši…?“, dokud neustoupíš."],
+];
+const ANSWERS={
+3:{app:"Sešitko (Úkol 3)",items:[
+   ["Visual interference (vizuální rušení)","Cookie lišta měla velké zelené „Přijmout vše“ a malý šedý odkaz „Nastavení“. V nastavení bylo výrazné „Povolit vše a pokračovat“ a skoro neviditelné „Potvrdit mé volby“."],
+   ["Preselection (předvolba)","Analytika, reklama i sdílení s 847 partnery byly předem zapnuté a stránka radila „ponechat vše zapnuté“. Ve formuláři byl předzaškrtnutý odběr novinek."],
+   ["Privacy zuckering (vylákání dat)","Velká tlačítka „Pokračovat přes Instagram/TikTok“ chtěla přístup k fotkám, sledovaným lidem a posílání zpráv. Registrace e-mailem byla jen malý odkaz. Na konci aplikace chtěla nahrát kontakty."],
+   ["Trick wording (matoucí formulace)","„Nepřeji si, aby mi nebyly zasílány personalizované nabídky“ byl předzaškrtnutý dvojitý zápor, zaškrtnuto = souhlas. U polohy to bylo naopak: bylo potřeba zaškrtnout, jinak se poloha sdílela."],
+   ["Forced action (vynucená akce)","Telefon měl hvězdičku, takže vypadal povinně, ale povinný nebyl. Hvězdička znamenala jen „doporučujeme vyplnit“."],
+   ["Confirmshaming (zahanbování)","„Ne, radši budu mít horší známky“ jako odmítnutí nabídky Sešitko Pro s tipy do e-mailu."],
+ ]},
+2:{app:"Trendo (Úkol 2)",items:[
+   ["Fake urgency (falešná naléhavost)","„Black Week končí za 01:59“ a „Akční cena platí ještě 04:59“. Po vypršení se odpočet spustil znovu, sleva nikdy nekončí."],
+   ["Fake scarcity (falešný nedostatek)","„Poslední 2 kusy!“ a „23 lidí si právě prohlíží tento produkt“ u dražšího trička Premium."],
+   ["Social proof (sociální důkaz)","„Prodáno 10 000+ · ★ 4,9“ a přeškrtnutá „původní“ cena 579 Kč, aby Premium vypadalo jako jistota a výhodný kup."],
+   ["Preselection (předvolba)","Předvybraný dražší materiál Organic (+80 Kč), expresní doprava za 129 Kč místo 49 Kč, zaškrtnuté pojištění a prodloužená záruka."],
+   ["Sneak into basket (plížení do košíku)","Do košíku se samy přidaly ponožky za 59 Kč jako „Doporučeno k nákupu“. Bylo potřeba je odebrat."],
+   ["Hidden costs (skryté náklady)","Servisní poplatek 29 Kč se objevil až ve shrnutí objednávky, v košíku ani v pokladně nebyl."],
+   ["Virtuální měna (zakrytá cena)","Trička Basic a Retro byla v seznamu za mince (790 🪙 a 1 110 🪙), skutečná cena v Kč jen drobně pod tím. Basic tričko bylo za 790 🪙 a placení mincemi bylo předvybrané jako „Výhodné“. Nejmenší balíček, který stačil, stál 279 Kč, tedy víc než tričko za 199 Kč."],
+   ["Řazení „Doporučené“","Nejlevnější tričko bylo v seznamu až poslední. Nejlevnější cesta: Basic tričko Standard, výdejní místo, bez doplňků, platba kartou = 277 Kč."],
+ ]},
+ 1:{app:"Tonik (Úkol 1)",items:[
+   ["Disguised ads (skrytá reklama)","Řádek „Spravovat předplatné“ na hlavní obrazovce vypadal jako součást aplikace, ale byla to reklama na VPN. Zavřít šla až po 5 sekundách."],
+   ["Visual interference (vizuální rušení)","Velké barevné tlačítko vedlo k dražšímu tarifu Family, odkaz „Ukončit Premium“ byl malý a šedý až dole. V posledním kroku bylo správné tlačítko „Ano“ téměř neviditelné."],
+   ["Roach motel (past na myš)","Předplatné se zakládá jedním klikem, ke zrušení vedlo přes 8 obrazovek: profil, účet, tarif, nabídky, ověření, poslední otázka."],
+   ["Nagging (otravování)","Místo zrušení aplikace opakovaně nabízela něco jiného: dražší Premium Plus a pak slevu."],
+   ["Forced action (vynucená akce)","Před zrušením chtěla telefonní číslo, i když ho nepotřebovala, a k tomu předzaškrtnutý souhlas s reklamními SMS. Šlo to obejít přes „Ověřit jinak“."],
+   ["Confirmshaming (zahanbování)","„Ne, díky. Nová hudba mě nebaví.“ a „Ano, chci přijít o všechno, co jsem si vybudoval.“"],
+   ["Trick wording (matoucí formulace)","„Nepřejete si, aby vaše předplatné nebylo ukončeno a nedošlo k jeho nepokračování?“ Trojitý zápor, správně bylo „Ano“."],
+ ]},
+};
+
+function allDone(){return REQUIRED.every(n=>H.done[n])}
+function renderTasks(){
+  document.getElementById("tasks").innerHTML=TASKS.map(t=>{
+    const active=REQUIRED.includes(t.n)||(t.n===3&&H.submitted), done=H.done[t.n], st=H.stats[t.n];
+    return `<div class="tcard ${active?"":"off"} ${done?"done":""}">
+      <div class="lab"><span>Úkol ${t.n} · ${esc(t.app)}</span>${done?"<b>Splněno ✓</b>":""}</div>
+      <h3>${esc(t.title)}</h3><p>${esc(t.text)}</p>
+      ${done&&st?`<div class="muted">Čas ${st.time} · ${st.clicks} kliků · nachytáni ${st.caught}×</div>`:""}
+      ${active?`<button class="go" data-task="${t.n}">${done?"Zkusit znovu":"Spustit úkol"}</button>`:`<button class="go" disabled>${t.n===3?"Odemkne se s bonusem":"Zatím zamčeno"}</button>`}
+    </div>`}).join("");
+}
+function stepBox(n,title,state,body,lockText){
+  return `<div class="step ${state}"><div class="step-h"><div class="step-n">${state==="ok"?"✓":n}</div><h2>${title}</h2></div>${state==="locked"?`<p class="lockmsg">${lockText}</p>`:body}</div>`;
+}
+function renderSteps(){
+  const s1=allDone(), s2=s1&&H.read, s3=s2&&H.checked;
+  const read=`<div class="read">
+    <p><b style="color:#fff">Dark pattern</b> (temný vzorec, klamavý design) je prvek aplikace nebo webu navržený tak, abys udělal něco, co bys jinak neudělal: zaplatil víc, zůstal déle, dal víc osobních údajů nebo nezrušil předplatné. Nejde o chybu designu, ale o záměr. Funguje to, protože využívá zkratky, které má v hlavě každý.</p>
+    <details data-d="levers" ${H.opened&&H.opened.levers&&!H.read?"open":""}><summary>Na jaké páky v nás dark patterns tlačí</summary><div>
+    <div class="tbl"><table><thead><tr><th>Páka</th><th>Co dělá</th><th>Konkrétní příklad</th></tr></thead><tbody>
+    ${LEVERS.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table></div></div></details>
+    <details data-d="pats" ${H.opened&&H.opened.pats&&!H.read?"open":""}><summary>Nejčastější dark patterns</summary><div>
+    <ul class="pats">${PATTERNS.map(p=>`<li><b>${p[0]}</b><i>${p[1]}</i><br>${p[2]}</li>`).join("")}</ul></div></details>
+    <p style="margin-top:16px"><b style="color:#fff">Chceš vědět víc?</b> Další vzorce a skutečné příklady najdeš na <a href="https://deceptive.design/" target="_blank" rel="noopener" style="color:var(--gold)">deceptive.design</a>.</p>
+    <p class="muted" style="margin-top:14px">Až budete hledat, ptejte se: Proč to tam je? Co to ve mně vyvolává? Kdo na tom vydělá?</p>
+    ${H.read?"":`<button class="hbtn" data-h="read" ${readyToRead()?"":"disabled"}>Přečteno, pokračovat</button>${readyToRead()?"":`<p class="muted" id="readhint" style="margin-top:8px">Nejdřív si rozklikněte a přečtěte obě části výše.</p>`}`}</div>`;
+  const ident=`<p>Projděte si klidně znovu všechny aplikace společně s týmem. Dělejte si poznámky na papír a pak sem napište všechno, co jste objevili: co vám bránilo, kde vás aplikace tlačila a jak se tomu říká.</p>
+    <div class="field"><label for="notes">Dark patterns, které jsme našli</label>
+    <textarea id="notes" placeholder="Např. v Toniku byla reklama, která vypadala jako tlačítko…">${esc(H.notes)}</textarea></div>
+    ${H.checked?"":`<button class="hbtn" data-h="check" ${H.notes.trim()?"":"disabled"}>Zkontrolovat</button>`}`;
+  const check=`<p>Tohle všechno se v aplikacích schovávalo. Porovnejte to se svými poznámkami.</p>
+    ${REQUIRED.map(n=>ANSWERS[n]).map(a=>`<div class="answer"><h3>${a.app}</h3><ol>${a.items.map(([x,y])=>`<li><b>${x}.</b> ${y}</li>`).join("")}</ol></div>`).join("")}
+    <div class="field" style="margin-top:18px"><label for="missed">Čeho jste si předtím v týmu nevšimli?</label>
+    <textarea id="missed" placeholder="Napište, co vám uniklo a proč myslíte, že to fungovalo." ${H.submitted?"readonly":""}>${esc(H.missed)}</textarea></div>
+    ${H.submitted?"":`<button class="hbtn" data-h="submit" ${H.missed.trim()?"":"disabled"}>Odeslat odpověď</button>`}`;
+  document.getElementById("step1").innerHTML=
+    stepBox(1,"Splňte úkoly 1 a 2",s1?"ok":"",`<p>Splněno ${REQUIRED.filter(n=>H.done[n]).length} ze ${REQUIRED.length} povinných úkolů. Spusťte je z dlaždic níže. Úkol 3 se odemkne jako bonus na konci.</p>`,"");
+  document.getElementById("steps").innerHTML=
+    stepBox(2,"Přečtěte si něco o dark patterns",!s1?"locked":(H.read?"ok":""),read,"Odemkne se po splnění všech úkolů.")+
+    (H.read?`<div class="step ok" style="background:#1f4a3a;border-color:#2f7d5d;text-align:center"><h2 style="font-size:20px">Na dalších úkolech pokračujte společně v týmu.</h2></div>`:"")+
+    stepBox(3,"Najděte co nejvíc dark patterns",!s2?"locked":(H.checked?"ok":""),ident,"Odemkne se, až si přečtete text o dark patterns.")+
+    stepBox(4,"Zkontrolujte se",!s3?"locked":(H.submitted?"ok":""),check,"Odemkne se po vyplnění poznámek.")+
+    (H.submitted?`<div class="step ok" style="background:#1f4a3a;border-color:#2f7d5d;text-align:center"><h2 style="font-size:24px">Dobrá práce, Stanoviště A splněno!</h2></div>
+    <div class="step" style="border:1px dashed var(--gold)"><div class="step-h"><div class="step-n" style="background:var(--gold);color:#1d2230;width:36px;height:36px"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="display:block"><path fill="#ffffff" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg></div><h2>BONUS: Máš všechno a zbývá ti ještě čas?</h2></div>
+    <p style="color:#fff;font-size:18px;font-weight:700;line-height:1.5;margin:4px 0 0">Jaké konkrétní dark patterns používají sociální sítě, které používáš? Najdi příklad dark patternu kdekoliv na internetu nebo přímo ve svém mobilu, popiš, jak funguje, a pořiď o něm důkaz (třeba screenshot).</p>
+    <div style="margin-top:18px;background:#1a1f2b;border-radius:12px;padding:16px">
+      <p style="margin:0 0 6px;font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">Odemčeno: Úkol 3</p>
+      <p style="margin:0">Zkuste se zaregistrovat do aplikace Sešitko tak, abyste jí nedali žádný marketingový souhlas ani údaje navíc.</p>
+      <button class="hbtn" data-task="3">Spustit Úkol 3</button>
+    </div>
+    </div>`:"");
+  if(H.read&&!s2){} 
+}
+function renderHub(){renderTasks();renderSteps()}
+document.getElementById("v-hub").addEventListener("click",e=>{
+  const t=e.target.closest("[data-task]");
+  if(t){const n=t.dataset.task;n==="3"?startReg():n==="2"?startShop():startTonik();return}
+  const h=e.target.closest("[data-h]"); if(!h) return;
+  if(h.dataset.h==="read"){H.read=true;hSave();renderSteps();document.getElementById("notes")?.focus()}
+  if(h.dataset.h==="check"){H.checked=true;hSave();renderSteps()}
+  if(h.dataset.h==="submit"){H.submitted=true;hSave();renderHub();document.querySelector(".step.ok[style]")?.scrollIntoView({behavior:"smooth",block:"center"})}
+});
+function readyToRead(){return !!(H.opened&&H.opened.levers&&H.opened.pats)}
+document.getElementById("v-hub").addEventListener("toggle",e=>{
+  const d=e.target; if(!d.dataset||!d.dataset.d||!d.open) return;
+  H.opened=Object.assign({},H.opened,{[d.dataset.d]:true}); hSave();
+  const b=document.querySelector('[data-h="read"]'); if(b&&readyToRead()){b.disabled=false;document.getElementById("readhint")?.remove()}
+},true);
+document.getElementById("v-hub").addEventListener("input",e=>{
+  if(e.target.id==="notes"){H.notes=e.target.value;hSave();const b=document.querySelector('[data-h="check"]');if(b)b.disabled=!H.notes.trim()}
+  if(e.target.id==="bonus"){H.bonus=e.target.value;hSave()}
+  if(e.target.id==="missed"){H.missed=e.target.value;hSave();const b=document.querySelector('[data-h="submit"]');if(b)b.disabled=!H.missed.trim()}
+});
+document.getElementById("hubReset").addEventListener("click",()=>{hFresh();hSave();fresh();render();hud();zFresh();zRender();zHud();rFresh();rRender();rHud();renderHub()});
+
+function showView(){
+  const v=location.hash==="#tonik"?"tonik":location.hash==="#shop"?"shop":location.hash==="#reg"?"reg":"hub";
+  document.getElementById("v-hub").hidden=v!=="hub";
+  document.getElementById("v-tonik").hidden=v!=="tonik";
+  document.getElementById("v-shop").hidden=v!=="shop";
+  document.getElementById("v-reg").hidden=v!=="reg";
+  if(v==="hub")renderHub();
+  window.scrollTo(0,0);
+}
+function startTonik(){clearInterval(adTimer);fresh();render();hud();location.hash="#tonik";showView()}
+function startReg(){rFresh();rRender();rHud();location.hash="#reg";showView()}
+function regWon(){H.done[3]=true;H.stats[3]={time:fmt(R.end-R.start),clicks:R.clicks,caught:R.caught};hSave()}
+function startShop(){zFresh();zRender();zHud();location.hash="#shop";showView()}
+function shopWon(){H.done[2]=true;H.stats[2]={time:fmt(Z.end-Z.start),clicks:Z.clicks,caught:Z.caught};hSave()}
+function tonikWon(){
+  const t=S.trap;
+  H.done[1]=true;H.stats[1]={time:fmt(S.end-S.start),clicks:S.clicks,caught:t.ad+t.upgrade+t.newsletter+t.phone+t.discount+t.wrong};hSave();
+}
+window.addEventListener("hashchange",showView);
+showView();
+</script>
+
+</body>
+</html>
